@@ -6,7 +6,8 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-scripts": "1.0.17",
-    "whammy": "0.0.1"
+    "whammy": "0.0.1",
+    "jsfft": "0.0.3"
   },
   "scripts": {
     "start": "react-scripts start",

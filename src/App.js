@@ -1,103 +1,100 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Whammy from "whammy";
+import DataProvider from "./services/DataProvider"
+import SimpleSpectrum from "./analysers/SimpleSpectrum"
 
 class App extends Component {
     constructor(props) {
         super(props)
 
-        this.startRecording = this.startRecording.bind(this)
-        this.stopRecording = this.stopRecording.bind(this)
+        this.renderVideo = this.renderVideo.bind(this)
         this.draw = this.draw.bind(this)
-    }
 
+        this.audioFilePath = "/bad-monday.mp3"
 
-    startRecording() {
-        if (!this.audioRef) {
-            console.log("Audio reference not set")
-            return
+        this.state = {
+            canPlay: false,
         }
 
-        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        var source = audioCtx.createMediaElementSource(this.audioRef);
+        this.visualizers = []
 
-        var gainNode = audioCtx.createGain();
-        gainNode.gain.value = 0.125
-        
-        this.analyser = audioCtx.createAnalyser()
-        this.analyser.fftSize = 8192;
-        this.bufferLength = this.analyser.frequencyBinCount;
-        this.dataArray = new Uint8Array(this.bufferLength);
+    }
 
-        source.connect(this.analyser);
-        this.analyser.connect(gainNode)
-        gainNode.connect(audioCtx.destination);
+    componentDidMount() {
+        this.setup()
+    }
 
-        console.log(Whammy)
+    setup() {
+        // Download mp3
+        fetch(this.audioFilePath)
+            .then((response) => {
+                // Get mp3 data as ArrayBuffer
+                return response.arrayBuffer()
+            })
+            .then((fileData) => {
+                // Decode mp3 to PCM ArrayBuffer
+                var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                audioCtx.decodeAudioData(fileData, (decodedData) => {
+                    // Initialize data provider
+                    let fftSize = 8192
+                    this.provider = new DataProvider(decodedData, fftSize)
+
+                    // Initialize visualizers array
+                    const vis1 = new SimpleSpectrum(this.provider, this.canvasRef)
+                    this.visualizers.push(vis1)
+
+                    // Now we're ready to show anything
+                    this.setState({
+                        canPlay: true
+                    })
+
+                    // Start animations
+                    this.draw()
+                }, () => {
+                    console.log("Failed to decode audio file")
+                })
+            })
+            .catch(() => {
+                console.log("Failed to download file")
+            })
+    }
+
+    renderVideo() {
         this.videoRecorder = new Whammy.Video(60);
         console.log(this.videoRecorder)
 
         this.draw()
-    }
 
-    stopRecording() {
-        var output = this.videoRecorder.compile();
-        var url = (window.webkitURL || window.URL).createObjectURL(output);
-        this.videoRef.src = url;
+        //var output = this.videoRecorder.compile();
+        //var url = (window.webkitURL || window.URL).createObjectURL(output);
+        //this.videoRef.src = url;
     }
 
     draw() {
-        var canvasCtx = this.canvasRef.getContext("2d");
-        let canvas = this.canvasRef
-
-        var drawVisual = requestAnimationFrame(this.draw);
-
-        this.analyser.getByteFrequencyData(this.dataArray);
+        const canvas = this.canvasRef
+        const canvasCtx = canvas.getContext("2d");
 
         canvasCtx.fillStyle = 'rgb(0, 0, 0)';
         canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-        var barWidth = /*(canvas.width / this.bufferLength) * 3*/1.0;
-        var barHeight;
-        var x = 0;
-        var i = 0;
-        var lastI = 0;
-        var increment = 0.5;
-
-        while (i < this.bufferLength) {
-            barHeight = this.dataArray[Math.floor(i)];
-            if (Math.floor(i) - Math.floor(lastI) > 1) {
-                barHeight = 0
-                for (var c = Math.floor(lastI) + 1; c <= Math.floor(i); c++) {
-                    barHeight += this.dataArray[c]
-                }
-                barHeight = barHeight / (Math.floor(i) - Math.floor(lastI));
-            }
-
-            canvasCtx.fillStyle = 'rgb(' + (barHeight+100) + ',50,50)';
-            canvasCtx.fillRect(x, canvas.height-barHeight, barWidth, barHeight);
-
-            x += barWidth;
-            lastI = i;
-            i += increment;
-            increment += 0.001;
+        if (this.state.canPlay) {
+            this.visualizers.forEach((visualizer) => { visualizer.drawFrame(this.audioRef.currentTime) })
         }
 
-        this.videoRecorder.add(canvas)
+        //this.videoRecorder.add(canvas)
+        requestAnimationFrame(this.draw);
     };
-
 
     render() {
         return (
             <div className="App">
-                <audio src="/bad-monday.mp3" controls ref={(audio) => { this.audioRef = audio }} />
+                <audio src={this.audioFilePath} controls ref={(audio) => { this.audioRef = audio }} />
                 <hr />
                 <br />
-                <button onClick={this.startRecording}>Start</button>
-                <button onClick={this.stopRecording}>Stop</button>
+                <button onClick={this.renderVideo}>Render</button>
                 <br />
-                <canvas width="1600" height="300" ref={(canvas) => { this.canvasRef = canvas }} />
+                <canvas width="800" height="450" ref={(canvas) => { this.canvasRef = canvas }} />
                 <video ref={(video) => { this.videoRef = video }} />
             </div>
         );
