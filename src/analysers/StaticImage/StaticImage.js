@@ -27,7 +27,6 @@ class StaticImage extends AnalyserBase {
 
         canvasCtx.drawImage(this.vars.image, x, y, imgW, imgH)
 	}
-	
 }
 
 export default StaticImage

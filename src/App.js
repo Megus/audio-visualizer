@@ -5,6 +5,7 @@ import Whammy from "whammy";
 import DataProvider from "./services/DataProvider"
 import SimpleSpectrum from "./analysers/SimpleSpectrum"
 import StaticImage from "./analysers/StaticImage"
+import PowerMeter from "./analysers/PowerMeter"
 
 class App extends Component {
     constructor(props) {
@@ -13,7 +14,7 @@ class App extends Component {
         this.renderVideo = this.renderVideo.bind(this)
         this.draw = this.draw.bind(this)
 
-        this.audioFilePath = "/bad-monday.mp3"
+        this.audioFilePath = "/counting-clouds.mp3"
 
         this.state = {
             canPlay: false,
@@ -69,15 +70,15 @@ class App extends Component {
         this.provider = new DataProvider(this.decodedData, fftSize)
 
         // Initialize visualizers array
-        this.visualizers.push(new StaticImage(
-            this.provider,
-            this.canvasRef,
+        this.visualizers.push(new StaticImage(this.provider, this.canvasRef,
             {},
             {image: this.coverImage}
         ))
-        this.visualizers.push(new SimpleSpectrum(
-            this.provider,
-            this.canvasRef,
+        this.visualizers.push(new SimpleSpectrum(this.provider, this.canvasRef,
+            {},
+            {}
+        ))
+        this.visualizers.push(new PowerMeter(this.provider, this.canvasRef,
             {},
             {}
         ))

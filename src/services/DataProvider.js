@@ -7,6 +7,11 @@ class DataProvider {
 		this.sampleRate = audioBuffer.sampleRate
 		this.fft = new KissFFT(fftSize)
 		this.fftInArray = new Float32Array(fftSize * 2)
+		this.audioLength = audioBuffer.length
+		this.channels = []
+	    for (var c = 0; c < audioBuffer.numberOfChannels; c++) {
+	    	this.channels.push(audioBuffer.getChannelData(c))
+	    }
 	}
 
 	stop() {
@@ -15,37 +20,30 @@ class DataProvider {
 
 	getFrequencyArray(timestamp, dataArray) {
 	    const fft = this.fft
-	    const audioLength = this.audioBuffer.length
 	    const sampleStart = this.timestampToSample(timestamp) - this.fftSize / 2
-	    var channels = []
-	    for (var c = 0; c < this.audioBuffer.numberOfChannels; c++) {
-	    	channels.push(this.audioBuffer.getChannelData(c))
-	    }
 
 	    var i = 0
-		var sample = 0
-		var summer = (channel) => { sample += channel[c] }
-	    for (c = sampleStart; c < sampleStart + this.fftSize; c++) {
-	    	if (c < 0 || c >= audioLength) {
-	    		this.fftInArray[i] = 0
-	    	} else {
-	    		sample = 0
-	    		// Avarage sample value of all channels
-	    		channels.forEach(summer)
-	    		this.fftInArray[i] = sample / this.audioBuffer.numberOfChannels
-	    	}
+	    for (var c = sampleStart; c < sampleStart + this.fftSize; c++) {
+	    	this.fftInArray[i] = this.avgSampleAt(c)
 	    	i += 2
 	    }
 	    
 		var out = fft.forward(this.fftInArray);
 
-		for (var j = 0; j < this.fftSize; j++) {
-			dataArray[j] = Math.sqrt(out[j*2] * out[j*2] + out[j*2+1] * out[j*2+1]) / this.fftSize
+		for (c = 0; c < this.fftSize; c++) {
+			dataArray[c] = Math.sqrt(out[c*2] * out[c*2] + out[c*2+1] * out[c*2+1]) / this.fftSize
 		}
 	}
 
 	getPower(timestamp) {
-
+		var power = 0.0
+		var sample = 0
+		const sampleStart = this.timestampToSample(timestamp)
+		for (var c = sampleStart; c < sampleStart + this.fftSize; c++) {
+			sample = this.avgSampleAt(c)
+			power += sample * sample
+		}
+		return Math.sqrt(power / this.fftSize)
 	}
 
 	getSamples(timestamp, count) {
@@ -54,6 +52,18 @@ class DataProvider {
 
 	timestampToSample(timestamp) {
 		return Math.floor(timestamp * this.sampleRate)
+	}
+
+	avgSampleAt(sample) {
+    	if (sample < 0 || sample >= this.audioLength) {
+    		return 0.0
+    	} else {
+    		var value = 0
+    		for (var c = 0; c < this.channels.length; c++) {
+    			value += this.channels[c][sample]
+    		}
+    		return value / this.channels.length
+    	}
 	}
 }
 
