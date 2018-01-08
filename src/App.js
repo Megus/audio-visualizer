@@ -41,7 +41,7 @@ class App extends Component {
                     this.provider = new DataProvider(decodedData, fftSize)
 
                     // Initialize visualizers array
-                    const vis1 = new SimpleSpectrum(this.provider, this.canvasRef)
+                    const vis1 = new SimpleSpectrum(this.provider, this.canvasRef, {}, {height: 0.5, scale: 4})
                     this.visualizers.push(vis1)
 
                     // Now we're ready to show anything

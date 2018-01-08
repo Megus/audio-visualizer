@@ -1,0 +1,5 @@
+{
+  "name": "AnalyserBase",
+  "private": true,
+  "main": "./AnalyserBase.js"
+}

@@ -1,24 +1,30 @@
-class SimpleSpectrum {
-	constructor(dataProvider, canvas) {
-		// Analyzer Configuration
-		this.barsCount = 128	// 128 bars
-		this.scale = 1.5		// Power scale
-		this.height = 0.2		// 20%
-		this.fallTime = 1.5		// 2 seconds for full release
+import AnalyserBase from "../AnalyserBase"
 
-		// Setup
-		this.provider = dataProvider
-		this.canvas = canvas
+class SimpleSpectrum extends AnalyserBase {
+	getDefaultConsts() {
+		return {
+			barsCount: 128,		// Number of spectrum bars
+		}
+	}
+
+	getDefaultVars() {
+		return {
+			scale: 1.5,			// Power multiplier
+			height: 0.2,		// Spectrum height in percents of canvas height
+			fallTime: 1.5,		// Seconds for a bar to fall to zero
+		}
+	}
+
+	constructor(dataProvider, canvas, consts = {}, vars = {}) {
+		super(dataProvider, canvas, consts, vars)
+
+		const barsCount = this.consts.barsCount
 
 		// Prepare arrays
 		this.bufferLength = dataProvider.fftSize / 2
 		this.dataArray = new Float32Array(this.bufferLength)
-		this.bars = new Float32Array(this.barsCount)
-
-		// Canvas-related size calculations
-		this.barWidth = canvas.width / this.barsCount
-		this.maxBarHeight = canvas.height * this.height
-		this.powerMultiplier = canvas.height * this.scale
+		this.bars = new Float32Array(barsCount)
+		this.barWidth = canvas.width / barsCount
 
 		// Calculate FFT bins for bars
 		var barBins = []
@@ -26,19 +32,30 @@ class SimpleSpectrum {
 		var maxFreq = dataProvider.sampleRate / 2
 		var curBin = this.freqToBin(40)
 		var maxBin = this.freqToBin(maxFreq * 0.9)
-		var binMultiplier = Math.pow(maxBin / curBin, 1.0 / this.barsCount)
+		var binMultiplier = Math.pow(maxBin / curBin, 1.0 / barsCount)
 
-		for (var c = 0; c <= this.barsCount; c++) {
+		for (var c = 0; c <= barsCount; c++) {
 			barBins.push(curBin)
 			curBin *= binMultiplier
 		}
 
 		this.barBins = barBins
 		this.lastTimestamp = 0
+
+		this.setupForVars()
 	}
 
 	freqToBin(freq) {
 		return Math.floor(freq * this.provider.fftSize / this.provider.sampleRate)
+	}
+
+	setupForVars() {
+		this.maxBarHeight = this.canvas.height * this.vars.height
+		this.powerMultiplier = this.canvas.height * this.vars.scale
+		// Trim bars height
+		for (var c = 0; c < this.consts.barsCount; c++) {
+			this.bars[c] = Math.min(this.maxBarHeight, this.bars[c])
+		}
 	}
 
     drawFrame(timestamp) {
@@ -50,7 +67,7 @@ class SimpleSpectrum {
         var barHeight;
         var x = 0;
 
-        for (var i = 0; i < this.barsCount; i++) {
+        for (var i = 0; i < this.consts.barsCount; i++) {
         	// Calculate bar height
     		if (Math.floor(this.barBins[i]) < Math.floor(this.barBins[i + 1])) {
     			barHeight = 0
@@ -73,7 +90,7 @@ class SimpleSpectrum {
             if (this.bars[i] < barHeight) {
             	this.bars[i] = barHeight
             } else {
-            	this.bars[i] = Math.max(this.bars[i] - this.maxBarHeight * (timestamp - this.lastTimestamp) / this.fallTime, barHeight)
+            	this.bars[i] = Math.max(this.bars[i] - this.maxBarHeight * Math.abs(timestamp - this.lastTimestamp) / this.vars.fallTime, barHeight)
             }
 
             canvasCtx.fillStyle = 'rgb(255,50,50)';
