@@ -23,13 +23,15 @@ class DataProvider {
 	    }
 
 	    var i = 0
+		var sample = 0
+		var summer = (channel) => { sample += channel[c] }
 	    for (c = sampleStart; c < sampleStart + this.fftSize; c++) {
 	    	if (c < 0 || c >= audioLength) {
 	    		this.fftInArray[i] = 0
 	    	} else {
+	    		sample = 0
 	    		// Avarage sample value of all channels
-	    		var sample = 0
-	    		channels.forEach((channel) => { sample += channel[c] })
+	    		channels.forEach(summer)
 	    		this.fftInArray[i] = sample / this.audioBuffer.numberOfChannels
 	    	}
 	    	i += 2

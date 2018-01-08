@@ -15,8 +15,12 @@ class AnalyserBase {
 		return {}
 	}
 
-	setVars() {
-		
+	setVars(newVars) {
+		Object.assign(this.vars, newVars)
+	}
+
+	drawFrame(timestamp) {
+		// Implement in subclasses
 	}
 }
 

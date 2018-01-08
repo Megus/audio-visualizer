@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
 import Whammy from "whammy";
+
 import DataProvider from "./services/DataProvider"
 import SimpleSpectrum from "./analysers/SimpleSpectrum"
+import StaticImage from "./analysers/StaticImage"
 
 class App extends Component {
     constructor(props) {
@@ -26,8 +28,8 @@ class App extends Component {
     }
 
     setup() {
-        // Download mp3
-        fetch(this.audioFilePath)
+        // Download resources
+        const loadAudio = fetch(this.audioFilePath)
             .then((response) => {
                 // Get mp3 data as ArrayBuffer
                 return response.arrayBuffer()
@@ -35,29 +37,58 @@ class App extends Component {
             .then((fileData) => {
                 // Decode mp3 to PCM ArrayBuffer
                 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                audioCtx.decodeAudioData(fileData, (decodedData) => {
-                    // Initialize data provider
-                    let fftSize = 8192
-                    this.provider = new DataProvider(decodedData, fftSize)
-
-                    // Initialize visualizers array
-                    const vis1 = new SimpleSpectrum(this.provider, this.canvasRef, {}, {height: 0.5, scale: 4})
-                    this.visualizers.push(vis1)
-
-                    // Now we're ready to show anything
-                    this.setState({
-                        canPlay: true
-                    })
-
-                    // Start animations
-                    this.draw()
-                }, () => {
-                    console.log("Failed to decode audio file")
+                return new Promise((resolve, reject) => {
+                    audioCtx.decodeAudioData(fileData, resolve, reject) 
                 })
             })
-            .catch(() => {
-                console.log("Failed to download file")
+
+        const loadImage = fetch("/cc-cover.jpeg")
+            .then((response) => {
+                return response.blob()
             })
+            .then((imageBlob) => {
+                return createImageBitmap(imageBlob)
+            })
+
+
+        Promise.all([loadAudio, loadImage])
+            .then((data) => {
+                this.decodedData = data[0]
+                this.coverImage = data[1]
+                this.initialize()
+            })
+            .catch((error) => {
+                console.log(error)
+                console.log("Failed to load resources")
+            })
+    }
+
+    initialize() {
+        // Initialize data provider
+        let fftSize = 8192
+        this.provider = new DataProvider(this.decodedData, fftSize)
+
+        // Initialize visualizers array
+        this.visualizers.push(new StaticImage(
+            this.provider,
+            this.canvasRef,
+            {},
+            {image: this.coverImage}
+        ))
+        this.visualizers.push(new SimpleSpectrum(
+            this.provider,
+            this.canvasRef,
+            {},
+            {}
+        ))
+
+        // Now we're ready to show anything
+        this.setState({
+            canPlay: true
+        })
+
+        // Start animations
+        this.draw()
     }
 
     renderVideo() {
@@ -94,7 +125,7 @@ class App extends Component {
                 <br />
                 <button onClick={this.renderVideo}>Render</button>
                 <br />
-                <canvas width="800" height="450" ref={(canvas) => { this.canvasRef = canvas }} />
+                <canvas width="1920" height="1080" style={{width: 960, height: 540}} ref={(canvas) => { this.canvasRef = canvas }} />
                 <video ref={(video) => { this.videoRef = video }} />
             </div>
         );
