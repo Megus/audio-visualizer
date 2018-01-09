@@ -30,8 +30,8 @@ class SimpleSpectrum extends AnalyserBase {
 		var barBins = []
 
 		var maxFreq = dataProvider.sampleRate / 2
-		var curBin = this.freqToBin(40)
-		var maxBin = this.freqToBin(maxFreq * 0.9)
+		var curBin = dataProvider.freqToFFTBin(40)
+		var maxBin = dataProvider.freqToFFTBin(maxFreq * 0.9)
 		var binMultiplier = Math.pow(maxBin / curBin, 1.0 / barsCount)
 
 		for (var c = 0; c <= barsCount; c++) {
@@ -43,10 +43,6 @@ class SimpleSpectrum extends AnalyserBase {
 		this.lastTimestamp = 0
 
 		this.setupForVars()
-	}
-
-	freqToBin(freq) {
-		return Math.floor(freq * this.provider.fftSize / this.provider.sampleRate)
 	}
 
 	setupForVars() {

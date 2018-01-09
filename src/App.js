@@ -6,6 +6,7 @@ import DataProvider from "./services/DataProvider"
 import SimpleSpectrum from "./analysers/SimpleSpectrum"
 import StaticImage from "./analysers/StaticImage"
 import PowerMeter from "./analysers/PowerMeter"
+import BeatDetector from "./analysers/BeatDetector"
 
 class App extends Component {
     constructor(props) {
@@ -79,6 +80,10 @@ class App extends Component {
             {}
         ))
         this.visualizers.push(new PowerMeter(this.provider, this.canvasRef,
+            {},
+            {}
+        ))
+        this.visualizers.push(new BeatDetector(this.provider, this.canvasRef,
             {},
             {}
         ))

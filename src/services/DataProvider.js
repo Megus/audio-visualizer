@@ -50,6 +50,11 @@ class DataProvider {
 
 	}
 
+	// Public utility functions
+	freqToFFTBin(freq) {
+		return Math.floor(freq * this.fftSize / this.sampleRate)
+	}
+
 	timestampToSample(timestamp) {
 		return Math.floor(timestamp * this.sampleRate)
 	}

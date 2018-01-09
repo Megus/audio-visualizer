@@ -1,0 +1,5 @@
+{
+  "name": "BeatDetector",
+  "private": true,
+  "main": "./BeatDetector.js"
+}
