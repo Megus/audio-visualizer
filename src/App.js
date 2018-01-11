@@ -6,7 +6,6 @@ import DataProvider from "./services/DataProvider"
 import SimpleSpectrum from "./analysers/SimpleSpectrum"
 import StaticImage from "./analysers/StaticImage"
 import PowerMeter from "./analysers/PowerMeter"
-import BeatDetector from "./analysers/BeatDetector"
 
 class App extends Component {
     constructor(props) {
@@ -14,11 +13,15 @@ class App extends Component {
 
         this.renderVideo = this.renderVideo.bind(this)
         this.draw = this.draw.bind(this)
+        this.onAudioPlay = this.onAudioPlay.bind(this)
+        this.onAudioPause = this.onAudioPause.bind(this)
 
-        this.audioFilePath = "/counting-clouds.mp3"
+        this.audioFilePath = "/bad-monday.mp3"
 
         this.state = {
             canPlay: false,
+            isAnimating: false,
+            isRendering: false,
         }
 
         this.visualizers = []
@@ -83,50 +86,82 @@ class App extends Component {
             {},
             {}
         ))
-        this.visualizers.push(new BeatDetector(this.provider, this.canvasRef,
-            {},
-            {}
-        ))
 
         // Now we're ready to show anything
         this.setState({
             canPlay: true
         })
-
-        // Start animations
-        this.draw()
     }
 
     renderVideo() {
         this.videoRecorder = new Whammy.Video(60);
         console.log(this.videoRecorder)
 
-        this.draw()
+        var frame = 0
 
-        //var output = this.videoRecorder.compile();
-        //var url = (window.webkitURL || window.URL).createObjectURL(output);
-        //this.videoRef.src = url;
+        const renderFrame = () => {
+            const timestamp = frame / 60.0
+            this.draw(timestamp)
+            this.videoRecorder.add(this.canvasRef)
+            console.log(timestamp)
+            frame++
+            if (timestamp < 5) {
+                setTimeout(renderFrame, 0)
+            } else {
+                var output = this.videoRecorder.compile();
+                var url = (window.webkitURL || window.URL).createObjectURL(output);
+                this.videoRef.src = url;
+            }
+        }
+
+        setTimeout(renderFrame, 1)
     }
 
-    draw() {
+    draw(timestamp) {
         const canvas = this.canvasRef
         const canvasCtx = canvas.getContext("2d");
 
         canvasCtx.fillStyle = 'rgb(0, 0, 0)';
         canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-        if (this.state.canPlay) {
-            this.visualizers.forEach((visualizer) => { visualizer.drawFrame(this.audioRef.currentTime) })
+        var frameTimestamp
+        if (timestamp !== null) {
+            frameTimestamp = timestamp
+        } else {
+            frameTimestamp = this.audioRef.currentTime
         }
 
-        //this.videoRecorder.add(canvas)
-        requestAnimationFrame(this.draw);
+        if (this.state.canPlay) {
+            this.visualizers.forEach((visualizer) => { visualizer.drawFrame(frameTimestamp) })
+        }
+
+        if (this.state.isAnimating && !this.state.isRendering) {
+            requestAnimationFrame(this.draw);
+        }
     };
 
+    onAudioPlay() {
+        this.setState({isAnimating: true})
+    }
+
+    onAudioPause() {
+        this.setState({isAnimating: false})
+    }
+
+
     render() {
+        if (this.state.isAnimating) {
+            this.draw()
+        }
+
         return (
             <div className="App">
-                <audio src={this.audioFilePath} controls ref={(audio) => { this.audioRef = audio }} />
+                <audio
+                    src={this.audioFilePath}
+                    controls
+                    onPlay={this.onAudioPlay}
+                    onPause={this.onAudioPause}
+                    ref={(audio) => { this.audioRef = audio }} />
                 <hr />
                 <br />
                 <button onClick={this.renderVideo}>Render</button>
