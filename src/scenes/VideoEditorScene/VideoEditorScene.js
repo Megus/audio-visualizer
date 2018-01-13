@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import Whammy from "whammy";
 
-import DataProvider from "../../services/DataProvider"
-import SimpleSpectrum from "../../analysers/SimpleSpectrum"
-import StaticImage from "../../analysers/StaticImage"
-import PowerMeter from "../../analysers/PowerMeter"
+import loadProject from "../../services/loadProject"
+
+import RenderEngine from "../../core/RenderEngine"
 
 class VideoEditorScene extends Component {
     constructor(props) {
@@ -15,16 +14,13 @@ class VideoEditorScene extends Component {
         this.onAudioPlay = this.onAudioPlay.bind(this)
         this.onAudioPause = this.onAudioPause.bind(this)
 
-        this.audioFilePath = "/bad-monday.mp3"
+        this.audioFilePath = "/project/bad-monday.mp3"
 
         this.state = {
             canPlay: false,
             isAnimating: false,
             isRendering: false,
         }
-
-        this.visualizers = []
-
     }
 
     componentDidMount() {
@@ -32,65 +28,16 @@ class VideoEditorScene extends Component {
     }
 
     setup() {
-        // Download resources
-        const loadAudio = fetch(this.audioFilePath)
-            .then((response) => {
-                // Get mp3 data as ArrayBuffer
-                return response.arrayBuffer()
-            })
-            .then((fileData) => {
-                // Decode mp3 to PCM ArrayBuffer
-                var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                return new Promise((resolve, reject) => {
-                    audioCtx.decodeAudioData(fileData, resolve, reject) 
+        loadProject("/project/project.json")
+            .then((project) => {
+                const canvas = this.canvasRef
+                this.renderEngine = new RenderEngine(project, canvas.width, canvas.height)
+                this.setState({
+                    canPlay: true,
+                    isAnimating: true,
                 })
+                setTimeout(this.draw, 1)
             })
-
-        const loadImage = fetch("/cc-cover.jpeg")
-            .then((response) => {
-                return response.blob()
-            })
-            .then((imageBlob) => {
-                return createImageBitmap(imageBlob)
-            })
-
-
-        Promise.all([loadAudio, loadImage])
-            .then((data) => {
-                this.decodedData = data[0]
-                this.coverImage = data[1]
-                this.initialize()
-            })
-            .catch((error) => {
-                console.log(error)
-                console.log("Failed to load resources")
-            })
-    }
-
-    initialize() {
-        // Initialize data provider
-        let fftSize = 8192
-        this.provider = new DataProvider(this.decodedData, fftSize)
-
-        // Initialize visualizers array
-        this.visualizers.push(new StaticImage(this.provider, this.canvasRef,
-            {},
-            {image: this.coverImage}
-        ))
-        this.visualizers.push(new SimpleSpectrum(this.provider, this.canvasRef,
-            {},
-            {}
-        ))
-        this.visualizers.push(new PowerMeter(this.provider, this.canvasRef,
-            {},
-            {}
-        ))
-
-        // Now we're ready to show anything
-        this.setState({
-            canPlay: true,
-            isAnimating: true,
-        })
     }
 
     renderVideo() {
@@ -117,22 +64,14 @@ class VideoEditorScene extends Component {
         setTimeout(renderFrame, 1)
     }
 
-    draw(timestamp) {
-        const canvas = this.canvasRef
-        const canvasCtx = canvas.getContext("2d");
-
-        canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-        canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-
-        var frameTimestamp
-        //if (timestamp !== null) {
-            //frameTimestamp = timestamp
-        //} else {
-            frameTimestamp = this.audioRef.currentTime
-        //}
-
+    draw() {
         if (this.state.canPlay) {
-            this.visualizers.forEach((visualizer) => { visualizer.drawFrame(frameTimestamp) })
+            const canvas = this.canvasRef
+
+            if (this.state.canPlay) {
+                this.renderEngine.drawFrame(this.canvasRef, this.audioRef.currentTime)
+            }
+
         }
 
         if (this.state.isAnimating && !this.state.isRendering) {
@@ -150,10 +89,6 @@ class VideoEditorScene extends Component {
 
 
     render() {
-        if (this.state.isAnimating) {
-            this.draw()
-        }
-
         return (
             <div>
                 <audio

@@ -6,12 +6,14 @@ class StaticImage extends AnalyserBase {
 	}
 
 	drawFrame(timestamp) {
-		if (!this.vars.image) return
+		if (!this.consts.images) return
+		if (!this.consts.images[this.vars.image]) return
+        const image = this.provider.media[this.consts.images[this.vars.image]]
+    	if (!image) return
 
         let canvas = this.canvas
         let canvasCtx = canvas.getContext("2d");
 
-        const image = this.vars.image
         var imgH
         var imgW
         if (image.height >= image.width) {
@@ -25,7 +27,7 @@ class StaticImage extends AnalyserBase {
         const x = (canvas.width - imgW) / 2
         const y = (canvas.height - imgH) / 2
 
-        canvasCtx.drawImage(this.vars.image, x, y, imgW, imgH)
+        canvasCtx.drawImage(image, x, y, imgW, imgH)
 	}
 }
 

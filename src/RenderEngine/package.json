@@ -1,5 +1,0 @@
-{
-  "name": "RenderEngine",
-  "private": true,
-  "main": "./RenderEngine.js"
-}

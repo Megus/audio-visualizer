@@ -1,0 +1,29 @@
+{
+	"title": "Bad Monday",
+	"author": "Megus",
+	"audioFile": "/project/bad-monday.mp3",
+	"media": {
+		"img1": "/project/cc-cover.jpeg"
+	},
+	"layers": [
+		{
+			"effect": "StaticImage",
+			"consts": {
+				"images": ["img1"]
+			},
+			"vars": {
+				"image": 0
+			}
+		},
+		{
+			"effect": "SimpleSpectrum",
+			"consts": {},
+			"vars": {}
+		},
+		{
+			"effect": "PowerMeter",
+			"consts": {},
+			"vars": {}
+		}
+	]
+}

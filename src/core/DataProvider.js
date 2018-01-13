@@ -1,16 +1,17 @@
 import {KissFFT} from "../3rdParty/kissfft/FFT.js"
 
 class DataProvider {
-	constructor(audioBuffer, fftSize = 2048) {
-		this.audioBuffer = audioBuffer
+	constructor(project, fftSize = 2048) {
+		this.audioBuffer = project.audioBuffer
+		this.media = project.media
 		this.fftSize = fftSize
-		this.sampleRate = audioBuffer.sampleRate
+		this.sampleRate = project.audioBuffer.sampleRate
 		this.fft = new KissFFT(fftSize)
 		this.fftInArray = new Float32Array(fftSize * 2)
-		this.audioLength = audioBuffer.length
+		this.audioLength = project.audioBuffer.length
 		this.channels = []
-	    for (var c = 0; c < audioBuffer.numberOfChannels; c++) {
-	    	this.channels.push(audioBuffer.getChannelData(c))
+	    for (var c = 0; c < project.audioBuffer.numberOfChannels; c++) {
+	    	this.channels.push(project.audioBuffer.getChannelData(c))
 	    }
 	}
 
