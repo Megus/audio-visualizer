@@ -1,5 +1,5 @@
 {
-  "name": "StaticImage",
-  "private": true,
-  "main": "./StaticImage.js"
+	"name": "StaticImage",
+	"private": true,
+	"main": "./StaticImage.js"
 }

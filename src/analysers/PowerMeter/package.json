@@ -1,5 +1,5 @@
 {
-  "name": "PowerMeter",
-  "private": true,
-  "main": "./PowerMeter.js"
+	"name": "PowerMeter",
+	"private": true,
+	"main": "./PowerMeter.js"
 }

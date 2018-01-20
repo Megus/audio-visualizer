@@ -1,5 +1,5 @@
 {
-  "name": "AnalyserBase",
-  "private": true,
-  "main": "./AnalyserBase.js"
+	"name": "AnalyserBase",
+	"private": true,
+	"main": "./AnalyserBase.js"
 }

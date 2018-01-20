@@ -1,5 +1,5 @@
 {
-  "name": "SimpleSpectrum",
-  "private": true,
-  "main": "./SimpleSpectrum.js"
+	"name": "SimpleSpectrum",
+	"private": true,
+	"main": "./SimpleSpectrum.js"
 }

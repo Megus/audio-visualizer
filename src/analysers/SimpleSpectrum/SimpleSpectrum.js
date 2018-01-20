@@ -54,49 +54,49 @@ class SimpleSpectrum extends AnalyserBase {
 		}
 	}
 
-    drawFrame(timestamp) {
-        let canvas = this.canvas
-        let canvasCtx = canvas.getContext("2d");
+		drawFrame(timestamp) {
+			let canvas = this.canvas
+			let canvasCtx = canvas.getContext("2d");
 
-        this.provider.getFrequencyArray(timestamp, this.dataArray);
+			this.provider.getFrequencyArray(timestamp, this.dataArray);
 
-        var barHeight;
-        var x = 0;
+			var barHeight;
+			var x = 0;
 
-        for (var i = 0; i < this.consts.barsCount; i++) {
-        	// Calculate bar height
-    		if (Math.floor(this.barBins[i]) < Math.floor(this.barBins[i + 1])) {
-    			barHeight = 0
-    			for (var c = Math.floor(this.barBins[i]); c < Math.floor(this.barBins[i + 1]); c++) {
-    				barHeight += this.dataArray[c]
-    			}
-    		} else {
-        		barHeight = this.dataArray[Math.floor(this.barBins[i])] + 
-        			(this.barBins[i] - Math.floor(this.barBins[i])) *
-        			(this.dataArray[Math.floor(this.barBins[i]) + 1] - this.dataArray[Math.floor(this.barBins[i])])
-    		}
+			for (var i = 0; i < this.consts.barsCount; i++) {
+				// Calculate bar height
+			if (Math.floor(this.barBins[i]) < Math.floor(this.barBins[i + 1])) {
+				barHeight = 0
+				for (var c = Math.floor(this.barBins[i]); c < Math.floor(this.barBins[i + 1]); c++) {
+					barHeight += this.dataArray[c]
+				}
+			} else {
+					barHeight = this.dataArray[Math.floor(this.barBins[i])] + 
+						(this.barBins[i] - Math.floor(this.barBins[i])) *
+						(this.dataArray[Math.floor(this.barBins[i]) + 1] - this.dataArray[Math.floor(this.barBins[i])])
+			}
 
-            barHeight *= this.powerMultiplier;
+			barHeight *= this.powerMultiplier;
 
-            if (barHeight > this.maxBarHeight) {
-                barHeight = this.maxBarHeight
-            }
+			if (barHeight > this.maxBarHeight) {
+				barHeight = this.maxBarHeight
+			}
 
-            // Bars falling
-            if (this.bars[i] < barHeight) {
-            	this.bars[i] = barHeight
-            } else {
-            	this.bars[i] = Math.max(this.bars[i] - this.maxBarHeight * Math.abs(timestamp - this.lastTimestamp) / this.vars.fallTime, barHeight)
-            }
+			// Bars falling
+			if (this.bars[i] < barHeight) {
+				this.bars[i] = barHeight
+			} else {
+				this.bars[i] = Math.max(this.bars[i] - this.maxBarHeight * Math.abs(timestamp - this.lastTimestamp) / this.vars.fallTime, barHeight)
+			}
 
-            canvasCtx.fillStyle = 'rgb(255,50,50)';
-            canvasCtx.fillRect(x, canvas.height - this.bars[i], this.barWidth - 1, this.bars[i]);
+			canvasCtx.fillStyle = 'rgb(255,50,50)';
+			canvasCtx.fillRect(x, canvas.height - this.bars[i], this.barWidth - 1, this.bars[i]);
 
-            x += this.barWidth;
-        }
+			x += this.barWidth;
+		}
 
-        this.lastTimestamp = timestamp
-    }
+		this.lastTimestamp = timestamp
+	}
 }
 
 export default SimpleSpectrum

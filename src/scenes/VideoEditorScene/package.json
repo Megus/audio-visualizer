@@ -1,5 +1,5 @@
 {
-  "name": "VideoEditorScene",
-  "private": true,
-  "main": "./VideoEditorScene.js"
+	"name": "VideoEditorScene",
+	"private": true,
+	"main": "./VideoEditorScene.js"
 }

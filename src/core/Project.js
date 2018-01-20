@@ -8,9 +8,9 @@ class Project {
 		this.mediaUrls = projectJson.media
 		this.layers = projectJson.layers
 	}
-	
+
 	prepare() {
-        this.dataProvider = new DataProvider(this, 8192)
+		this.dataProvider = new DataProvider(this, 8192)
 	}
 }
 

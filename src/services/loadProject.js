@@ -9,26 +9,26 @@ function loadProject(projectURL) {
 			project = new Project(projectJson)
 
 			// Load audio file
-	        const loadAudio = fetch(project.audioFileUrl)
-	            .then((response) => {
-	                // Get mp3 data as ArrayBuffer
-	                return response.arrayBuffer()
-	            })
-	            .then((fileData) => {
-	                // Decode mp3 to PCM ArrayBuffer
-	                var audioCtx = new (window.AudioContext || window.webkitAudioContext)()
-	                return new Promise((resolve, reject) => {
-	                    audioCtx.decodeAudioData(fileData, resolve, reject) 
-	                })
-	            })
+					const loadAudio = fetch(project.audioFileUrl)
+							.then((response) => {
+									// Get mp3 data as ArrayBuffer
+									return response.arrayBuffer()
+							})
+							.then((fileData) => {
+									// Decode mp3 to PCM ArrayBuffer
+									var audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+									return new Promise((resolve, reject) => {
+											audioCtx.decodeAudioData(fileData, resolve, reject) 
+									})
+							})
 
 			// Load media (well, only images for now)
 			// TODO: Handle other kinds of media
 			const loadMedia = Object.keys(projectJson.media).map((key) =>
 				fetch(projectJson.media[key])
-		            .then((response) => response.blob())
-		            .then((imageBlob) => createImageBitmap(imageBlob))
-		            .then((mediaObject) => media[key] = mediaObject))
+								.then((response) => response.blob())
+								.then((imageBlob) => createImageBitmap(imageBlob))
+								.then((mediaObject) => media[key] = mediaObject))
 
 			return Promise.all([loadAudio, loadMedia])
 		})

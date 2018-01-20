@@ -12,13 +12,13 @@ class PowerMeter extends AnalyserBase {
 	}
 
 	drawFrame(timestamp) {
-        let canvas = this.canvas
-        let canvasCtx = canvas.getContext("2d");
+				let canvas = this.canvas
+				let canvasCtx = canvas.getContext("2d");
 
-        const power = this.provider.getPower(timestamp)
+				const power = this.provider.getPower(timestamp)
 
-        canvasCtx.fillStyle = 'rgb(255,50,50)';
-        canvasCtx.fillRect(0, 0, power * this.vars.scale, 16);
+				canvasCtx.fillStyle = 'rgb(255,50,50)';
+				canvasCtx.fillRect(0, 0, power * this.vars.scale, 16);
 	}
 }
 

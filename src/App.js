@@ -3,17 +3,17 @@ import VideoEditorScene from "./scenes/VideoEditorScene"
 import './App.css';
 
 class App extends Component {
-    constructor(props) {
-        super(props)
-    }
+	constructor(props) {
+		super(props)
+	}
 
-    render() {
-        return (
-            <div className="App">
-                <VideoEditorScene />
-            </div>
-        );
-    }
+	render() {
+		return (
+			<div className="App">
+				<VideoEditorScene />
+			</div>
+		);
+	}
 }
 
 export default App;
