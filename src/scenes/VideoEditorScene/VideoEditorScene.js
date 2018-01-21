@@ -99,6 +99,10 @@ class VideoEditorScene extends Component {
 
 	uploadFile(event) {
 		const file = event.target.files[0];
+		if (file.type.split("/")[0] !== "audio") {
+			alert("File type not supported");
+			return;
+		}
 		let urlFileReader = new FileReader();
 		let arrayBufferFileReader = new FileReader();
 		urlFileReader.onload = e => {
