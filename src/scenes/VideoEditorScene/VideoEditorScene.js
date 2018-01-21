@@ -27,10 +27,6 @@ class VideoEditorScene extends Component {
 		}
 	}
 
-	componentDidMount() {
-		// this.setup()
-	}
-
 	setup(project) {
 		const canvas = this.canvasRef
 		this.renderEngine = new RenderEngine(project, canvas.width, canvas.height)
