@@ -6,7 +6,7 @@ const layerClasses = { SimpleSpectrum, StaticImage, PowerMeter }
 
 class RenderEngine {
 	constructor(project, width, height) {
-		console.log("RenderEngine constructor", project.dataProvider);
+		console.log("RenderEngine constructor, project", project);
 		this.project = project
 		this.width = width
 		this.height = height

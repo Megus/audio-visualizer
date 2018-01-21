@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import Whammy from "whammy";
 
-import loadProject from "../../services/loadProject"
+import loadProject from "../../services/loadProject";
+import createNewProject from "../../services/createNewProject";
 
-import RenderEngine from "../../core/RenderEngine"
+import RenderEngine from "../../core/RenderEngine";
 
 class VideoEditorScene extends Component {
 	constructor(props) {
@@ -22,8 +23,7 @@ class VideoEditorScene extends Component {
 		this.state = {
 			canPlay: false,
 			isAnimating: false,
-			isRendering: false,
-			file: null
+			isRendering: false
 		}
 	}
 
@@ -42,10 +42,12 @@ class VideoEditorScene extends Component {
 	}
 
 	loadProject() {
+		let player = document.getElementById("player");
+		player.src = this.audioFilePath;
 		loadProject("/project/project.json")
 			.then(project => {
 				this.setup(project);
-			})
+			});
 	}
 
 	renderVideo() {
@@ -74,10 +76,10 @@ class VideoEditorScene extends Component {
 
 	draw() {
 		if (this.state.canPlay) {
-			const canvas = this.canvasRef
+			const canvas = this.canvasRef;
 
 			if (this.state.canPlay) {
-				this.renderEngine.drawFrame(this.canvasRef, this.audioRef.currentTime)
+				this.renderEngine.drawFrame(this.canvasRef, this.audioRef.currentTime);
 			}
 
 		}
@@ -96,48 +98,51 @@ class VideoEditorScene extends Component {
 	}
 
 	uploadFile(event) {
-		this.state.file = event.target.files[0];
-		const fileName = this.state.file.name;
-		let freader = new FileReader();
-		let player = document.getElementById("player");
-		freader.onload = e => {
+		const file = event.target.files[0];
+		let urlFileReader = new FileReader();
+		let arrayBufferFileReader = new FileReader();
+		urlFileReader.onload = e => {
+			let player = document.getElementById("player");
 			player.src = e.target.result;
+		};
+		arrayBufferFileReader.onload = e => {
 			const project = {
-				title: fileName,
+				title: file.name,
 				author: "",
-				audioFile: e.target.result,
+				arrayBuffer: e.target.result,
 				media: {
 					img1: "/project/cc-cover.jpeg"
 				},
 				layers: [
-					// {
-					// 	effect: "StaticImage",
-					// 	consts: {
-					// 		images: ["img1"]
-					// 	},
-					// 	vars: {
-					// 		image: 0
-					// 	}
-					// },
-					// {
-					// 	effect: "SimpleSpectrum",
-					// 	consts: {},
-					// 	vars: {}
-					// },
-					// {
-					// 	effect: "PowerMeter",
-					// 	consts: {},
-					// 	vars: {}
-					// }
+					{
+						effect: "StaticImage",
+						consts: {
+							images: ["img1"]
+						},
+						vars: {
+							image: 0
+						}
+					},
+					{
+						effect: "SimpleSpectrum",
+						consts: {},
+						vars: {}
+					},
+					{
+						effect: "PowerMeter",
+						consts: {},
+						vars: {}
+					}
 				]
 			}
-			loadProject(project)
+			createNewProject(project)
 				.then(project => {
 					this.setup(project);
 				});
 		};
-		if (this.state.file) {
-			freader.readAsDataURL(this.state.file);
+		if (file) {
+			urlFileReader.readAsDataURL(file);
+			arrayBufferFileReader.readAsArrayBuffer(file);
 		}
 	}
 
@@ -155,6 +160,7 @@ class VideoEditorScene extends Component {
 				<br />
 				<button onClick={this.renderVideo}>Render</button>
 				<input type="file" onChange={this.uploadFile}/>
+				<button onClick={this.loadProject}>Load Bad Monday</button>
 				<br />
 				<canvas width="1920" height="1080" style={{width: 960, height: 540}} ref={(canvas) => { this.canvasRef = canvas }} />
 				<video ref={(video) => { this.videoRef = video }} />
