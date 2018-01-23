@@ -2,12 +2,13 @@
 	"title": "Bad Monday",
 	"author": "Megus",
 	"audioFile": "/project/bad-monday.mp3",
+	"aspectRatio": "16:9",
 	"media": {
 		"img1": "/project/cc-cover.jpeg"
 	},
 	"layers": [
 		{
-			"effect": "StaticImage",
+			"fx": "StaticImage",
 			"consts": {
 				"images": ["img1"]
 			},
@@ -16,12 +17,17 @@
 			}
 		},
 		{
-			"effect": "SimpleSpectrum",
+			"fx": "VideoPlayer",
 			"consts": {},
 			"vars": {}
 		},
 		{
-			"effect": "PowerMeter",
+			"fx": "SimpleSpectrum",
+			"consts": {},
+			"vars": {}
+		},
+		{
+			"fx": "PowerMeter",
 			"consts": {},
 			"vars": {}
 		}

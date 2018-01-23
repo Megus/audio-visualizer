@@ -1,6 +1,6 @@
-import AnalyserBase from "../AnalyserBase"
+import FXBase from "../FXBase"
 
-class SimpleSpectrum extends AnalyserBase {
+class SimpleSpectrum extends FXBase {
 	getDefaultConsts() {
 		return {
 			barsCount: 128,		// Number of spectrum bars

@@ -1,6 +1,6 @@
-import AnalyserBase from "../AnalyserBase"
+import FXBase from "../FXBase"
 
-class PowerMeter extends AnalyserBase {
+class PowerMeter extends FXBase {
 	getDefaultVars() {
 		return {
 			scale: 1000,

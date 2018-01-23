@@ -1,6 +1,6 @@
-import AnalyserBase from "../AnalyserBase"
+import FXBase from "../FXBase"
 
-class BeatDetector extends AnalyserBase {
+class BeatDetector extends FXBase {
 	getDefaultConsts() {
 		return {
 			freqLow: 20,

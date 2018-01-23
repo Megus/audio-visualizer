@@ -1,0 +1,5 @@
+{
+	"name": "VideoPlayer",
+	"private": true,
+	"main": "./VideoPlayer.js"
+}

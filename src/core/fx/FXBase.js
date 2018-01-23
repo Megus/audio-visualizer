@@ -1,4 +1,4 @@
-class AnalyserBase {
+class FXBase {
 	constructor(dataProvider, canvas, consts = {}, vars = {}) {
 		// Setup
 		this.provider = dataProvider
@@ -24,4 +24,4 @@ class AnalyserBase {
 	}
 }
 
-export default AnalyserBase
+export default FXBase

@@ -40,10 +40,11 @@ function loadProject(projectURL) {
 
 			return project
 		})
-		.catch((error) => {
+		// Don't need to handle errors here, let it be done by a calling function
+		/*.catch((error) => {
 			console.error("Failed to load project")
 			console.error(error)
-		})
+		})*/
 }
 
 export default loadProject
