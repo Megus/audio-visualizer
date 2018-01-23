@@ -1,8 +1,4 @@
-import SimpleSpectrum from "../analysers/SimpleSpectrum"
-import StaticImage from "../analysers/StaticImage"
-import PowerMeter from "../analysers/PowerMeter"
-
-const layerClasses = { SimpleSpectrum, StaticImage, PowerMeter }
+import fxClasses from "./fx"
 
 class RenderEngine {
 	constructor(project, width, height) {
@@ -14,7 +10,7 @@ class RenderEngine {
 		this.canvas.width = width
 		this.canvas.height = height
 		this.layers = project.layers.map((layer) => {
-			return new layerClasses[layer.effect](project.dataProvider, this.canvas, layer.consts, layer.vars)
+			return new fxClasses[layer.fx](project.dataProvider, this.canvas, layer.consts, layer.vars)
 		})
 	}
 

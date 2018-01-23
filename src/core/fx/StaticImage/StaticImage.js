@@ -1,6 +1,6 @@
-import AnalyserBase from "../AnalyserBase"
+import FXBase from "../FXBase"
 
-class StaticImage extends AnalyserBase {
+class StaticImage extends FXBase {
 	constructor(dataProvider, canvas, consts = {}, vars = {}) {
 		super(dataProvider, canvas, consts, vars)
 	}
@@ -27,7 +27,7 @@ class StaticImage extends AnalyserBase {
 		const x = (canvas.width - imgW) / 2
 		const y = (canvas.height - imgH) / 2
 
-		canvasCtx.drawImage(image, x, y, imgW, imgH)
+		canvasCtx.drawImage(image, Math.floor(x), Math.floor(y), Math.floor(imgW), Math.floor(imgH))
 	}
 }
 
