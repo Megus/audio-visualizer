@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import Whammy from "whammy";
 
-import loadProject from "../../services/loadProject"
+import loadProject from "../../services/loadProject";
+import createNewProject from "../../services/createNewProject";
 
-import RenderEngine from "../../core/RenderEngine"
+import RenderEngine from "../../core/RenderEngine";
 
 class VideoEditorScene extends Component {
 	constructor(props) {
@@ -13,31 +14,36 @@ class VideoEditorScene extends Component {
 		this.draw = this.draw.bind(this)
 		this.onAudioPlay = this.onAudioPlay.bind(this)
 		this.onAudioPause = this.onAudioPause.bind(this)
+		this.uploadFile = this.uploadFile.bind(this)
+		this.loadProject = this.loadProject.bind(this)
+		this.setup = this.setup.bind(this)
 
 		this.audioFilePath = "/project/bad-monday.mp3"
 
 		this.state = {
 			canPlay: false,
 			isAnimating: false,
-			isRendering: false,
+			isRendering: false
 		}
 	}
 
-	componentDidMount() {
-		this.setup()
+	setup(project) {
+		const canvas = this.canvasRef
+		this.renderEngine = new RenderEngine(project, canvas.width, canvas.height)
+		this.setState({
+			canPlay: true,
+			isAnimating: true,
+		})
+		setTimeout(this.draw, 1)
 	}
 
-	setup() {
+	loadProject() {
+		let player = document.getElementById("player");
+		player.src = this.audioFilePath;
 		loadProject("/project/project.json")
-			.then((project) => {
-				const canvas = this.canvasRef
-				this.renderEngine = new RenderEngine(project, canvas.width, canvas.height)
-				this.setState({
-					canPlay: true,
-					isAnimating: true,
-				})
-				setTimeout(this.draw, 1)
-			})
+			.then(project => {
+				this.setup(project);
+			});
 	}
 
 	renderVideo() {
@@ -66,10 +72,10 @@ class VideoEditorScene extends Component {
 
 	draw() {
 		if (this.state.canPlay) {
-			const canvas = this.canvasRef
+			const canvas = this.canvasRef;
 
 			if (this.state.canPlay) {
-				this.renderEngine.drawFrame(this.canvasRef, this.audioRef.currentTime)
+				this.renderEngine.drawFrame(this.canvasRef, this.audioRef.currentTime);
 			}
 
 		}
@@ -87,12 +93,65 @@ class VideoEditorScene extends Component {
 		this.setState({isAnimating: false})
 	}
 
+	uploadFile(event) {
+		const file = event.target.files[0];
+		if (file.type.split("/")[0] !== "audio") {
+			alert("File type not supported");
+			return;
+		}
+		let urlFileReader = new FileReader();
+		let arrayBufferFileReader = new FileReader();
+		urlFileReader.onload = e => {
+			let player = document.getElementById("player");
+			player.src = e.target.result;
+		};
+		arrayBufferFileReader.onload = e => {
+			const project = {
+				title: file.name,
+				author: "",
+				arrayBuffer: e.target.result,
+				media: {
+					img1: "/project/cc-cover.jpeg"
+				},
+				layers: [
+					{
+						effect: "StaticImage",
+						consts: {
+							images: ["img1"]
+						},
+						vars: {
+							image: 0
+						}
+					},
+					{
+						effect: "SimpleSpectrum",
+						consts: {},
+						vars: {}
+					},
+					{
+						effect: "PowerMeter",
+						consts: {},
+						vars: {}
+					}
+				]
+			}
+			createNewProject(project)
+				.then(project => {
+					this.setup(project);
+				});
+		};
+		if (file) {
+			urlFileReader.readAsDataURL(file);
+			arrayBufferFileReader.readAsArrayBuffer(file);
+		}
+	}
+
 
 	render() {
 		return (
 			<div>
 				<audio
-					src={this.audioFilePath}
+					id="player"
 					controls
 					onPlay={this.onAudioPlay}
 					onPause={this.onAudioPause}
@@ -100,6 +159,8 @@ class VideoEditorScene extends Component {
 				<hr />
 				<br />
 				<button onClick={this.renderVideo}>Render</button>
+				<input type="file" onChange={this.uploadFile}/>
+				<button onClick={this.loadProject}>Load Bad Monday</button>
 				<br />
 				<canvas width="1920" height="1080" style={{width: 960, height: 540}} ref={(canvas) => { this.canvasRef = canvas }} />
 				<video ref={(video) => { this.videoRef = video }} />
