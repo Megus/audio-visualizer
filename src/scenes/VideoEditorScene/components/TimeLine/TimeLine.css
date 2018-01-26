@@ -1,0 +1,13 @@
+.root {
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: center;
+	width: 100%;
+	/* border: 1px solid red; */
+}
+
+.testControl {
+	display: flex;
+	justify-content: center;
+	/* border: 1px solid green; */
+}

@@ -1,0 +1,5 @@
+{
+	"name": "TimeLine",
+	"private": true,
+	"main": "./TimeLine.js"
+}
