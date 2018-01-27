@@ -61,15 +61,15 @@ class DataProvider {
 	}
 
 	avgSampleAt(sample) {
-			if (sample < 0 || sample >= this.audioLength) {
-				return 0.0
-			} else {
-				var value = 0
-				for (var c = 0; c < this.channels.length; c++) {
-					value += this.channels[c][sample]
-				}
-				return value / this.channels.length
+		if (sample < 0 || sample >= this.audioLength) {
+			return 0.0
+		} else {
+			var value = 0
+			for (var c = 0; c < this.channels.length; c++) {
+				value += this.channels[c][sample]
 			}
+			return value / this.channels.length
+		}
 	}
 }
 

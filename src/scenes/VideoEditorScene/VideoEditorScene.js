@@ -8,33 +8,37 @@ import RenderEngine from "../../core/RenderEngine";
 
 class VideoEditorScene extends Component {
 	constructor(props) {
-		super(props)
+		super(props);
 
-		this.renderVideo = this.renderVideo.bind(this)
-		this.draw = this.draw.bind(this)
-		this.onAudioPlay = this.onAudioPlay.bind(this)
-		this.onAudioPause = this.onAudioPause.bind(this)
-		this.uploadFile = this.uploadFile.bind(this)
-		this.loadProject = this.loadProject.bind(this)
-		this.setup = this.setup.bind(this)
+		this.renderVideo = this.renderVideo.bind(this);
+		this.draw = this.draw.bind(this);
+		this.onAudioPlay = this.onAudioPlay.bind(this);
+		this.onAudioPause = this.onAudioPause.bind(this);
+		this.uploadFile = this.uploadFile.bind(this);
+		this.loadProject = this.loadProject.bind(this);
+		this.setup = this.setup.bind(this);
 
-		this.audioFilePath = "/project/bad-monday.mp3"
+		this.audioFilePath = "/project/bad-monday.mp3";
 
 		this.state = {
 			canPlay: false,
 			isAnimating: false,
 			isRendering: false
-		}
+		};
 	}
 
 	setup(project) {
-		const canvas = this.canvasRef
-		this.renderEngine = new RenderEngine(project, canvas.width, canvas.height)
+		const canvas = this.canvasRef;
+
+		project.layers[1].vars = {"video": this.videoLayer};	// TESTING VIDEO PLAYER!
+		console.log(project.layers[1])
+
+		this.renderEngine = new RenderEngine(project, canvas.width, canvas.height);
 		this.setState({
 			canPlay: true,
 			isAnimating: true,
 		})
-		setTimeout(this.draw, 1)
+		setTimeout(this.draw, 1);
 	}
 
 	loadProject() {
@@ -48,18 +52,17 @@ class VideoEditorScene extends Component {
 
 	renderVideo() {
 		this.videoRecorder = new Whammy.Video(60);
-		console.log(this.videoRecorder)
 
-		var frame = 0
+		var frame = 0;
 
 		const renderFrame = () => {
-			const timestamp = frame / 60.0
-			this.draw(timestamp)
-			this.videoRecorder.add(this.canvasRef)
-			console.log(timestamp)
-			frame++
+			const timestamp = frame / 60.0;
+			this.draw(timestamp);
+			this.videoRecorder.add(this.canvasRef);
+			console.log(timestamp);
+			frame++;
 			if (timestamp < 5) {
-				setTimeout(renderFrame, 1)
+				setTimeout(renderFrame, 1);
 			} else {
 				var output = this.videoRecorder.compile();
 				var url = (window.webkitURL || window.URL).createObjectURL(output);
@@ -67,7 +70,7 @@ class VideoEditorScene extends Component {
 			}
 		}
 
-		setTimeout(renderFrame, 1)
+		setTimeout(renderFrame, 1);
 	}
 
 	draw() {
@@ -86,11 +89,12 @@ class VideoEditorScene extends Component {
 	};
 
 	onAudioPlay() {
-		this.setState({isAnimating: true})
+		this.setState({isAnimating: true});
+		setTimeout(this.draw, 0.01);
 	}
 
 	onAudioPause() {
-		this.setState({isAnimating: false})
+		this.setState({isAnimating: false});
 	}
 
 	uploadFile(event) {
@@ -164,6 +168,7 @@ class VideoEditorScene extends Component {
 				<br />
 				<canvas width="1920" height="1080" style={{width: 960, height: 540}} ref={(canvas) => { this.canvasRef = canvas }} />
 				<video ref={(video) => { this.videoRef = video }} />
+				<video ref={(video) => { this.videoLayer = video }} src="/project/video.mp4" style={{display: "none"}} />
 			</div>
 		);
 	}
