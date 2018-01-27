@@ -1,4 +1,4 @@
-import DataProvider from "./DataProvider"
+import DataProvider from "./DataProvider";
 
 class Project {
 	constructor(projectJson) {
@@ -15,4 +15,4 @@ class Project {
 	}
 }
 
-export default Project
+export default Project;
