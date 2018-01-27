@@ -1,12 +1,8 @@
-import React, { Component } from 'react';
-import VideoEditorScene from "./scenes/VideoEditorScene"
-import './App.css';
+import React, { Component } from "react";
+import VideoEditorScene from "./scenes/VideoEditorScene";
+import "./App.css";
 
 class App extends Component {
-	constructor(props) {
-		super(props)
-	}
-
 	render() {
 		return (
 			<div className="App">
