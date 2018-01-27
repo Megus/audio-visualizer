@@ -1,50 +1,51 @@
-import Project from "../core/Project"
+/* global fetch, createImageBitmap */
+import Project from "../core/Project";
 
 function loadProject(projectURL) {
-	var project
-	var media = {}
+	let project;
+	const media = {};
 	return fetch(projectURL)
-		.then((response) => response.json())
+		.then(response => response.json())
 		.then((projectJson) => {
-			project = new Project(projectJson)
+			project = new Project(projectJson);
 
 			// Load audio file
 			const loadAudio = fetch(project.audioFileUrl)
-				.then((response) => {
-					// Get mp3 data as ArrayBuffer
-					return response.arrayBuffer();
-				})
+				// Get mp3 data as ArrayBuffer
+				.then(response => response.arrayBuffer())
 				.then((fileData) => {
 					// Decode mp3 to PCM ArrayBuffer
 					const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 					return new Promise((resolve, reject) => {
 						audioCtx.decodeAudioData(fileData, resolve, reject);
 					});
-			});
+				});
 
 			// Load media (well, only images for now)
 			// TODO: Handle other kinds of media
-			const loadMedia = Object.keys(projectJson.media).map((key) =>
+			const loadMedia = Object.keys(projectJson.media).map(key =>
 				fetch(projectJson.media[key])
-					.then((response) => response.blob())
-					.then((imageBlob) => createImageBitmap(imageBlob))
-					.then((mediaObject) => media[key] = mediaObject));
+					.then(response => response.blob())
+					.then(imageBlob => createImageBitmap(imageBlob))
+					.then((mediaObject) => { media[key] = mediaObject; }));
 
-			return Promise.all([loadAudio, loadMedia])
+			return Promise.all([loadAudio, loadMedia]);
 		})
 		.then((responses) => {
 			// Responses contain decoded audio data and an array of all media
-			project.audioBuffer = responses[0]
-			project.media = media
-			project.prepare()
+			[project.audioBuffer] = responses;
+			project.media = media;
+			project.prepare();
 
-			return project
-		})
-		// Don't need to handle errors here, let it be done by a calling function
-		/*.catch((error) => {
-			console.error("Failed to load project")
-			console.error(error)
-		})*/
+			return project;
+		});
+	// Don't need to handle errors here, let it be done by a calling function
+	/*
+	.catch((error) => {
+		console.error("Failed to load project")
+		console.error(error)
+	})
+	*/
 }
 
-export default loadProject
+export default loadProject;

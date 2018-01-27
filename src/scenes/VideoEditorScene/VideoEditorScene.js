@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+/* global requestAnimationFrame, FileReader */
+
+import React, { Component } from "react";
 import Whammy from "whammy";
 
 import loadProject from "../../services/loadProject";
@@ -23,8 +25,16 @@ class VideoEditorScene extends Component {
 		this.state = {
 			canPlay: false,
 			isAnimating: false,
-			isRendering: false
+			isRendering: false,
 		};
+	}
+
+	onAudioPlay() {
+		this.setState({ isAnimating: true });
+	}
+
+	onAudioPause() {
+		this.setState({ isAnimating: false });
 	}
 
 	setup(project) {
@@ -37,15 +47,15 @@ class VideoEditorScene extends Component {
 		this.setState({
 			canPlay: true,
 			isAnimating: true,
-		})
+		});
 		setTimeout(this.draw, 1);
 	}
 
 	loadProject() {
-		let player = document.getElementById("player");
+		const player = document.getElementById("player");
 		player.src = this.audioFilePath;
 		loadProject("/project/project.json")
-			.then(project => {
+			.then((project) => {
 				this.setup(project);
 			});
 	}
@@ -76,11 +86,9 @@ class VideoEditorScene extends Component {
 	draw() {
 		if (this.state.canPlay) {
 			const canvas = this.canvasRef;
-
 			if (this.state.canPlay) {
 				this.renderEngine.drawFrame(this.canvasRef, this.audioRef.currentTime);
 			}
-
 		}
 
 		if (this.state.isAnimating && !this.state.isRendering) {
@@ -103,45 +111,45 @@ class VideoEditorScene extends Component {
 			alert("File type not supported");
 			return;
 		}
-		let urlFileReader = new FileReader();
-		let arrayBufferFileReader = new FileReader();
-		urlFileReader.onload = e => {
-			let player = document.getElementById("player");
+		const urlFileReader = new FileReader();
+		const arrayBufferFileReader = new FileReader();
+		urlFileReader.onload = (e) => {
+			const player = document.getElementById("player");
 			player.src = e.target.result;
 		};
-		arrayBufferFileReader.onload = e => {
+		arrayBufferFileReader.onload = (e) => {
 			const project = {
 				title: file.name,
 				author: "",
 				arrayBuffer: e.target.result,
 				media: {
-					img1: "/project/cc-cover.jpeg"
+					img1: "/project/cc-cover.jpeg",
 				},
 				layers: [
 					{
 						effect: "StaticImage",
 						consts: {
-							images: ["img1"]
+							images: ["img1"],
 						},
 						vars: {
-							image: 0
-						}
+							image: 0,
+						},
 					},
 					{
 						effect: "SimpleSpectrum",
 						consts: {},
-						vars: {}
+						vars: {},
 					},
 					{
 						effect: "PowerMeter",
 						consts: {},
-						vars: {}
-					}
-				]
-			}
+						vars: {},
+					},
+				],
+			};
 			createNewProject(project)
-				.then(project => {
-					this.setup(project);
+				.then((_project) => {
+					this.setup(_project);
 				});
 		};
 		if (file) {
@@ -150,6 +158,29 @@ class VideoEditorScene extends Component {
 		}
 	}
 
+	renderVideo() {
+		this.videoRecorder = new Whammy.Video(60);
+		console.log(this.videoRecorder);
+
+		let frame = 0;
+
+		const renderFrame = () => {
+			const timestamp = frame / 60.0;
+			this.draw(timestamp);
+			this.videoRecorder.add(this.canvasRef);
+			console.log(timestamp);
+			frame += 1;
+			if (timestamp < 5) {
+				setTimeout(renderFrame, 1);
+			} else {
+				const output = this.videoRecorder.compile();
+				const url = (window.webkitURL || window.URL).createObjectURL(output);
+				this.videoRef.src = url;
+			}
+		};
+
+		setTimeout(renderFrame, 1);
+	}
 
 	render() {
 		return (
@@ -159,11 +190,12 @@ class VideoEditorScene extends Component {
 					controls
 					onPlay={this.onAudioPlay}
 					onPause={this.onAudioPause}
-					ref={(audio) => { this.audioRef = audio }} />
+					ref={(audio) => { this.audioRef = audio; }}
+				/>
 				<hr />
 				<br />
 				<button onClick={this.renderVideo}>Render</button>
-				<input type="file" onChange={this.uploadFile}/>
+				<input type="file" onChange={this.uploadFile} />
 				<button onClick={this.loadProject}>Load Bad Monday</button>
 				<br />
 				<canvas width="1920" height="1080" style={{width: 960, height: 540}} ref={(canvas) => { this.canvasRef = canvas }} />

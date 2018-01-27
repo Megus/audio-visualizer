@@ -1,8 +1,8 @@
-import FXBase from "../FXBase"
+import FXBase from "../FXBase";
 
 class VideoPlayer extends FXBase {
 	constructor(dataProvider, canvas, consts = {}, vars = {}) {
-		super(dataProvider, canvas, consts, vars)
+		super(dataProvider, canvas, consts, vars);
 	}
 
 	drawFrame(timestamp) {
@@ -29,4 +29,4 @@ class VideoPlayer extends FXBase {
 	}
 }
 
-export default VideoPlayer
+export default VideoPlayer;
