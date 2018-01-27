@@ -1,11 +1,11 @@
-import FXBase from "../FXBase"
+import FXBase from "../FXBase";
 
 class SimpleSpectrum extends FXBase {
 	getDefaultConsts() {
 		return {
 			barsCount: 128,		// Number of spectrum bars
 		};
-	};
+	}
 
 	getDefaultVars() {
 		return {
@@ -13,12 +13,12 @@ class SimpleSpectrum extends FXBase {
 			height: 0.2,		// Spectrum height in percents of canvas height
 			fallTime: 1.5,		// Seconds for a bar to fall to zero
 		};
-	};
+	}
 
 	constructor(dataProvider, canvas, consts = {}, vars = {}) {
 		super(dataProvider, canvas, consts, vars);
 
-		const barsCount = this.consts.barsCount;
+		const { barsCount } = this.consts;
 
 		// Prepare arrays
 		this.bufferLength = dataProvider.fftSize / 2;
@@ -27,14 +27,14 @@ class SimpleSpectrum extends FXBase {
 		this.barWidth = canvas.width / barsCount;
 
 		// Calculate FFT bins for bars
-		let barBins = [];
+		const barBins = [];
 
-		let maxFreq = dataProvider.sampleRate / 2;
+		const maxFreq = dataProvider.sampleRate / 2;
 		let curBin = dataProvider.freqToFFTBin(40);
-		let maxBin = dataProvider.freqToFFTBin(maxFreq * 0.9);
-		let binMultiplier = Math.pow(maxBin / curBin, 1.0 / barsCount);
+		const maxBin = dataProvider.freqToFFTBin(maxFreq * 0.9);
+		const binMultiplier = (maxBin / curBin) ** (1.0 / barsCount);
 
-		for (let c = 0; c <= barsCount; c++) {
+		for (let c = 0; c <= barsCount; c += 1) {
 			barBins.push(curBin);
 			curBin *= binMultiplier;
 		}
@@ -43,35 +43,35 @@ class SimpleSpectrum extends FXBase {
 		this.lastTimestamp = 0;
 
 		this.setupForVars();
-	};
+	}
 
 	setupForVars() {
 		this.maxBarHeight = this.canvas.height * this.vars.height;
 		this.powerMultiplier = this.canvas.height * this.vars.scale;
 		// Trim bars height
-		for (let c = 0; c < this.consts.barsCount; c++) {
+		for (let c = 0; c < this.consts.barsCount; c += 1) {
 			this.bars[c] = Math.min(this.maxBarHeight, this.bars[c]);
 		}
 	}
 
 	drawFrame(timestamp) {
-		let canvas = this.canvas;
-		let canvasCtx = canvas.getContext("2d");
+		const canvas = this.canvas;
+		const canvasCtx = canvas.getContext("2d");
 
 		this.provider.getFrequencyArray(timestamp, this.dataArray);
 
 		let barHeight;
 		let x = 0;
 
-		for (let i = 0; i < this.consts.barsCount; i++) {
+		for (let i = 0; i < this.consts.barsCount; i += 1) {
 			// Calculate bar height
 			if (Math.floor(this.barBins[i]) < Math.floor(this.barBins[i + 1])) {
 				barHeight = 0;
-				for (let c = Math.floor(this.barBins[i]); c < Math.floor(this.barBins[i + 1]); c++) {
+				for (let c = Math.floor(this.barBins[i]); c < Math.floor(this.barBins[i + 1]); c += 1) {
 					barHeight += this.dataArray[c];
 				}
 			} else {
-				barHeight = this.dataArray[Math.floor(this.barBins[i])] + 
+				barHeight = this.dataArray[Math.floor(this.barBins[i])] +
 					(this.barBins[i] - Math.floor(this.barBins[i])) *
 					(this.dataArray[Math.floor(this.barBins[i]) + 1] - this.dataArray[Math.floor(this.barBins[i])]);
 			}
@@ -86,10 +86,11 @@ class SimpleSpectrum extends FXBase {
 			if (this.bars[i] < barHeight) {
 				this.bars[i] = barHeight;
 			} else {
-				this.bars[i] = Math.max(this.bars[i] - this.maxBarHeight * Math.abs(timestamp - this.lastTimestamp) / this.vars.fallTime, barHeight);
+				this.bars[i] =
+					Math.max(this.bars[i] - this.maxBarHeight * Math.abs(timestamp - this.lastTimestamp) / this.vars.fallTime, barHeight);
 			}
 
-			canvasCtx.fillStyle = 'rgb(255,50,50)';
+			canvasCtx.fillStyle = "rgb(255,50,50)";
 			canvasCtx.fillRect(x, canvas.height - this.bars[i], this.barWidth - 1, this.bars[i]);
 
 			x += this.barWidth;
@@ -99,4 +100,4 @@ class SimpleSpectrum extends FXBase {
 	}
 }
 
-export default SimpleSpectrum
+export default SimpleSpectrum;
