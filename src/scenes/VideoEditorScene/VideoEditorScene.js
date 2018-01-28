@@ -29,19 +29,8 @@ class VideoEditorScene extends Component {
 		};
 	}
 
-	onAudioPlay() {
-		this.setState({ isAnimating: true });
-	}
-
-	onAudioPause() {
-		this.setState({ isAnimating: false });
-	}
-
 	setup(project) {
 		const canvas = this.canvasRef;
-
-		project.layers[1].vars = {"video": this.videoLayer};	// TESTING VIDEO PLAYER!
-		console.log(project.layers[1])
 
 		this.renderEngine = new RenderEngine(project, canvas.width, canvas.height);
 		this.setState({
@@ -56,12 +45,13 @@ class VideoEditorScene extends Component {
 		player.src = this.audioFilePath;
 		loadProject("/project/project.json")
 			.then((project) => {
+				console.log(project);
 				this.setup(project);
 			});
 	}
 
 	renderVideo() {
-		this.videoRecorder = new Whammy.Video(60);
+		this.videoRecorder = new Whammy.Video(60, 1.0);
 
 		var frame = 0;
 
@@ -198,9 +188,13 @@ class VideoEditorScene extends Component {
 				<input type="file" onChange={this.uploadFile} />
 				<button onClick={this.loadProject}>Load Bad Monday</button>
 				<br />
-				<canvas width="1920" height="1080" style={{width: 960, height: 540}} ref={(canvas) => { this.canvasRef = canvas }} />
+				<canvas
+					width="1920"
+					height="1080"
+					style={{width: 960, height: 540}}
+					ref={(canvas) => { this.canvasRef = canvas; }} 
+				/>
 				<video ref={(video) => { this.videoRef = video }} />
-				<video ref={(video) => { this.videoLayer = video }} src="/project/video.mp4" style={{display: "none"}} />
 			</div>
 		);
 	}

@@ -1,7 +1,7 @@
 class FXBase {
-	constructor(dataProvider, canvas, consts = {}, vars = {}) {
+	constructor(media, canvas, consts = {}, vars = {}) {
 		// Setup
-		this.provider = dataProvider;
+		this.media = media;
 		this.canvas = canvas;
 		this.consts = Object.assign({}, this.getDefaultConsts(), consts);
 		this.vars = Object.assign({}, this.getDefaultVars(), vars);

@@ -9,7 +9,7 @@ class RenderEngine {
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = width;
 		this.canvas.height = height;
-		this.layers = project.layers.map(layer => new fxClasses[layer.fx](project.dataProvider, this.canvas, layer.consts, layer.vars));
+		this.layers = project.layers.map(layer => new fxClasses[layer.fx](project.media, this.canvas, layer.consts, layer.vars));
 	}
 
 	drawFrame(canvas, timestamp) {

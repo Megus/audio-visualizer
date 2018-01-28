@@ -1,14 +1,14 @@
 import FXBase from "../FXBase";
 
 class StaticImage extends FXBase {
-	constructor(dataProvider, canvas, consts = {}, vars = {}) {
-		super(dataProvider, canvas, consts, vars);
+	constructor(media, canvas, consts = {}, vars = {}) {
+		super(media, canvas, consts, vars);
 	}
 
 	drawFrame(timestamp) {
 		if (!this.consts.images) return;
 		if (!this.consts.images[this.vars.image]) return;
-		const image = this.provider.media[this.consts.images[this.vars.image]];
+		const image = this.media[this.consts.images[this.vars.image]].image;
 		if (!image) return;
 
 		const canvas = this.canvas;

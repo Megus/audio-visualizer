@@ -1,23 +1,22 @@
-import { KissFFT } from "../3rdParty/kissfft/FFT";
+import { KissFFT } from "../../3rdParty/kissfft/FFT";
 
-class DataProvider {
-	constructor(project, fftSize = 2048) {
-		this.audioBuffer = project.audioBuffer;
-		this.media = project.media;
+class MediaAudio {
+	constructor(audioBuffer, fftSize = 8192) {
+		this.audioBuffer = audioBuffer;
 		this.fftSize = fftSize;
-		this.sampleRate = project.audioBuffer.sampleRate;
+		this.sampleRate = audioBuffer.sampleRate;
 		this.fft = new KissFFT(fftSize);
 		this.fftInArray = new Float32Array(fftSize * 2);
-		this.audioLength = project.audioBuffer.length;
+		this.audioLength = audioBuffer.length;
 		this.channels = [];
-		for (let c = 0; c < project.audioBuffer.numberOfChannels; c += 1) {
-			this.channels.push(project.audioBuffer.getChannelData(c));
+		for (let c = 0; c < audioBuffer.numberOfChannels; c += 1) {
+			this.channels.push(audioBuffer.getChannelData(c));
 		}
 	}
 
-	stop() {
-		this.fft.dispose();
-	}
+	//stop() {
+	//	this.fft.dispose();
+	//}
 
 	getFrequencyArray(timestamp, dataArray) {
 		const fft = this.fft;
@@ -71,6 +70,7 @@ class DataProvider {
 		}
 		return value / this.channels.length;
 	}
+	
 }
 
-export default DataProvider;
+export default MediaAudio;

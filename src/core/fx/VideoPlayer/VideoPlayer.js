@@ -1,12 +1,12 @@
 import FXBase from "../FXBase";
 
 class VideoPlayer extends FXBase {
-	constructor(dataProvider, canvas, consts = {}, vars = {}) {
-		super(dataProvider, canvas, consts, vars);
+	constructor(media, canvas, consts = {}, vars = {}) {
+		super(media, canvas, consts, vars);
 	}
 
 	drawFrame(timestamp) {
-		let canvas = this.canvas
+		/*let canvas = this.canvas
 		let canvasCtx = canvas.getContext("2d");
 		const video = this.vars.video
 
@@ -25,7 +25,7 @@ class VideoPlayer extends FXBase {
 
 		canvasCtx.drawImage(this.vars.video, 0, 0)
 
-		this.lastTimestamp = timestamp
+		this.lastTimestamp = timestamp*/
 	}
 }
 

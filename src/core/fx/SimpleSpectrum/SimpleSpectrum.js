@@ -15,13 +15,14 @@ class SimpleSpectrum extends FXBase {
 		};
 	}
 
-	constructor(dataProvider, canvas, consts = {}, vars = {}) {
-		super(dataProvider, canvas, consts, vars);
+	constructor(media, canvas, consts = {}, vars = {}) {
+		super(media, canvas, consts, vars);
 
 		const { barsCount } = this.consts;
 
 		// Prepare arrays
-		this.bufferLength = dataProvider.fftSize / 2;
+		this.audio = media["mainAudio"]
+		this.bufferLength = this.audio.fftSize / 2;
 		this.dataArray = new Float32Array(this.bufferLength);
 		this.bars = new Float32Array(barsCount);
 		this.barWidth = canvas.width / barsCount;
@@ -29,9 +30,9 @@ class SimpleSpectrum extends FXBase {
 		// Calculate FFT bins for bars
 		const barBins = [];
 
-		const maxFreq = dataProvider.sampleRate / 2;
-		let curBin = dataProvider.freqToFFTBin(40);
-		const maxBin = dataProvider.freqToFFTBin(maxFreq * 0.9);
+		const maxFreq = this.audio.sampleRate / 2;
+		let curBin = this.audio.freqToFFTBin(40);
+		const maxBin = this.audio.freqToFFTBin(maxFreq * 0.9);
 		const binMultiplier = (maxBin / curBin) ** (1.0 / barsCount);
 
 		for (let c = 0; c <= barsCount; c += 1) {
@@ -58,7 +59,7 @@ class SimpleSpectrum extends FXBase {
 		const canvas = this.canvas;
 		const canvasCtx = canvas.getContext("2d");
 
-		this.provider.getFrequencyArray(timestamp, this.dataArray);
+		this.audio.getFrequencyArray(timestamp, this.dataArray);
 
 		let barHeight;
 		let x = 0;
