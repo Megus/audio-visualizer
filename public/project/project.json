@@ -1,10 +1,20 @@
 {
 	"title": "Bad Monday",
 	"author": "Megus",
-	"audioFile": "/project/bad-monday.mp3",
 	"aspectRatio": "16:9",
 	"media": {
-		"img1": "/project/cc-cover.jpeg"
+		"mainAudio": {
+			"type": "audio",
+			"url": "/project/bad-monday.mp3"
+		},
+		"img1": {
+			"type": "image",
+			"url": "/project/cc-cover.jpeg"
+		},
+		"video1": {
+			"type": "video",
+			"url": "/project/video.mp4"
+		}
 	},
 	"layers": [
 		{
@@ -18,7 +28,10 @@
 		},
 		{
 			"fx": "VideoPlayer",
-			"consts": {},
+			"consts": {
+				"video": "video1",
+				"looped": true
+			},
 			"vars": {}
 		},
 		{

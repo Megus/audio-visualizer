@@ -16,12 +16,13 @@ class BeatDetector extends FXBase {
 		};
 	}
 
-	constructor(dataProvider, canvas, consts = {}, vars = {}) {
-		super(dataProvider, canvas, consts, vars);
-		this.lowBin = dataProvider.freqToFFTBin(this.consts.freqLow);
-		this.highBin = dataProvider.freqToFFTBin(this.consts.freqHigh);
+	constructor(media, canvas, consts = {}, vars = {}) {
+		super(media, canvas, consts, vars);
+		this.audio = media["mainAudio"]
+		this.lowBin = this.audio.freqToFFTBin(this.consts.freqLow);
+		this.highBin = this.audio.freqToFFTBin(this.consts.freqHigh);
 
-		this.bufferLength = dataProvider.fftSize / 2;
+		this.bufferLength = this.audio.fftSize / 2;
 		this.dataArray = new Float32Array(this.bufferLength);
 		this.level = 0;
 		this.lastTimestamp = 0;
@@ -33,7 +34,7 @@ class BeatDetector extends FXBase {
 		const canvas = this.canvas;
 		const canvasCtx = canvas.getContext("2d");
 
-		this.provider.getFrequencyArray(timestamp, this.dataArray);
+		this.audio.getFrequencyArray(timestamp, this.dataArray);
 		let power = 0;
 		for (let c = this.lowBin; c <= this.highBin; c += 1) {
 			power += this.dataArray[c] * this.dataArray[c];

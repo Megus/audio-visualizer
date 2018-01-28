@@ -31,16 +31,9 @@ class VideoEditorScene extends Component {
 		};
 	}
 
-	onAudioPlay() {
-		this.setState({ isAnimating: true });
-	}
-
-	onAudioPause() {
-		this.setState({ isAnimating: false });
-	}
-
 	setup(project) {
 		const canvas = this.canvasRef;
+
 		this.renderEngine = new RenderEngine(project, canvas.width, canvas.height);
 		this.setState({
 			canPlay: true,
@@ -58,6 +51,29 @@ class VideoEditorScene extends Component {
 			});
 	}
 
+	renderVideo() {
+		this.videoRecorder = new Whammy.Video(60, 1.0);
+
+		var frame = 0;
+
+		const renderFrame = () => {
+			const timestamp = frame / 60.0;
+			this.draw(timestamp);
+			this.videoRecorder.add(this.canvasRef);
+			console.log(timestamp);
+			frame++;
+			if (timestamp < 5) {
+				setTimeout(renderFrame, 1);
+			} else {
+				var output = this.videoRecorder.compile();
+				var url = (window.webkitURL || window.URL).createObjectURL(output);
+				this.videoRef.src = url;
+			}
+		}
+
+		setTimeout(renderFrame, 1);
+	}
+
 	draw() {
 		if (this.state.canPlay) {
 			const canvas = this.canvasRef;
@@ -69,6 +85,15 @@ class VideoEditorScene extends Component {
 		if (this.state.isAnimating && !this.state.isRendering) {
 			requestAnimationFrame(this.draw);
 		}
+	};
+
+	onAudioPlay() {
+		this.setState({isAnimating: true});
+		setTimeout(this.draw, 0.01);
+	}
+
+	onAudioPause() {
+		this.setState({isAnimating: false});
 	}
 
 	uploadFile(event) {
@@ -124,30 +149,6 @@ class VideoEditorScene extends Component {
 		}
 	}
 
-	renderVideo() {
-		this.videoRecorder = new Whammy.Video(60);
-		console.log(this.videoRecorder);
-
-		let frame = 0;
-
-		const renderFrame = () => {
-			const timestamp = frame / 60.0;
-			this.draw(timestamp);
-			this.videoRecorder.add(this.canvasRef);
-			console.log(timestamp);
-			frame += 1;
-			if (timestamp < 5) {
-				setTimeout(renderFrame, 1);
-			} else {
-				const output = this.videoRecorder.compile();
-				const url = (window.webkitURL || window.URL).createObjectURL(output);
-				this.videoRef.src = url;
-			}
-		};
-
-		setTimeout(renderFrame, 1);
-	}
-
 	render() {
 		return (
 			<div>
@@ -167,7 +168,7 @@ class VideoEditorScene extends Component {
 				<canvas
 					width="1920"
 					height="1080"
-					style={{ width: 960, height: 540 }}
+					style={{width: 960, height: 540}}
 					ref={(canvas) => { this.canvasRef = canvas; }}
 				/>
 				<video ref={(video) => { this.videoRef = video; }} />
