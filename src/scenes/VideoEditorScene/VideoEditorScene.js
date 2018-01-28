@@ -45,7 +45,6 @@ class VideoEditorScene extends Component {
 		player.src = this.audioFilePath;
 		loadProject("/project/project.json")
 			.then((project) => {
-				console.log(project);
 				this.setup(project);
 			});
 	}
