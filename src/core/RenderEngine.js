@@ -20,8 +20,9 @@ class RenderEngine {
 		offscreenCanvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
 		this.layers.forEach((layer) => { layer.drawFrame(timestamp); });
-		const image = offscreenCanvasCtx.getImageData(0, 0, this.width, this.height);
-		canvasCtx.putImageData(image, 0, 0);
+		//const image = offscreenCanvasCtx.getImageData(0, 0, this.width, this.height);
+		//canvasCtx.putImageData(image, 0, 0);
+		canvasCtx.drawImage(this.canvas, 0, 0);
 	}
 }
 
