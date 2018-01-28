@@ -29,7 +29,8 @@
 		{
 			"fx": "VideoPlayer",
 			"consts": {
-				"video": "video1"
+				"video": "video1",
+				"looped": true
 			},
 			"vars": {}
 		},

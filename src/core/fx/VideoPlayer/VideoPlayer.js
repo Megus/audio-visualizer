@@ -11,7 +11,13 @@ class VideoPlayer extends FXBase {
 			let canvas = this.canvas;
 			let canvasCtx = canvas.getContext("2d");
 
-			canvasCtx.drawImage(video.getFrame(timestamp), 0, 0)
+			let videoTimestamp = timestamp;
+			const duration = video.video.duration;
+			if (video.video.duration && this.consts.looped) {
+				videoTimestamp = timestamp - Math.floor(timestamp / duration) * duration;
+			}
+
+			canvasCtx.drawImage(video.getFrame(videoTimestamp), 0, 0)
 		}
 	}
 }

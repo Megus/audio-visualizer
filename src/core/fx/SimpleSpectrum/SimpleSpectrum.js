@@ -64,6 +64,7 @@ class SimpleSpectrum extends FXBase {
 		let barHeight;
 		let x = 0;
 
+		canvasCtx.fillStyle = "rgb(255,50,50)";
 		for (let i = 0; i < this.consts.barsCount; i += 1) {
 			// Calculate bar height
 			if (Math.floor(this.barBins[i]) < Math.floor(this.barBins[i + 1])) {
@@ -91,7 +92,6 @@ class SimpleSpectrum extends FXBase {
 					Math.max(this.bars[i] - this.maxBarHeight * Math.abs(timestamp - this.lastTimestamp) / this.vars.fallTime, barHeight);
 			}
 
-			canvasCtx.fillStyle = "rgb(255,50,50)";
 			canvasCtx.fillRect(x, canvas.height - this.bars[i], this.barWidth - 1, this.bars[i]);
 
 			x += this.barWidth;
