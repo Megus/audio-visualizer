@@ -6,26 +6,13 @@ class VideoPlayer extends FXBase {
 	}
 
 	drawFrame(timestamp) {
-		/*let canvas = this.canvas
-		let canvasCtx = canvas.getContext("2d");
-		const video = this.vars.video
+		const video = this.media[this.consts.video];
+		if (video) {
+			let canvas = this.canvas;
+			let canvasCtx = canvas.getContext("2d");
 
-		const videoTime = Math.min(timestamp, video.duration)
-
-		// Determine video state: playing or paused
-		if (this.lastTimestamp == timestamp) {
-			video.pause()
-		} else if (video.paused && videoTime < video.duration) {
-			video.play()
+			canvasCtx.drawImage(video.getFrame(timestamp), 0, 0)
 		}
-
-		if (Math.abs(videoTime - video.currentTime) > 1.0) {
-			this.vars.video.currentTime = videoTime
-		}
-
-		canvasCtx.drawImage(this.vars.video, 0, 0)
-
-		this.lastTimestamp = timestamp*/
 	}
 }
 

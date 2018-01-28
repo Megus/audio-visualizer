@@ -148,30 +148,6 @@ class VideoEditorScene extends Component {
 		}
 	}
 
-	renderVideo() {
-		this.videoRecorder = new Whammy.Video(60);
-		console.log(this.videoRecorder);
-
-		let frame = 0;
-
-		const renderFrame = () => {
-			const timestamp = frame / 60.0;
-			this.draw(timestamp);
-			this.videoRecorder.add(this.canvasRef);
-			console.log(timestamp);
-			frame += 1;
-			if (timestamp < 5) {
-				setTimeout(renderFrame, 1);
-			} else {
-				const output = this.videoRecorder.compile();
-				const url = (window.webkitURL || window.URL).createObjectURL(output);
-				this.videoRef.src = url;
-			}
-		};
-
-		setTimeout(renderFrame, 1);
-	}
-
 	render() {
 		return (
 			<div>

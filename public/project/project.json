@@ -28,7 +28,9 @@
 		},
 		{
 			"fx": "VideoPlayer",
-			"consts": {},
+			"consts": {
+				"video": "video1"
+			},
 			"vars": {}
 		},
 		{
