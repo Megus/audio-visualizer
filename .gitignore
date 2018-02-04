@@ -50,3 +50,6 @@ pids
 *.pid
 *.seed
 *.pid.lock
+
+# Local TODO files
+TODO

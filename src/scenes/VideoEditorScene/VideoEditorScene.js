@@ -6,7 +6,7 @@ import Whammy from "whammy";
 import loadProject from "../../services/loadProject";
 import createNewProject from "../../services/createNewProject";
 
-import TimeLine from './components/TimeLine';
+import TimeLine from "./components/TimeLine";
 
 import RenderEngine from "../../core/RenderEngine";
 
@@ -172,7 +172,10 @@ class VideoEditorScene extends Component {
 					ref={(canvas) => { this.canvasRef = canvas; }}
 				/>
 				<video ref={(video) => { this.videoRef = video; }} />
-				<TimeLine />
+				<TimeLine
+					baseHeight={540}
+					baseWidth={3840}
+				/>
 			</div>
 		);
 	}

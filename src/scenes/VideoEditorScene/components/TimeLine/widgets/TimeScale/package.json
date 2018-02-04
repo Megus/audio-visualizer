@@ -1,0 +1,5 @@
+{
+	"name": "TimeScale",
+	"private": true,
+	"main": "./TimeScale.js"
+}
