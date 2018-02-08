@@ -15,7 +15,6 @@ class PowerMeter extends FXBase {
 		const canvas = this.canvas;
 		const canvasCtx = canvas.getContext("2d");
 
-		canvasCtx.fillStyle = "rgba(0, 0, 0, 0)";
 		canvasCtx.clearRect(0, 0, canvas.width, 16);
 
 		const power = this.media["mainAudio"].getPower(timestamp);

@@ -7,7 +7,7 @@ class StaticImage extends FXBase {
 	}
 
 	drawFrame(timestamp) {
-		if (this.vars.image != this.oldImage) {
+		if (this.vars.image !== this.oldImage) {
 			if (!this.consts.images) return;
 			if (!this.consts.images[this.vars.image]) return;
 			const image = this.media[this.consts.images[this.vars.image]].image;
@@ -15,7 +15,7 @@ class StaticImage extends FXBase {
 
 			const canvas = this.canvas;
 			const canvasCtx = canvas.getContext("2d");
-			canvasCtx.fillStyle = "rgba(0, 0, 0, 0)";
+
 			canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
 			let imgH;
