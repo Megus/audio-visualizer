@@ -13,25 +13,25 @@ function loadAudio(url) {
 			});
 		})
 		.then(audioBuffer => new MediaAudio(audioBuffer));
-};
+}
 
 function loadImage(url) {
 	return fetch(url)
 		.then(response => response.blob())
 		.then(imageBlob => createImageBitmap(imageBlob))
 		.then(imageBitmap => new MediaImage(imageBitmap));
-};
+}
 
 function loadVideo(url) {
 	return new Promise((resolve, reject) => {
 		resolve(new MediaVideo(url));
 	});
-};
+}
 
 const mediaLoaders = {
-	"audio": loadAudio,
-	"image": loadImage,
-	"video": loadVideo,
+	audio: loadAudio,
+	image: loadImage,
+	video: loadVideo,
 };
 
 

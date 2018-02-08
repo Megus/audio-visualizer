@@ -70,7 +70,6 @@ class MediaAudio {
 		}
 		return value / this.channels.length;
 	}
-	
 }
 
 export default MediaAudio;

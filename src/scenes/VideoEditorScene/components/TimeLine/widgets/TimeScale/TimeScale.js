@@ -1,12 +1,8 @@
 import WidgetBase from "../WidgetBase";
 
 export default class TimeScale extends WidgetBase {
-	// constructor(canvas, media) {
-	// 	super(canvas, media);
-	// }
-
 	// testSpread = (...args) => {
-	// 	[this.a] = args;
+	// 	[this.a] = args; // array decomposition
 	// 	console.log(this.a);
 	// };
 
@@ -15,7 +11,7 @@ export default class TimeScale extends WidgetBase {
 	getTimeMarkersNumber = (canvasWidth, xDelta) =>
 		(canvasWidth - canvasWidth % xDelta) / xDelta;
 
-	draw() {
+	drawFrame = () => {
 		const baseWidth = 3840;
 
 		const ctx = this.canvas.getContext("2d");

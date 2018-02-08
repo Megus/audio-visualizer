@@ -21,7 +21,7 @@ class SimpleSpectrum extends FXBase {
 		const { barsCount } = this.consts;
 
 		// Prepare arrays
-		this.audio = media["mainAudio"]
+		this.audio = media["mainAudio"];
 		this.bufferLength = this.audio.fftSize / 2;
 		this.dataArray = new Float32Array(this.bufferLength);
 		this.bars = new Float32Array(barsCount);
