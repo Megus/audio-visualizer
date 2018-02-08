@@ -19,7 +19,7 @@ class FXBase {
 		Object.assign(this.vars, newVars);
 	}
 
-	drawFrame(timestamp) {
+	async drawFrame(timestamp) {
 		// Implement in subclasses
 	}
 }
