@@ -64,6 +64,9 @@ class SimpleSpectrum extends FXBase {
 		let barHeight;
 		let x = 0;
 
+		canvasCtx.fillStyle = "rgba(0, 0, 0, 0)";
+		canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+
 		canvasCtx.fillStyle = "rgb(255,50,50)";
 		for (let i = 0; i < this.consts.barsCount; i += 1) {
 			// Calculate bar height
