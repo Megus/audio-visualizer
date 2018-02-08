@@ -11,7 +11,7 @@ class PowerMeter extends FXBase {
 		super(media, canvas, consts, vars);
 	}
 
-	drawFrame(timestamp) {
+	async drawFrame(timestamp) {
 		const canvas = this.canvas;
 		const canvasCtx = canvas.getContext("2d");
 

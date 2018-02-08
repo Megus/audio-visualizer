@@ -72,11 +72,11 @@ class VideoEditorScene extends Component {
 		setTimeout(renderFrame, 1);
 	}
 
-	draw() {
+	async draw() {
 		if (this.state.canPlay) {
 			const canvas = this.canvasRef;
 			if (this.state.canPlay) {
-				this.renderEngine.drawFrame(this.canvasRef, this.audioRef.currentTime);
+				await this.renderEngine.drawFrame(this.canvasRef, this.audioRef.currentTime);
 			}
 		}
 

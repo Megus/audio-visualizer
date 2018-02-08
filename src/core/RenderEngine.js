@@ -17,17 +17,16 @@ class RenderEngine {
 		});
 	}
 
-	drawFrame(canvas, timestamp) {
+	async drawFrame(canvas, timestamp) {
 		const canvasCtx = canvas.getContext("2d");
 		const offscreenCanvasCtx = this.canvas.getContext("2d");
 
 		offscreenCanvasCtx.fillStyle = "rgb(0, 0, 0)";
 		offscreenCanvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-		this.layers.forEach((layer) => {
-			layer.drawFrame(timestamp);
-			offscreenCanvasCtx.drawImage(layer.canvas, 0, 0);
-		});
+		await Promise.all(this.layers.map(layer => layer.drawFrame(timestamp)));
+		this.layers.forEach((layer) => { offscreenCanvasCtx.drawImage(layer.canvas, 0, 0); });
+
 		canvasCtx.drawImage(this.canvas, 0, 0);
 	}
 }

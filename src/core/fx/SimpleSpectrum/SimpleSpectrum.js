@@ -55,7 +55,7 @@ class SimpleSpectrum extends FXBase {
 		}
 	}
 
-	drawFrame(timestamp) {
+	async drawFrame(timestamp) {
 		const canvas = this.canvas;
 		const canvasCtx = canvas.getContext("2d");
 

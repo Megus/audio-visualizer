@@ -6,7 +6,7 @@ class StaticImage extends FXBase {
 		this.oldImage = null;
 	}
 
-	drawFrame(timestamp) {
+	async drawFrame(timestamp) {
 		if (this.vars.image !== this.oldImage) {
 			if (!this.consts.images) return;
 			if (!this.consts.images[this.vars.image]) return;
