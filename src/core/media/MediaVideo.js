@@ -17,7 +17,7 @@ class MediaVideo {
 		const videoTime = Math.min(timestamp, video.duration);
 
 		// Determine video state: playing or paused
-		if (this.lastTimestamp == timestamp) {
+		if (this.lastTimestamp === timestamp) {
 			video.pause();
 		} else if (video.paused && videoTime < video.duration) {
 			video.play();

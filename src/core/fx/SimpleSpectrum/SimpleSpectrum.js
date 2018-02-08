@@ -55,7 +55,7 @@ class SimpleSpectrum extends FXBase {
 		}
 	}
 
-	drawFrame(timestamp) {
+	async drawFrame(timestamp) {
 		const canvas = this.canvas;
 		const canvasCtx = canvas.getContext("2d");
 
@@ -63,6 +63,8 @@ class SimpleSpectrum extends FXBase {
 
 		let barHeight;
 		let x = 0;
+
+		canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
 		canvasCtx.fillStyle = "rgb(255,50,50)";
 		for (let i = 0; i < this.consts.barsCount; i += 1) {

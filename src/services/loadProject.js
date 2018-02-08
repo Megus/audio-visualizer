@@ -48,6 +48,8 @@ function loadProject(projectURL) {
 				if (loader) {
 					return loader(projectJson.media[key].url)
 						.then((mediaItem) => { media[key] = mediaItem });
+				} else {
+					return null;
 				}
 			});
 			return Promise.all(loadMedia);

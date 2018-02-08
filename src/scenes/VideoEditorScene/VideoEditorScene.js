@@ -32,12 +32,12 @@ class VideoEditorScene extends Component {
 	}
 
 	onAudioPlay() {
-		this.setState({ isAnimating: true });
+		this.setState({isAnimating: true});
 		setTimeout(this.draw, 0.01);
 	}
 
 	onAudioPause() {
-		this.setState({ isAnimating: false });
+		this.setState({isAnimating: false});
 	}
 
 	setup(project) {
@@ -61,11 +61,11 @@ class VideoEditorScene extends Component {
 			});
 	}
 
-	draw() {
+	async draw() {
 		if (this.state.canPlay) {
 			const canvas = this.canvasRef;
 			if (this.state.canPlay) {
-				this.renderEngine.drawFrame(canvas, this.audioRef.currentTime);
+				await this.renderEngine.drawFrame(canvas, this.audioRef.currentTime);
 			}
 		}
 
@@ -145,7 +145,7 @@ class VideoEditorScene extends Component {
 				const url = (window.webkitURL || window.URL).createObjectURL(output);
 				this.videoRef.src = url;
 			}
-		};
+		}
 
 		setTimeout(renderFrame, 1);
 	}

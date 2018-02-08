@@ -9,19 +9,24 @@ class RenderEngine {
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = width;
 		this.canvas.height = height;
-		this.layers = project.layers.map(layer => new fxClasses[layer.fx](project.media, this.canvas, layer.consts, layer.vars));
+		this.layers = project.layers.map((layer) => {
+			const canvas = document.createElement("canvas");
+			canvas.width = width;
+			canvas.height = height;
+			return new fxClasses[layer.fx](project.media, canvas, layer.consts, layer.vars);
+		});
 	}
 
-	drawFrame(canvas, timestamp) {
+	async drawFrame(canvas, timestamp) {
 		const canvasCtx = canvas.getContext("2d");
 		const offscreenCanvasCtx = this.canvas.getContext("2d");
 
 		offscreenCanvasCtx.fillStyle = "rgb(0, 0, 0)";
 		offscreenCanvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-		this.layers.forEach((layer) => { layer.drawFrame(timestamp); });
-		// const image = offscreenCanvasCtx.getImageData(0, 0, this.width, this.height);
-		// canvasCtx.putImageData(image, 0, 0);
+		await Promise.all(this.layers.map(layer => layer.drawFrame(timestamp)));
+		this.layers.forEach((layer) => { offscreenCanvasCtx.drawImage(layer.canvas, 0, 0); });
+
 		canvasCtx.drawImage(this.canvas, 0, 0);
 	}
 }
