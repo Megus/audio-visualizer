@@ -5,7 +5,7 @@ class VideoPlayer extends FXBase {
 		super(media, canvas, consts, vars);
 	}
 
-	drawFrame(timestamp) {
+	async drawFrame(timestamp) {
 		const video = this.media[this.consts.video];
 		if (video) {
 			let canvas = this.canvas;
@@ -17,7 +17,10 @@ class VideoPlayer extends FXBase {
 				videoTimestamp = timestamp - Math.floor(timestamp / duration) * duration;
 			}
 
-			canvasCtx.drawImage(video.getFrame(videoTimestamp), 0, 0)
+			const frame = await video.getFrame(videoTimestamp, this.consts.realtime);
+			if (frame) {
+				canvasCtx.drawImage(frame, 0, 0)
+			}
 		}
 	}
 }
