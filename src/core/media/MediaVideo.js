@@ -5,10 +5,18 @@ class MediaVideo {
 		this.video = document.createElement("video");
 		this.video.src = url;
 		this.video.muted = true;
+		this.video.oncanplay = this.videoCanPlay.bind(this);
+		this.canvas = null;
+		this.width = 0;
+		this.height = 0;
+	}
 
+	videoCanPlay() {
 		this.canvas = document.createElement("canvas");
-		this.canvas.width = 1280;
-		this.canvas.height = 720;
+		this.canvas.width = this.video.videoWidth;
+		this.canvas.height = this.video.videoHeight;
+		this.width = this.video.videoWidth;
+		this.height = this.video.videoHeight;
 	}
 
 	async getFrame(timestamp, realtime) {
@@ -20,8 +28,9 @@ class MediaVideo {
 	}
 
 	async getFrameRealtime(timestamp) {
-		let canvas = this.canvas;
-		let canvasCtx = canvas.getContext("2d");
+		if (!this.canvas) return;
+		const canvas = this.canvas;
+		const canvasCtx = canvas.getContext("2d");
 		const video = this.video;
 
 		const videoTime = Math.min(timestamp, video.duration);
@@ -45,9 +54,17 @@ class MediaVideo {
 	}
 
 	async getFrameOffline(timestamp) {
+		if (!this.canvas) {
+			// Okay, maybe it's not the perfect solution, but we need to wait until video is loaded
+			// TODO: If there's a fatal problem with video loading, this wait loop will become infinite
+			while (!this.canvas) {
+				await new Promise(resolve => setTimeout(resolve, 100));
+			}
+		}
+
 		const video = this.video;
-		let canvas = this.canvas;
-		let canvasCtx = canvas.getContext("2d");
+		const canvas = this.canvas;
+		const canvasCtx = canvas.getContext("2d");
 
 		if (!video.paused) {
 			video.pause();
