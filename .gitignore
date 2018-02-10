@@ -53,3 +53,6 @@ pids
 
 # Local TODO files
 TODO
+
+# NPM package lock file
+package-lock.json

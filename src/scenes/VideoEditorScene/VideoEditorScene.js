@@ -6,9 +6,9 @@ import Whammy from "whammy";
 import loadProject from "../../services/loadProject";
 import createNewProject from "../../services/createNewProject";
 
-import TimeLine from "./components/TimeLine";
-
 import RenderEngine from "../../core/RenderEngine";
+
+import TimeLine from "./components/TimeLine";
 
 class VideoEditorScene extends Component {
 	constructor(props) {
@@ -16,6 +16,7 @@ class VideoEditorScene extends Component {
 
 		this.renderVideo = this.renderVideo.bind(this);
 		this.draw = this.draw.bind(this);
+		this.drawOfflineRender = this.drawOfflineRender.bind(this);
 		this.onAudioPlay = this.onAudioPlay.bind(this);
 		this.onAudioPause = this.onAudioPause.bind(this);
 		this.uploadFile = this.uploadFile.bind(this);
@@ -31,20 +32,11 @@ class VideoEditorScene extends Component {
 		};
 	}
 
-	onAudioPlay() {
-		this.setState({isAnimating: true});
-		setTimeout(this.draw, 0.01);
-	}
-
-	onAudioPause() {
-		this.setState({isAnimating: false});
-	}
-
 	setup(project) {
 		const canvas = this.canvasRef;
 
+		this.project = project;
 		this.renderEngine = new RenderEngine(project, canvas.width, canvas.height);
-		console.log(project); // ! TODO: Remove it
 		this.setState({
 			canPlay: true,
 			isAnimating: true,
@@ -61,17 +53,57 @@ class VideoEditorScene extends Component {
 			});
 	}
 
+	renderVideo() {
+		if (!this.state.canPlay) {
+			return;
+		}
+
+		this.offlineRenderEngine = new RenderEngine(this.project, this.canvasRef.width, this.canvasRef.height, false);
+		this.videoRecorder = new Whammy.Video(60, 0.9);
+		this.renderFrame = 0;
+		this.setState({isRendering: true});
+		setTimeout(this.drawOfflineRender, 1);
+	}
+
+	async drawOfflineRender() {
+		const timestamp = this.renderFrame / 60.0;
+		await this.offlineRenderEngine.drawFrame(this.canvasRef, timestamp);
+		this.videoRecorder.add(this.canvasRef);
+		this.renderFrame++;
+		if (this.renderFrame % 10 === 0) {
+			console.log(timestamp);
+		}
+
+		if (timestamp < 2) {
+			requestAnimationFrame(this.drawOfflineRender);
+		} else {
+			var output = this.videoRecorder.compile();
+			this.offlineRenderEngine = null;
+			var url = (window.webkitURL || window.URL).createObjectURL(output);
+			this.videoRef.src = url;
+			this.setState({isRendering: false});
+		}
+	}
+
 	async draw() {
 		if (this.state.canPlay) {
-			const canvas = this.canvasRef;
 			if (this.state.canPlay) {
-				await this.renderEngine.drawFrame(canvas, this.audioRef.currentTime);
+				await this.renderEngine.drawFrame(this.canvasRef, this.audioRef.currentTime);
 			}
 		}
 
 		if (this.state.isAnimating && !this.state.isRendering) {
 			requestAnimationFrame(this.draw);
 		}
+	};
+
+	onAudioPlay() {
+		this.setState({isAnimating: true});
+		setTimeout(this.draw, 0.01);
+	}
+
+	onAudioPause() {
+		this.setState({isAnimating: false});
 	}
 
 	uploadFile(event) {
@@ -127,29 +159,6 @@ class VideoEditorScene extends Component {
 		}
 	}
 
-	renderVideo() {
-		this.videoRecorder = new Whammy.Video(60, 1.0);
-
-		let frame = 0;
-
-		const renderFrame = () => {
-			const timestamp = frame / 60.0;
-			this.draw(timestamp);
-			this.videoRecorder.add(this.canvasRef);
-			console.log(timestamp);
-			frame += 1;
-			if (timestamp < 5) {
-				setTimeout(renderFrame, 1);
-			} else {
-				const output = this.videoRecorder.compile();
-				const url = (window.webkitURL || window.URL).createObjectURL(output);
-				this.videoRef.src = url;
-			}
-		}
-
-		setTimeout(renderFrame, 1);
-	}
-
 	render() {
 		return (
 			<div>
@@ -169,10 +178,11 @@ class VideoEditorScene extends Component {
 				<canvas
 					width="1920"
 					height="1080"
-					style={{ width: 960, height: 540 }}
+					style={{width: 960, height: 540}}
 					ref={(canvas) => { this.canvasRef = canvas; }}
 				/>
-				<video ref={(video) => { this.videoRef = video; }} />
+				<br />
+				<video ref={(video) => { this.videoRef = video }} controls style={{width: 960, height: 540}} />
 				<TimeLine
 					baseHeight={540}
 					baseWidth={3840}
