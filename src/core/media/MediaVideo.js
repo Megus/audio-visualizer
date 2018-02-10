@@ -1,3 +1,5 @@
+import eventToPromise from "event-to-promise";
+
 class MediaVideo {
 	constructor(url) {
 		this.video = document.createElement("video");
@@ -9,7 +11,15 @@ class MediaVideo {
 		this.canvas.height = 720;
 	}
 
-	getFrame(timestamp) {
+	async getFrame(timestamp, realtime) {
+		if (realtime) {
+			return this.getFrameRealtime(timestamp);
+		} else {
+			return this.getFrameOffline(timestamp);
+		}
+	}
+
+	async getFrameRealtime(timestamp) {
 		let canvas = this.canvas;
 		let canvasCtx = canvas.getContext("2d");
 		const video = this.video;
@@ -32,6 +42,27 @@ class MediaVideo {
 		this.lastTimestamp = timestamp;
 
 		return this.canvas;
+	}
+
+	async getFrameOffline(timestamp) {
+		const video = this.video;
+		let canvas = this.canvas;
+		let canvasCtx = canvas.getContext("2d");
+
+		if (!video.paused) {
+			video.pause();
+		}
+
+		const videoTime = Math.min(timestamp, video.duration);
+		const currentTime = video.currentTime;
+
+		if (Math.abs(videoTime - currentTime) > 0.01) {
+			video.currentTime = videoTime;
+			await eventToPromise(video, "seeked");
+		}
+		canvasCtx.drawImage(video, 0, 0);
+
+		return canvas;
 	}
 }
 

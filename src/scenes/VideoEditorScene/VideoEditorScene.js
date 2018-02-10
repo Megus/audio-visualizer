@@ -14,6 +14,7 @@ class VideoEditorScene extends Component {
 
 		this.renderVideo = this.renderVideo.bind(this);
 		this.draw = this.draw.bind(this);
+		this.drawOfflineRender = this.drawOfflineRender.bind(this);
 		this.onAudioPlay = this.onAudioPlay.bind(this);
 		this.onAudioPause = this.onAudioPause.bind(this);
 		this.uploadFile = this.uploadFile.bind(this);
@@ -32,6 +33,7 @@ class VideoEditorScene extends Component {
 	setup(project) {
 		const canvas = this.canvasRef;
 
+		this.project = project;
 		this.renderEngine = new RenderEngine(project, canvas.width, canvas.height);
 		this.setState({
 			canPlay: true,
@@ -50,31 +52,39 @@ class VideoEditorScene extends Component {
 	}
 
 	renderVideo() {
-		this.videoRecorder = new Whammy.Video(60, 1.0);
-
-		var frame = 0;
-
-		const renderFrame = () => {
-			const timestamp = frame / 60.0;
-			this.draw(timestamp);
-			this.videoRecorder.add(this.canvasRef);
-			console.log(timestamp);
-			frame++;
-			if (timestamp < 5) {
-				setTimeout(renderFrame, 1);
-			} else {
-				var output = this.videoRecorder.compile();
-				var url = (window.webkitURL || window.URL).createObjectURL(output);
-				this.videoRef.src = url;
-			}
+		if (!this.state.canPlay) {
+			return;
 		}
 
-		setTimeout(renderFrame, 1);
+		this.offlineRenderEngine = new RenderEngine(this.project, this.canvasRef.width, this.canvasRef.height, false);
+		this.videoRecorder = new Whammy.Video(60, 0.9);
+		this.renderFrame = 0;
+		this.setState({isRendering: true});
+		setTimeout(this.drawOfflineRender, 1);
+	}
+
+	async drawOfflineRender() {
+		const timestamp = this.renderFrame / 60.0;
+		await this.offlineRenderEngine.drawFrame(this.canvasRef, timestamp);
+		this.videoRecorder.add(this.canvasRef);
+		this.renderFrame++;
+		if (this.renderFrame % 10 === 0) {
+			console.log(timestamp);
+		}
+
+		if (timestamp < 2) {
+			requestAnimationFrame(this.drawOfflineRender);
+		} else {
+			var output = this.videoRecorder.compile();
+			this.offlineRenderEngine = null;
+			var url = (window.webkitURL || window.URL).createObjectURL(output);
+			this.videoRef.src = url;
+			this.setState({isRendering: false});
+		}
 	}
 
 	async draw() {
 		if (this.state.canPlay) {
-			const canvas = this.canvasRef;
 			if (this.state.canPlay) {
 				await this.renderEngine.drawFrame(this.canvasRef, this.audioRef.currentTime);
 			}
@@ -169,7 +179,8 @@ class VideoEditorScene extends Component {
 					style={{width: 960, height: 540}}
 					ref={(canvas) => { this.canvasRef = canvas; }} 
 				/>
-				<video ref={(video) => { this.videoRef = video }} />
+				<br />
+				<video ref={(video) => { this.videoRef = video }} controls style={{width: 960, height: 540}} />
 			</div>
 		);
 	}

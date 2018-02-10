@@ -1,7 +1,7 @@
 import fxClasses from "./fx";
 
 class RenderEngine {
-	constructor(project, width, height) {
+	constructor(project, width, height, realtime = true) {
 		this.project = project;
 		this.width = width;
 		this.height = height;
@@ -13,7 +13,7 @@ class RenderEngine {
 			const canvas = document.createElement("canvas");
 			canvas.width = width;
 			canvas.height = height;
-			return new fxClasses[layer.fx](project.media, canvas, layer.consts, layer.vars);
+			return new fxClasses[layer.fx](project.media, canvas, { ...layer.consts, realtime: realtime }, layer.vars);
 		});
 	}
 
