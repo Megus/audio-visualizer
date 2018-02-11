@@ -54,6 +54,15 @@
 			}
 		},
 		{
+			"fx": "SimpleWave",
+			"consts": {},
+			"vars": {
+				"lineWidth": 4,
+				"color": "#FFFFFF80",
+				"frame": { "x": 0, "y": 700, "width": 1920, "height": 380 }
+			}
+		},
+		{
 			"fx": "PowerMeter",
 			"consts": {},
 			"vars": {

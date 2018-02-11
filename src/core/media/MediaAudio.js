@@ -66,8 +66,8 @@ class MediaAudio {
 	getMonoSamples(timestamp, count) {
 		const sampleStart = this.timestampToSample(timestamp);
 		const samples = new Float32Array(count);
-		for (let c = sampleStart; c < sampleStart + count; c++) {
-			samples[c] = this.avgSampleAt(c);
+		for (let c = 0; c < count; c++) {
+			samples[c] = this.avgSampleAt(c + sampleStart);
 		}
 		return samples;
 	}
