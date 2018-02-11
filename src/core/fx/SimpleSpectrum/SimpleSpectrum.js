@@ -1,20 +1,6 @@
 import FXBase from "../FXBase";
 
 class SimpleSpectrum extends FXBase {
-	getDefaultConsts() {
-		return {
-			barsCount: 128,		// Number of spectrum bars
-		};
-	}
-
-	getDefaultVars() {
-		return {
-			scale: 5,			// Power multiplier
-			fallTime: 1.5,		// Seconds for a bar to fall to zero
-			color: "#FF0000FF"	// Bar color
-		};
-	}
-
 	constructor(media, canvas, consts = {}, vars = {}) {
 		super(media, canvas, consts, vars);
 

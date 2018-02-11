@@ -3,20 +3,17 @@ class FXBase {
 		// Setup
 		this.media = media;
 		this.canvas = canvas;
-		this.consts = Object.assign({}, this.getDefaultConsts(), consts);
-		this.vars = Object.assign({}, this.getDefaultVars(), vars);
-	}
-
-	getDefaultConsts() {
-		return {};
-	}
-
-	getDefaultVars() {
-		return {};
+		this.consts = consts;
+		this.vars = vars;
 	}
 
 	setVars(newVars) {
-		Object.assign(this.vars, newVars);
+		const oldVars = this.vars;
+		this.vars = Object.assign({}, this.vars, newVars);
+		this.onVarsUpdated(oldVars);
+	}
+
+	onVarsUpdated(oldVars) {
 	}
 
 	async drawFrame(timestamp) {
@@ -24,4 +21,13 @@ class FXBase {
 	}
 }
 
+const ValueTypes = {
+	int: 0,
+	string: 1,
+	rgba: 2,
+	float: 3,
+	frame: 4,
+}
+
 export default FXBase;
+export { ValueTypes };

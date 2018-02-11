@@ -1,7 +1,6 @@
 {
 	"title": "Bad Monday",
 	"author": "Megus",
-	"aspectRatio": "16:9",
 	"resolution": {
 		"width": 1920,
 		"height": 1080
@@ -41,6 +40,19 @@
 			"vars": {
 				"image": 0,
 				"frame": { "x": 1500, "y": 10, "width": 410, "height": 410 }
+			},
+			"automation": {
+				"frame": [
+					{
+						"timestamp": 0,
+						"value": { "x": 10, "y": 10, "width": 410, "height": 410 }
+					},
+					{
+						"timestamp": 30,
+						"easing": "linear",
+						"value": { "x": 1500, "y": 10, "width": 410, "height": 410 }
+					}
+				]
 			}
 		},
 		{
