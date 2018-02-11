@@ -22,17 +22,6 @@
 	},
 	"layers": [
 		{
-			"fx": "StaticImage",
-			"consts": {
-				"images": ["img1"],
-				"scale": "aspectFit"
-			},
-			"vars": {
-				"image": 0,
-				"frame": { "x": 960, "y": 0, "width": 960, "height": 540 }
-			}
-		},
-		{
 			"fx": "VideoPlayer",
 			"consts": {
 				"video": "video1",
@@ -40,7 +29,18 @@
 				"scale": "aspectFill"
 			},
 			"vars": {
-				"frame": { "x": 0, "y": 0, "width": 960, "height": 540 }
+				"frame": { "x": 0, "y": 0, "width": 1920, "height": 1080 }
+			}
+		},
+		{
+			"fx": "StaticImage",
+			"consts": {
+				"images": ["img1"],
+				"scale": "aspectFit"
+			},
+			"vars": {
+				"image": 0,
+				"frame": { "x": 1500, "y": 10, "width": 410, "height": 410 }
 			}
 		},
 		{
@@ -49,8 +49,8 @@
 				"barsCount": 256
 			},
 			"vars": {
-				"color": "#FF0000FF",
-				"frame": { "x": 0, "y": 540, "width": 1920, "height": 540 }
+				"color": "#FF0000D0",
+				"frame": { "x": 0, "y": 700, "width": 1920, "height": 380 }
 			}
 		},
 		{

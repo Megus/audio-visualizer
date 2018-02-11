@@ -90,7 +90,7 @@ class SimpleSpectrum extends FXBase {
 			}
 
 			canvasCtx.fillRect(x, this.vars.frame.y + this.vars.frame.height - this.bars[i],
-				this.barWidth - 1, this.bars[i]);
+				this.barWidth - 0.5, this.bars[i]);
 
 			x += this.barWidth;
 		}
