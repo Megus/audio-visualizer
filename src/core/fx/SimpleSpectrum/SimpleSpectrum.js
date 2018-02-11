@@ -9,9 +9,9 @@ class SimpleSpectrum extends FXBase {
 
 	getDefaultVars() {
 		return {
-			scale: 1.5,			// Power multiplier
-			height: 0.2,		// Spectrum height in percents of canvas height
+			scale: 5,			// Power multiplier
 			fallTime: 1.5,		// Seconds for a bar to fall to zero
+			color: "#FF0000FF"	// Bar color
 		};
 	}
 
@@ -25,7 +25,6 @@ class SimpleSpectrum extends FXBase {
 		this.bufferLength = this.audio.fftSize / 2;
 		this.dataArray = new Float32Array(this.bufferLength);
 		this.bars = new Float32Array(barsCount);
-		this.barWidth = canvas.width / barsCount;
 
 		// Calculate FFT bins for bars
 		const barBins = [];
@@ -47,11 +46,11 @@ class SimpleSpectrum extends FXBase {
 	}
 
 	setupForVars() {
-		this.maxBarHeight = this.canvas.height * this.vars.height;
-		this.powerMultiplier = this.canvas.height * this.vars.scale;
+		this.powerMultiplier = this.vars.frame.height * this.vars.scale;
+		this.barWidth = this.vars.frame.width / this.consts.barsCount;
 		// Trim bars height
 		for (let c = 0; c < this.consts.barsCount; c += 1) {
-			this.bars[c] = Math.min(this.maxBarHeight, this.bars[c]);
+			this.bars[c] = Math.min(this.vars.frame.height, this.bars[c]);
 		}
 	}
 
@@ -62,11 +61,11 @@ class SimpleSpectrum extends FXBase {
 		this.audio.getFrequencyArray(timestamp, this.dataArray);
 
 		let barHeight;
-		let x = 0;
+		let x = this.vars.frame.x;
 
 		canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
-		canvasCtx.fillStyle = "rgb(255,50,50)";
+		canvasCtx.fillStyle = this.vars.color;
 		for (let i = 0; i < this.consts.barsCount; i += 1) {
 			// Calculate bar height
 			if (Math.floor(this.barBins[i]) < Math.floor(this.barBins[i + 1])) {
@@ -80,21 +79,18 @@ class SimpleSpectrum extends FXBase {
 					(this.dataArray[Math.floor(this.barBins[i]) + 1] - this.dataArray[Math.floor(this.barBins[i])]);
 			}
 
-			barHeight *= this.powerMultiplier;
-
-			if (barHeight > this.maxBarHeight) {
-				barHeight = this.maxBarHeight;
-			}
+			barHeight = Math.min(this.vars.frame.height, barHeight * this.powerMultiplier);
 
 			// Bars falling
 			if (this.bars[i] < barHeight) {
 				this.bars[i] = barHeight;
 			} else {
 				this.bars[i] =
-					Math.max(this.bars[i] - this.maxBarHeight * Math.abs(timestamp - this.lastTimestamp) / this.vars.fallTime, barHeight);
+					Math.max(this.bars[i] - this.vars.frame.height * Math.abs(timestamp - this.lastTimestamp) / this.vars.fallTime, barHeight);
 			}
 
-			canvasCtx.fillRect(x, canvas.height - this.bars[i], this.barWidth - 1, this.bars[i]);
+			canvasCtx.fillRect(x, this.vars.frame.y + this.vars.frame.height - this.bars[i],
+				this.barWidth - 0.5, this.bars[i]);
 
 			x += this.barWidth;
 		}
