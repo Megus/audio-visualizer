@@ -1,4 +1,5 @@
 import FXBase from "../FXBase";
+import { scaleImageInFrame } from "../FXConvenience";
 
 class VideoPlayer extends FXBase {
 	constructor(media, canvas, consts = {}, vars = {}) {
@@ -17,9 +18,13 @@ class VideoPlayer extends FXBase {
 				videoTimestamp = timestamp - Math.floor(timestamp / duration) * duration;
 			}
 
-			const frame = await video.getFrame(videoTimestamp, this.consts.realtime);
-			if (frame) {
-				canvasCtx.drawImage(frame, 0, 0)
+			const image = await video.getFrame(videoTimestamp, this.consts.realtime);
+			if (image) {
+				const {x, y, w, h, sx, sy, sw, sh} = scaleImageInFrame(
+					this.consts.scale, image.width, image.height, this.vars.frame.width, this.vars.frame.height);
+
+				canvasCtx.drawImage(image, Math.floor(sx), Math.floor(sy), Math.floor(sw), Math.floor(sh),
+					Math.floor(x + this.vars.frame.x), Math.floor(y + this.vars.frame.y), Math.floor(w), Math.floor(h));
 			}
 		}
 	}

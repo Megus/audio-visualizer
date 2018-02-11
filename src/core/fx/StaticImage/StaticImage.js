@@ -1,4 +1,5 @@
 import FXBase from "../FXBase";
+import { scaleImageInFrame } from "../FXConvenience";
 
 class StaticImage extends FXBase {
 	constructor(media, canvas, consts = {}, vars = {}) {
@@ -18,20 +19,13 @@ class StaticImage extends FXBase {
 
 			canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
-			let imgH;
-			let imgW;
-			if (image.height >= image.width) {
-				imgH = canvas.height * 0.9;
-				imgW = image.width * (imgH / image.height);
-			} else {
-				imgW = canvas.width * 0.9;
-				imgH = image.height * (imgW / image.width);
-			}
+			const imgW = image.width;
+			const imgH = image.height;
+			const {x, y, w, h, sx, sy, sw, sh} = scaleImageInFrame(
+				this.consts.scale, imgW, imgH, this.vars.frame.width, this.vars.frame.height);
 
-			const x = (canvas.width - imgW) / 2;
-			const y = (canvas.height - imgH) / 2;
-
-			canvasCtx.drawImage(image, Math.floor(x), Math.floor(y), Math.floor(imgW), Math.floor(imgH));
+			canvasCtx.drawImage(image, Math.floor(sx), Math.floor(sy), Math.floor(sw), Math.floor(sh),
+				Math.floor(x + this.vars.frame.x), Math.floor(y + this.vars.frame.y), Math.floor(w), Math.floor(h));
 			this.oldImage = this.vars.image;
 		}
 	}

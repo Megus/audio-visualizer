@@ -4,6 +4,7 @@ class PowerMeter extends FXBase {
 	getDefaultVars() {
 		return {
 			scale: 1000,
+			color: "#FFFFFFFF"
 		};
 	}
 
@@ -15,12 +16,16 @@ class PowerMeter extends FXBase {
 		const canvas = this.canvas;
 		const canvasCtx = canvas.getContext("2d");
 
-		canvasCtx.clearRect(0, 0, canvas.width, 16);
+		canvasCtx.clearRect(0, 0, canvas.width, canvas.height);	// Can be optimized, btw
 
 		const power = this.media["mainAudio"].getPower(timestamp);
 
-		canvasCtx.fillStyle = "rgb(255,50,50)";
-		canvasCtx.fillRect(0, 0, power * this.vars.scale, 16);
+		canvasCtx.fillStyle = this.vars.color;
+		canvasCtx.fillRect(
+			this.vars.frame.x,
+			this.vars.frame.y,
+			Math.min(power * this.vars.scale, this.vars.frame.width),
+			this.vars.frame.height);
 	}
 }
 
