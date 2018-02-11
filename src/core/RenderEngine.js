@@ -18,6 +18,7 @@ class RenderEngine {
 	}
 
 	async drawFrame(canvas, timestamp) {
+		if (!canvas) { return; }
 		const canvasCtx = canvas.getContext("2d");
 		const offscreenCanvasCtx = this.canvas.getContext("2d");
 

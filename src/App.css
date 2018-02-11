@@ -26,3 +26,50 @@
 	from { transform: rotate(0deg); }
 	to { transform: rotate(360deg); }
 }
+
+.modal {
+	z-index: 10;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+.modal .modal__overlay {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal .modal__popup {
+	z-index: 11;
+	width: 1000px;
+	height: 620px;
+	position: absolute;
+	left: 50%;
+	margin-left: -500px;
+	top: 50%;
+	margin-top: -310px;
+	background-color: #fff;
+	border-radius: 3px;
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+.modal .modal__header {
+	height: 20px;
+	margin-bottom: 20px;
+}
+
+.modal .modal__close-button {
+	cursor: pointer;
+	float: right;
+}
+
+.modal .modal__close-button:before {
+	content: "\2715";
+}
