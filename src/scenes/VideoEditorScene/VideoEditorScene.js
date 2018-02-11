@@ -32,6 +32,15 @@ class VideoEditorScene extends Component {
 		};
 	}
 
+	onAudioPlay() {
+		this.setState({ isAnimating: true });
+		setTimeout(this.draw, 0.01);
+	}
+
+	onAudioPause() {
+		this.setState({ isAnimating: false });
+	}
+
 	setup(project) {
 		const canvas = this.canvasRef;
 
@@ -44,32 +53,11 @@ class VideoEditorScene extends Component {
 		setTimeout(this.draw, 1);
 	}
 
-	loadProject() {
-		const player = document.getElementById("player");
-		player.src = this.audioFilePath;
-		loadProject("/project/project.json")
-			.then((project) => {
-				this.setup(project);
-			});
-	}
-
-	renderVideo() {
-		if (!this.state.canPlay) {
-			return;
-		}
-
-		this.offlineRenderEngine = new RenderEngine(this.project, this.canvasRef.width, this.canvasRef.height, false);
-		this.videoRecorder = new Whammy.Video(60, 0.9);
-		this.renderFrame = 0;
-		this.setState({isRendering: true});
-		setTimeout(this.drawOfflineRender, 1);
-	}
-
 	async drawOfflineRender() {
 		const timestamp = this.renderFrame / 60.0;
 		await this.offlineRenderEngine.drawFrame(this.canvasRef, timestamp);
 		this.videoRecorder.add(this.canvasRef);
-		this.renderFrame++;
+		this.renderFrame += 1;
 		if (this.renderFrame % 10 === 0) {
 			console.log(timestamp);
 		}
@@ -77,11 +65,11 @@ class VideoEditorScene extends Component {
 		if (timestamp < 2) {
 			requestAnimationFrame(this.drawOfflineRender);
 		} else {
-			var output = this.videoRecorder.compile();
+			const output = this.videoRecorder.compile();
 			this.offlineRenderEngine = null;
-			var url = (window.webkitURL || window.URL).createObjectURL(output);
+			const url = (window.webkitURL || window.URL).createObjectURL(output);
 			this.videoRef.src = url;
-			this.setState({isRendering: false});
+			this.setState({ isRendering: false });
 		}
 	}
 
@@ -95,15 +83,15 @@ class VideoEditorScene extends Component {
 		if (this.state.isAnimating && !this.state.isRendering) {
 			requestAnimationFrame(this.draw);
 		}
-	};
-
-	onAudioPlay() {
-		this.setState({isAnimating: true});
-		setTimeout(this.draw, 0.01);
 	}
 
-	onAudioPause() {
-		this.setState({isAnimating: false});
+	loadProject() {
+		const player = document.getElementById("player");
+		player.src = this.audioFilePath;
+		loadProject("/project/project.json")
+			.then((project) => {
+				this.setup(project);
+			});
 	}
 
 	uploadFile(event) {
@@ -159,7 +147,20 @@ class VideoEditorScene extends Component {
 		}
 	}
 
+	renderVideo() {
+		if (!this.state.canPlay) {
+			return;
+		}
+
+		this.offlineRenderEngine = new RenderEngine(this.project, this.canvasRef.width, this.canvasRef.height, false);
+		this.videoRecorder = new Whammy.Video(60, 0.9);
+		this.renderFrame = 0;
+		this.setState({ isRendering: true });
+		setTimeout(this.drawOfflineRender, 1);
+	}
+
 	render() {
+		/* eslint-disable jsx-a11y/media-has-caption */
 		return (
 			<div>
 				<audio
@@ -178,11 +179,15 @@ class VideoEditorScene extends Component {
 				<canvas
 					width="1920"
 					height="1080"
-					style={{width: 960, height: 540}}
+					style={{ width: 960, height: 540 }}
 					ref={(canvas) => { this.canvasRef = canvas; }}
 				/>
 				<br />
-				<video ref={(video) => { this.videoRef = video }} controls style={{width: 960, height: 540}} />
+				<video
+					ref={(video) => { this.videoRef = video; }}
+					controls
+					style={{ width: 960, height: 540 }}
+				/>
 				<TimeLine
 					baseHeight={540}
 					baseWidth={3840}

@@ -28,8 +28,8 @@ export default class WidgetBase {
 	 * Abstract methods
 	 */
 
-	// eslint-disable-next-line no-unused-vars
-	drawFrame = () => {
-		throw new Error("Abstract method. Must be Impelemented in descendandts");
+	// eslint-disable-next-line no-unused-vars, class-methods-use-this
+	async drawFrame(timestamp) {
+		return Promise.reject(new Error("Abstract method. Must be Impelemented in descendandts"));
 	}
 }
