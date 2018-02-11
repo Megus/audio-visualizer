@@ -2,6 +2,10 @@
 	"title": "Bad Monday",
 	"author": "Megus",
 	"aspectRatio": "16:9",
+	"resolution": {
+		"width": 1920,
+		"height": 1080
+	},
 	"media": {
 		"mainAudio": {
 			"type": "audio",
@@ -20,29 +24,42 @@
 		{
 			"fx": "StaticImage",
 			"consts": {
-				"images": ["img1"]
+				"images": ["img1"],
+				"scale": "aspectFit"
 			},
 			"vars": {
-				"image": 0
+				"image": 0,
+				"frame": { "x": 960, "y": 0, "width": 960, "height": 540 }
 			}
 		},
 		{
 			"fx": "VideoPlayer",
 			"consts": {
 				"video": "video1",
-				"looped": true
+				"looped": true,
+				"scale": "aspectFill"
 			},
-			"vars": {}
+			"vars": {
+				"frame": { "x": 0, "y": 0, "width": 960, "height": 540 }
+			}
 		},
 		{
 			"fx": "SimpleSpectrum",
-			"consts": {},
-			"vars": {}
+			"consts": {
+				"barsCount": 256
+			},
+			"vars": {
+				"color": "#FF0000FF",
+				"frame": { "x": 0, "y": 540, "width": 1920, "height": 540 }
+			}
 		},
 		{
 			"fx": "PowerMeter",
 			"consts": {},
-			"vars": {}
+			"vars": {
+				"color": "#FFFFFF80",
+				"frame": { "x": 0, "y": 1050, "width": 300, "height": 30 }
+			}
 		}
 	]
 }
