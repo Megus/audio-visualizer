@@ -1,12 +1,12 @@
-import FXBase from "../FXBase";
-import { scaleImageInFrame } from "../FXConvenience";
+import RendererBase from "../../RendererBase";
+import { scaleImageInFrame } from "../../RendererConvenience";
 
-class VideoPlayer extends FXBase {
+class SimpleVideo extends RendererBase {
 	constructor(media, canvas, consts = {}, vars = {}) {
 		super(media, canvas, consts, vars);
 	}
 
-	async drawFrame(timestamp) {
+	async render(timestamp) {
 		const video = this.media[this.consts.video];
 		if (video) {
 			let canvas = this.canvas;
@@ -30,4 +30,4 @@ class VideoPlayer extends FXBase {
 	}
 }
 
-export default VideoPlayer;
+export default SimpleVideo;

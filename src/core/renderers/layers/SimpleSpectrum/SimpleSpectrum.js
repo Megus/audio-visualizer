@@ -1,6 +1,6 @@
-import FXBase from "../FXBase";
+import RendererBase from "../../RendererBase";
 
-class SimpleSpectrum extends FXBase {
+class SimpleSpectrum extends RendererBase {
 	constructor(media, canvas, consts = {}, vars = {}) {
 		super(media, canvas, consts, vars);
 
@@ -26,7 +26,6 @@ class SimpleSpectrum extends FXBase {
 		}
 
 		this.barBins = barBins;
-		this.lastTimestamp = 0;
 
 		this.setupForVars();
 	}
@@ -40,7 +39,11 @@ class SimpleSpectrum extends FXBase {
 		}
 	}
 
-	async drawFrame(timestamp) {
+	onVarsUpdted(oldVars) {
+		this.setupForVars();
+	}
+
+	async render(timestamp, dTimestamp) {
 		const canvas = this.canvas;
 		const canvasCtx = canvas.getContext("2d");
 
@@ -71,8 +74,8 @@ class SimpleSpectrum extends FXBase {
 			if (this.bars[i] < barHeight) {
 				this.bars[i] = barHeight;
 			} else {
-				this.bars[i] =
-					Math.max(this.bars[i] - this.vars.frame.height * Math.abs(timestamp - this.lastTimestamp) / this.vars.fallTime, barHeight);
+				this.bars[i] = Math.max(
+					this.bars[i] - this.vars.frame.height * Math.abs(dTimestamp) / this.vars.fallTime, barHeight);
 			}
 
 			canvasCtx.fillRect(x, this.vars.frame.y + this.vars.frame.height - this.bars[i],
@@ -80,8 +83,6 @@ class SimpleSpectrum extends FXBase {
 
 			x += this.barWidth;
 		}
-
-		this.lastTimestamp = timestamp;
 	}
 }
 

@@ -1,4 +1,4 @@
-class FXBase {
+class RendererBase {
 	constructor(media, canvas, consts = {}, vars = {}) {
 		// Setup
 		this.media = media;
@@ -16,18 +16,20 @@ class FXBase {
 	onVarsUpdated(oldVars) {
 	}
 
-	async drawFrame(timestamp) {
+	async render(timestamp, dTimestamp) {
 		// Implement in subclasses
 	}
 }
 
 const ValueTypes = {
-	int: 0,
-	string: 1,
-	rgba: 2,
-	float: 3,
-	frame: 4,
+	int: () => {},
+	string: () => {},
+	color: () => {},
+	float: () => {},
+	frame: () => {},
+	media: () => {},
+	arrayOf: (type) => {},
 }
 
-export default FXBase;
+export default RendererBase;
 export { ValueTypes };

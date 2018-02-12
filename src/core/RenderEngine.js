@@ -1,4 +1,4 @@
-import fxClasses from "./fx";
+import { createRenderer } from "./renderers";
 
 class RenderEngine {
 	constructor(project, width, height, realtime = true) {
@@ -13,8 +13,10 @@ class RenderEngine {
 			const canvas = document.createElement("canvas");
 			canvas.width = width;
 			canvas.height = height;
-			return new fxClasses[layer.fx](project.media, canvas, { ...layer.consts, realtime: realtime }, layer.vars);
+			return createRenderer(layer.id, project, canvas, { ...layer.consts, realtime: realtime }, layer.vars);
 		});
+
+		this.oldTimestamp = 0;
 	}
 
 	async drawFrame(canvas, timestamp) {
@@ -25,10 +27,13 @@ class RenderEngine {
 		offscreenCanvasCtx.fillStyle = "rgb(0, 0, 0)";
 		offscreenCanvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-		await Promise.all(this.layers.map(layer => layer.drawFrame(timestamp)));
+		const dTimestamp = timestamp - this.oldTimestamp;
+
+		await Promise.all(this.layers.map(layer => layer.render(timestamp, dTimestamp)));
 		this.layers.forEach((layer) => { offscreenCanvasCtx.drawImage(layer.canvas, 0, 0); });
 
 		canvasCtx.drawImage(this.canvas, 0, 0);
+		this.oldTimestamp = timestamp;
 	}
 }
 
