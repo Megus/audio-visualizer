@@ -1,0 +1,26 @@
+.sidebar {
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	width: 300px;
+	box-sizing: border-box;
+	border-left: 1px solid gray;
+	padding: 10px;
+	text-align: left;
+}
+
+ul {
+	padding: 0;
+	margin: 0;
+}
+
+li {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+li:not(:last-child) {
+	margin-bottom: 7px;
+}

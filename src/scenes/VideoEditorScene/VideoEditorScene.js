@@ -8,6 +8,7 @@ import createNewProject from "../../services/createNewProject";
 import RenderEngine from "../../core/RenderEngine";
 
 import VideoRenderingScene from "../VideoRenderingScene/VideoRenderingScene";
+import EffectsSidebar from "./components/EffectsSidebar/EffectsSidebar";
 
 class VideoEditorScene extends Component {
 	constructor(props) {
@@ -141,33 +142,36 @@ class VideoEditorScene extends Component {
 	render() {
 		return (
 			<div>
-				<audio
-					id="player"
-					controls
-					onPlay={this.onAudioPlay}
-					onPause={this.onAudioPause}
-					ref={(audio) => { this.audioRef = audio; }}
-				/>
-				<hr />
-				<br />
-				<button onClick={this.openRenderingPopup}>Render</button>
-				<input type="file" onChange={this.uploadFile} />
-				<button onClick={this.loadProject}>Load Bad Monday</button>
-				<br />
-				<canvas
-					width="1920"
-					height="1080"
-					style={{ width: 960, height: 540 }}
-					ref={(canvas) => { this.canvasRef = canvas; }}
-				/>
-				<br />
-				{
-					this.state.isRendering && <VideoRenderingScene
-						project={this.project}
-						duration={this.audioRef.duration}
-						onClose={this.closeRenderingPopup}
+				<EffectsSidebar />
+				<div style={{ width: "calc(100% - 300px)" }}>
+					<audio
+						id="player"
+						controls
+						onPlay={this.onAudioPlay}
+						onPause={this.onAudioPause}
+						ref={(audio) => { this.audioRef = audio; }}
 					/>
-				}
+					<hr />
+					<br />
+					<button onClick={this.openRenderingPopup}>Render</button>
+					<input type="file" onChange={this.uploadFile} />
+					<button onClick={this.loadProject}>Load Bad Monday</button>
+					<br />
+					<canvas
+						width="1920"
+						height="1080"
+						style={{ width: 960, height: 540 }}
+						ref={(canvas) => { this.canvasRef = canvas; }}
+					/>
+					<br />
+					{
+						this.state.isRendering && <VideoRenderingScene
+							project={this.project}
+							duration={this.audioRef.duration}
+							onClose={this.closeRenderingPopup}
+						/>
+					}
+				</div>
 			</div>
 		);
 	}
