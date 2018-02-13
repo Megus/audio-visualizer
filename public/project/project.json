@@ -48,9 +48,18 @@
 						"value": { "x": 10, "y": 10, "width": 410, "height": 410 }
 					},
 					{
-						"timestamp": 30,
+						"timestamp": 5,
+						"value": { "x": 1300, "y": 460, "width": 610, "height": 610 }
+					},
+					{
+						"timestamp": 7,
 						"easing": "linear",
-						"value": { "x": 1500, "y": 10, "width": 410, "height": 410 }
+						"value": { "x": 1300, "y": 460, "width": 610, "height": 610 }
+					},
+					{
+						"timestamp": 15,
+						"easing": "linear",
+						"value": { "x": 10, "y": 660, "width": 410, "height": 410 }
 					}
 				]
 			}
