@@ -22,13 +22,14 @@ class RendererBase {
 }
 
 const ValueTypes = {
-	int: () => {},
-	string: () => {},
-	color: () => {},
-	float: () => {},
-	frame: () => {},
-	media: () => {},
-	arrayOf: (type) => {},
+	// TODO: Validators?
+	int: () => { return 1; },
+	string: () => { return 2; },
+	color: () => { return 3; },
+	float: () => { return 4; },
+	frame: () => { return 5; },
+	media: () => { return 6; },
+	arrayOf: (type) => { return 7; },
 }
 
 export default RendererBase;

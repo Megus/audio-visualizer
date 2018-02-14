@@ -1,4 +1,5 @@
 import RendererBase from "../../RendererBase";
+import { colorToCanvasFillStyle } from "../../RendererConvenience"
 
 class SimpleSpectrum extends RendererBase {
 	constructor(media, canvas, consts = {}, vars = {}) {
@@ -54,7 +55,7 @@ class SimpleSpectrum extends RendererBase {
 
 		canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
-		canvasCtx.fillStyle = this.vars.color;
+		canvasCtx.fillStyle = colorToCanvasFillStyle(this.vars.color);
 		for (let i = 0; i < this.consts.barsCount; i += 1) {
 			// Calculate bar height
 			if (Math.floor(this.barBins[i]) < Math.floor(this.barBins[i + 1])) {

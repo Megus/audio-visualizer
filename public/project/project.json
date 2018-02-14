@@ -48,9 +48,19 @@
 						"value": { "x": 10, "y": 10, "width": 410, "height": 410 }
 					},
 					{
-						"timestamp": 30,
-						"easing": "linear",
-						"value": { "x": 1500, "y": 10, "width": 410, "height": 410 }
+						"timestamp": 5,
+						"easing": "easeInOutCubic",
+						"value": { "x": 1300, "y": 460, "width": 610, "height": 610 }
+					},
+					{
+						"timestamp": 7,
+						"easing": "easeInOutCubic",
+						"value": { "x": 1300, "y": 460, "width": 610, "height": 610 }
+					},
+					{
+						"timestamp": 15,
+						"easing": "easeInOutCubic",
+						"value": { "x": 10, "y": 660, "width": 410, "height": 410 }
 					}
 				]
 			}
@@ -61,24 +71,54 @@
 				"barsCount": 256
 			},
 			"vars": {
-				"color": "#FF0000D0",
+				"color": { "r": 255, "g": 0, "b": 0, "a": 0.8 },
 				"frame": { "x": 0, "y": 700, "width": 1920, "height": 380 }
+			},
+			"automation": {
+				"color": [
+					{
+						"timestamp": 0,
+						"value": { "r": 255, "g": 0, "b": 0, "a": 0.8 }
+					},
+					{
+						"timestamp": 5,
+						"easing": "easeInOutCubic",
+						"value": { "r": 0, "g": 255, "b": 0, "a": 0.8 }
+					},
+					{
+						"timestamp": 7,
+						"value": { "r": 0, "g": 0, "b": 255, "a": 0.8 }
+					}
+				]
 			}
 		},
 		{
 			"id": "org.megus.SimpleWave",
 			"consts": {},
 			"vars": {
-				"lineWidth": 4,
-				"color": "#FFFFFF80",
+				"lineWidth": 1,
+				"color": { "r": 255, "g": 255, "b": 255, "a": 0.5 },
 				"frame": { "x": 0, "y": 700, "width": 1920, "height": 380 }
+			},
+			"automation": {
+				"lineWidth": [
+					{
+						"timestamp": 0,
+						"value": 1
+					},
+					{
+						"timestamp": 5,
+						"easing": "linear",
+						"value": 4
+					}
+				]
 			}
 		},
 		{
 			"id": "org.megus.SimplePower",
 			"consts": {},
 			"vars": {
-				"color": "#FFFFFF80",
+				"color": { "r": 255, "g": 255, "b": 255, "a": 0.5 },
 				"frame": { "x": 0, "y": 1050, "width": 300, "height": 30 }
 			}
 		}

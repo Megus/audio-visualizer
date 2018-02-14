@@ -144,6 +144,7 @@ class VideoEditorScene extends Component {
 				<audio
 					id="player"
 					controls
+					muted
 					onPlay={this.onAudioPlay}
 					onPause={this.onAudioPause}
 					ref={(audio) => { this.audioRef = audio; }}
