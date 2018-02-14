@@ -1,15 +1,38 @@
 import { createRenderer, renderers } from "./renderers";
 import { ValueTypes } from "./renderers/RendererBase"
-import interpolators from "./interpolators"
+import easings from "./easings"
+
+function ease(a, b, t, easing) {
+	return a + (b - a) * easings[easing](t);
+}
+
+function trim(v, min, max) {
+	if (v < min) return min;
+	if (v > max) return max;
+	return v;
+}
 
 const typeInterpolators = {
-	[ValueTypes.frame]: (a, b, t, easing) => {
-		const i = interpolators[easing];
+	[ValueTypes.float]: (a, b, t, easing) => {
+		return ease(a, b, t, easing);
+	},
+	[ValueTypes.int]: (a, b, t, easing) => {
+		return Math.floor(ease(a, b, t, easing));
+	},
+	[ValueTypes.color]: (a, b, t, easing) => {
 		return {
-			x: i(a.x, b.x, t),
-			y: i(a.y, b.y, t),
-			width: i(a.width, b.width, t),
-			height: i(a.height, b.height, t)
+			r: trim(ease(a.r, b.r, t, easing), 0, 255),
+			g: trim(ease(a.g, b.g, t, easing), 0, 255),
+			b: trim(ease(a.b, b.b, t, easing), 0, 255),
+			a: trim(ease(a.a === undefined ? 1 : a.a, b.a === undefined ? 1 : b.a, t, easing), 0, 1)
+		}
+	},
+	[ValueTypes.frame]: (a, b, t, easing) => {
+		return {
+			x: ease(a.x, b.x, t, easing),
+			y: ease(a.y, b.y, t, easing),
+			width: ease(a.width, b.width, t, easing),
+			height: ease(a.height, b.height, t, easing)
 		}
 	}
 }
@@ -71,7 +94,7 @@ class RenderEngine {
 					if (idx === -1) {
 						idx = layerAuto.length - 1;
 					}
-					if (autoPosition < 0) {
+					if (autoPosition < 0 || layerAuto[idx + 1].easing === undefined) {
 						// Start or it's the end of automation points
 						layer.renderer.setVars({[autoVar]: layerAuto[idx].value});
 					} else {
@@ -81,7 +104,7 @@ class RenderEngine {
 							layerAuto[idx].value,
 							layerAuto[idx + 1].value,
 							autoPosition,
-							layerAuto[idx + 1].easing || "linear");
+							layerAuto[idx + 1].easing);
 						layer.renderer.setVars({[autoVar]: newValue});
 					}
 				});

@@ -51,4 +51,12 @@ function scaleImageInFrame(scale, imgW, imgH, frameW, frameH) {
 	return {x, y, w, h, sx, sy, sw, sh};
 }
 
-export { scaleImageInFrame };
+function colorToCanvasFillStyle(color) {
+	const a = color.a === undefined ? 1 : color.a;
+	const r = Math.floor(color.r);
+	const g = Math.floor(color.g)
+	const b = Math.floor(color.b);
+	return `rgba(${r},${g},${b},${a})`;
+}
+
+export { scaleImageInFrame, colorToCanvasFillStyle };
