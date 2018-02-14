@@ -29,7 +29,7 @@ function scaleImageInFrame(scale, imgW, imgH, frameW, frameH) {
 			sx = 0;
 			sy = (imgH - sh) / 2;
 		} else {
-			let ratio = h / imgH;
+			ratio = h / imgH;
 			sw = w / ratio;
 			sh = imgH;
 			sx = (imgW - sw) / 2;
@@ -48,7 +48,7 @@ function scaleImageInFrame(scale, imgW, imgH, frameW, frameH) {
 		h = frameH;
 	}
 
-	return {x, y, w, h, sx, sy, sw, sh};
+	return { x, y, w, h, sx, sy, sw, sh };
 }
 
 export { scaleImageInFrame };

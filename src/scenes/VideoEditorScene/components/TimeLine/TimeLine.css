@@ -2,37 +2,31 @@
 	display: flex;
 	flex-flow: column nowrap;
 	justify-content: center;
+	align-items: center;
 	width: 100%;
 	height: 100%;
 	/* border-top: 1px solid grey; */
 }
 
 .canvas {
-	border: 1px solid blue;
+	border: 1px solid gray;
 }
+
+/*
+ * Debug control styles
+ */
 
 .footer {
 	display: flex;
 	flex-flow: row nowrap;
 	align-items: center;
 	justify-content: flex-start;
+	width: 100%;
+	padding: 5px 0 5px 5px;
 	font-size: 12px;
-	border: 1px solid grey;
+	/* border: 1px solid red; */
 }
 
-/*
- * Debug controls styles
- */
-
-.debug-controls {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: flex-start;
-	margin: 5px 0 5px 5px;
-	width: 600px;
-}
-
-.debug-constrols__ctrl {
+.footer__ctrl {
 	margin-left: 5px;
 }

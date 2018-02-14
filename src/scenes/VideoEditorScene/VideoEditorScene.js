@@ -75,9 +75,7 @@ class VideoEditorScene extends Component {
 
 	async draw() {
 		if (this.state.canPlay) {
-			if (this.state.canPlay) {
-				await this.renderEngine.drawFrame(this.canvasRef, this.audioRef.currentTime);
-			}
+			await this.renderEngine.drawFrame(this.canvasRef, this.audioRef.currentTime);
 		}
 
 		if (this.state.isAnimating && !this.state.isRendering) {
@@ -189,9 +187,9 @@ class VideoEditorScene extends Component {
 					style={{ width: 960, height: 540 }}
 				/>
 				<TimeLine
-					baseHeight={540}
-					baseWidth={3840}
-					audio={this.project ? this.project.media.mainAudio : null}
+					width={3806}
+					height={540}
+					mediaAudio={this.project ? this.project.media.mainAudio : null}
 				/>
 			</div>
 		);

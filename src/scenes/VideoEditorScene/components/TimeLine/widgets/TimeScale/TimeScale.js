@@ -1,30 +1,62 @@
 import WidgetBase from "../WidgetBase";
 
+import divideOnEvenlyParts from "../../../../../../services/commonFunctions";
+
 export default class TimeScale extends WidgetBase {
-	// testSpread = (...args) => {
-	// 	[this.a] = args; // array decomposition
-	// 	console.log(this.a);
-	// };
+	defaultConsts = {
+		pixelsInSecod: 20,
+		noAudioLoadedMessage: "No audio file loaded",
+	}
 
-	// this.testSpread("canvVal", 1, false);
-
-	getTimeMarkersNumber = (canvasWidth, xDelta) =>
-		(canvasWidth - canvasWidth % xDelta) / xDelta;
-
-	drawFrame = () => {
-		const baseWidth = 3840;
-
+	// ! TODO: Debug method. Should be removed
+	drawCanvasMiddleMark = (canvasMiddle) => {
 		const ctx = this.canvas.getContext("2d");
+		ctx.beginPath();
+		ctx.moveTo(canvasMiddle, 0);
+		ctx.lineTo(canvasMiddle, 10);
+		ctx.stroke();
+		ctx.closePath();
+	}
 
-		const xDelta = 50;
-		const yDelta = 25;
+	showNoMediaAudioLoadedMessage = () => {
+		const { canvas } = this;
+		const { noAudioLoadedMessage } = this.defaultConsts;
+
+		const ctx = canvas.getContext("2d");
+		ctx.font = "42px sans-serif";
+
+		const txt = ctx.measureText(noAudioLoadedMessage);
+		const canvasMiddle = divideOnEvenlyParts(canvas.width, 2);
+		const txtMiddle = divideOnEvenlyParts(txt.width, 2);
+		const txtXOffset = canvasMiddle - txtMiddle;
+
+		ctx.fillText(noAudioLoadedMessage, txtXOffset, 50);
+
+		this.drawCanvasMiddleMark(canvasMiddle);
+	}
+
+	drawFrame = async (timestamp) => {
+		const { canvas, mediaAudio } = this;
+		const { pixelsInSecod } = this.defaultConsts;
+
+		if (!mediaAudio) {
+			this.showNoMediaAudioLoadedMessage();
+			return;
+		}
+
+		// ! TODO: Probably must not be called each time
+		this.clearCanvas();
+
+		const ctx = canvas.getContext("2d");
+
+		const yDelta = 30;
 		// const yAccentDelta = yDelta * 2;
-		const markersNum = this.getTimeMarkersNumber(baseWidth, xDelta);
-		ctx.lineWidth = 2;
+		const markersNum = divideOnEvenlyParts(canvas.width, pixelsInSecod);
+		ctx.lineWidth = 1;
 		ctx.beginPath();
 		for (let offset = 1; offset <= markersNum; offset += 1) {
-			ctx.moveTo(xDelta * offset, 0);
-			ctx.lineTo(xDelta * offset, yDelta);
+			ctx.moveTo(pixelsInSecod * offset, 0);
+			ctx.lineTo(pixelsInSecod * offset, yDelta);
 
 			// ? TODO: Implement calculation of accent markers
 			// ctx.lineTo(xDelta * offset, (xDelta * offset) % 3 === 0 ? yAccentDelta : yDelta);

@@ -4,14 +4,15 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 import { MediaAudio } from "../../../../core/media/index";
+import divideOnEvenlyParts from "../../../../services/commonFunctions";
 import Widgets from "./widgets";
 
 import "./TimeLine.css";
 
 export default class TimeLine extends Component {
 	static propTypes = {
-		baseHeight: PropTypes.number.isRequired,
-		baseWidth: PropTypes.number.isRequired,
+		height: PropTypes.number.isRequired,
+		width: PropTypes.number.isRequired,
 		mediaAudio: PropTypes.instanceOf(MediaAudio),
 	};
 
@@ -22,45 +23,63 @@ export default class TimeLine extends Component {
 	constructor(props) {
 		super(props);
 
-		// Declare widgets
-		this.timeScale = null;
+		this.widgets = [];
 	}
 
 	componentDidMount() {
 		const { mediaAudio } = this.props;
-		const { canvasRef } = this;
+		const {
+			canvasRef,
+			widgets,
+		} = this;
 
-		this.timeScale = new Widgets.TimeScale(canvasRef, mediaAudio);
-		// ! TODO: Think if it valid to init TimeScale in componentDidMount
-		// requestAnimationFrame(draw); // ! TODO: Should be done like this?
-		this.draw();
+		widgets.push(new Widgets.TimeScale(canvasRef));
+		widgets.push(new Widgets.FrequencyVisualizer(canvasRef));
+
+		widgets.forEach(widget => widget.setMediaAudio(mediaAudio));
 	}
 
-	draw = () => {
-		this.timeScale.drawFrame();
-	};
+	componentWillReceiveProps(nextProps) {
+		const { mediaAudio } = this.props;
+		const { widgets } = this;
+
+		if (nextProps.mediaAudio === mediaAudio) {
+			return;
+		}
+
+		widgets.forEach(widget => widget.setMediaAudio(nextProps.mediaAudio));
+	}
+
+	draw = async (timestamp) => {
+		const { widgets } = this;
+
+		await Promise.all(widgets.map(widget => widget.drawFrame(timestamp)));
+	}
 
 	render() {
 		const {
-			baseHeight,
-			baseWidth,
+			height,
+			width,
 		} = this.props;
+
+		// ? TODO: Get current audio time via props
+		requestAnimationFrame(this.draw);
 
 		return (
 			<div className="root">
 				<canvas
 					className="canvas"
-					height={baseHeight}
-					width={baseWidth}
-					style={{ height: baseHeight / 2, width: baseWidth / 2 }}
+					height={height}
+					width={width}
+					style={{ height: divideOnEvenlyParts(height, 2), width: divideOnEvenlyParts(width, 2) }}
 					ref={(canvas) => { this.canvasRef = canvas; }}
 				/>
+				{/* //! Footer is for debug */}
 				<div className="footer">
-					<div>Time Line Stub:</div>
-					<div className="debug-controls">
-						{/* <button className="debug-constrols__ctrl" onClick={this.testDraw}>Test draw</button> */}
-						<div className="debug-constrols__ctrl">Canvas base dim: {baseWidth}x{baseHeight}</div>
-					</div>
+					<div className="footer__ctrl">Time Line Stub:</div>
+					{/* <button className="footer__ctrl" onClick={this.testDraw}>Test draw</button> */}
+					<div className="footer__ctrl">Canvas base dim: {width}x{height}</div>
+					<div className="footer__ctrl">Canvase style dim: {divideOnEvenlyParts(width, 2)}x{divideOnEvenlyParts(height, 2)}</div>
 				</div>
 			</div>
 		);
