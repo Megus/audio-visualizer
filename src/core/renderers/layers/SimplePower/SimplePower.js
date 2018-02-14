@@ -1,18 +1,11 @@
-import FXBase from "../FXBase";
+import RendererBase from "../../RendererBase";
 
-class PowerMeter extends FXBase {
-	getDefaultVars() {
-		return {
-			scale: 1000,
-			color: "#FFFFFFFF"
-		};
-	}
-
+class SimplePower extends RendererBase {
 	constructor(media, canvas, consts = {}, vars = {}) {
 		super(media, canvas, consts, vars);
 	}
 
-	async drawFrame(timestamp) {
+	async render(timestamp) {
 		const canvas = this.canvas;
 		const canvasCtx = canvas.getContext("2d");
 
@@ -29,4 +22,4 @@ class PowerMeter extends FXBase {
 	}
 }
 
-export default PowerMeter;
+export default SimplePower;

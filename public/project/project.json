@@ -1,7 +1,6 @@
 {
 	"title": "Bad Monday",
 	"author": "Megus",
-	"aspectRatio": "16:9",
 	"resolution": {
 		"width": 1920,
 		"height": 1080
@@ -22,7 +21,7 @@
 	},
 	"layers": [
 		{
-			"fx": "VideoPlayer",
+			"id": "org.megus.SimpleVideo",
 			"consts": {
 				"video": "video1",
 				"looped": true,
@@ -33,7 +32,7 @@
 			}
 		},
 		{
-			"fx": "StaticImage",
+			"id": "org.megus.SimpleImage",
 			"consts": {
 				"images": ["img1"],
 				"scale": "aspectFit"
@@ -41,10 +40,23 @@
 			"vars": {
 				"image": 0,
 				"frame": { "x": 1500, "y": 10, "width": 410, "height": 410 }
+			},
+			"automation": {
+				"frame": [
+					{
+						"timestamp": 0,
+						"value": { "x": 10, "y": 10, "width": 410, "height": 410 }
+					},
+					{
+						"timestamp": 30,
+						"easing": "linear",
+						"value": { "x": 1500, "y": 10, "width": 410, "height": 410 }
+					}
+				]
 			}
 		},
 		{
-			"fx": "SimpleSpectrum",
+			"id": "org.megus.SimpleSpectrum",
 			"consts": {
 				"barsCount": 256
 			},
@@ -54,7 +66,7 @@
 			}
 		},
 		{
-			"fx": "SimpleWave",
+			"id": "org.megus.SimpleWave",
 			"consts": {},
 			"vars": {
 				"lineWidth": 4,
@@ -63,7 +75,7 @@
 			}
 		},
 		{
-			"fx": "PowerMeter",
+			"id": "org.megus.SimplePower",
 			"consts": {},
 			"vars": {
 				"color": "#FFFFFF80",
