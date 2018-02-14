@@ -54,7 +54,6 @@
 					},
 					{
 						"timestamp": 7,
-						"easing": "easeInOutCubic",
 						"value": { "x": 1300, "y": 460, "width": 610, "height": 610 }
 					},
 					{
@@ -104,12 +103,23 @@
 				"lineWidth": [
 					{
 						"timestamp": 0,
-						"value": 1
+						"value": 2
 					},
 					{
 						"timestamp": 5,
 						"easing": "linear",
-						"value": 4
+						"value": 8
+					}
+				],
+				"frame": [
+					{
+						"timestamp": 0,
+						"value": { "x": 0, "y": 700, "width": 1920, "height": 380 }
+					},
+					{
+						"timestamp": 30,
+						"easing": "easeOutElastic",
+						"value": { "x": 480, "y": 0, "width": 960, "height": 380 }
 					}
 				]
 			}
