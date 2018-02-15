@@ -1,4 +1,5 @@
 import RendererBase from "../../RendererBase";
+import { colorToCanvasFillStyle } from "../../RendererConvenience";
 
 class SimplePower extends RendererBase {
 	constructor(media, canvas, consts = {}, vars = {}) {
@@ -13,7 +14,7 @@ class SimplePower extends RendererBase {
 
 		const power = this.media["mainAudio"].getPower(timestamp);
 
-		canvasCtx.fillStyle = this.vars.color;
+		canvasCtx.fillStyle = colorToCanvasFillStyle(this.vars.color);
 		canvasCtx.fillRect(
 			this.vars.frame.x,
 			this.vars.frame.y,

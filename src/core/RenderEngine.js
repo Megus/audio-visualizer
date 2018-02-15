@@ -1,4 +1,42 @@
-import { createRenderer } from "./renderers";
+import { createRenderer, renderers } from "./renderers";
+import { ValueTypes } from "./renderers/RendererBase";
+import easings from "./easings";
+
+function ease(a, b, t, easing) {
+	return a + (b - a) * easings[easing](t);
+}
+
+function trim(v, min, max) {
+	if (v < min) return min;
+	if (v > max) return max;
+	return v;
+}
+
+const typeInterpolators = {
+	[ValueTypes.float]: (a, b, t, easing) => {
+		return ease(a, b, t, easing);
+	},
+	[ValueTypes.int]: (a, b, t, easing) => {
+		return Math.floor(ease(a, b, t, easing));
+	},
+	[ValueTypes.color]: (a, b, t, easing) => {
+		return {
+			r: trim(ease(a.r, b.r, t, easing), 0, 255),
+			g: trim(ease(a.g, b.g, t, easing), 0, 255),
+			b: trim(ease(a.b, b.b, t, easing), 0, 255),
+			a: trim(ease(a.a === undefined ? 1 : a.a, b.a === undefined ? 1 : b.a, t, easing), 0, 1)
+		}
+	},
+	[ValueTypes.frame]: (a, b, t, easing) => {
+		return {
+			x: ease(a.x, b.x, t, easing),
+			y: ease(a.y, b.y, t, easing),
+			width: ease(a.width, b.width, t, easing),
+			height: ease(a.height, b.height, t, easing)
+		}
+	}
+}
+
 
 class RenderEngine {
 	constructor(project, width, height, realtime = true) {
@@ -9,11 +47,14 @@ class RenderEngine {
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = width;
 		this.canvas.height = height;
-		this.layers = project.layers.map((layer) => {
+
+		project.layers.forEach((layer) => {
 			const canvas = document.createElement("canvas");
 			canvas.width = width;
 			canvas.height = height;
-			return createRenderer(layer.id, project, canvas, { ...layer.consts, realtime: realtime }, layer.vars);
+			const renderer = createRenderer(layer.id, project,
+				canvas, { ...layer.consts, realtime: realtime }, layer.vars);
+			layer.renderer = renderer;
 		});
 
 		this.oldTimestamp = 0;
@@ -29,8 +70,50 @@ class RenderEngine {
 
 		const dTimestamp = timestamp - this.oldTimestamp;
 
-		await Promise.all(this.layers.map(layer => layer.render(timestamp, dTimestamp)));
-		this.layers.forEach((layer) => { offscreenCanvasCtx.drawImage(layer.canvas, 0, 0); });
+		await Promise.all(this.project.layers.map(async (layer) => {
+			// Handle automation
+			if (layer.automation) {
+				// TODO: Optimize this code, it's a temporary quick implementation
+				// The slowest part here is the constant scanning through automation lists
+				// Another optimization is to combine all var changes in a single setVars call if there are
+				// several automation lanes for a single layer
+				Object.keys(layer.automation).forEach((autoVar) => {
+					const layerAuto = layer.automation[autoVar];
+					let idx = -1;
+					let autoPosition = -1;
+					// Find the pair of automation points for this timestamp
+					for (let c = 0; c < layerAuto.length - 1; c++) {
+						if (timestamp >= layerAuto[c].timestamp && timestamp < layerAuto[c + 1].timestamp) {
+							idx = c;
+							autoPosition = (timestamp - layerAuto[c].timestamp) /
+								(layerAuto[c + 1].timestamp - layerAuto[c].timestamp);
+							break;
+						}
+					}
+					// Didn't find the pair? That means we reached the end
+					if (idx === -1) {
+						idx = layerAuto.length - 1;
+					}
+					if (autoPosition < 0 || layerAuto[idx + 1].easing === undefined) {
+						// Start or it's the end of automation points
+						layer.renderer.setVars({[autoVar]: layerAuto[idx].value});
+					} else {
+						// Interpolate between pair of values
+						const varType = renderers[layer.id].vars[autoVar].type;
+						const newValue = typeInterpolators[varType](
+							layerAuto[idx].value,
+							layerAuto[idx + 1].value,
+							autoPosition,
+							layerAuto[idx + 1].easing);
+						layer.renderer.setVars({[autoVar]: newValue});
+					}
+				});
+			}
+
+			// Render layer
+			layer.renderer.render(timestamp, dTimestamp);
+		}));
+		this.project.layers.forEach((layer) => { offscreenCanvasCtx.drawImage(layer.renderer.canvas, 0, 0); });
 
 		canvasCtx.drawImage(this.canvas, 0, 0);
 		this.oldTimestamp = timestamp;
