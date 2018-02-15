@@ -4,7 +4,8 @@ import divideOnEvenlyParts from "../../../../../../services/commonFunctions";
 
 export default class TimeScale extends WidgetBase {
 	defaultConsts = {
-		pixelsInSecod: 20,
+		markerHeight: 30,
+		pixelsInSecond: 20,
 		noAudioLoadedMessage: "No audio file loaded",
 	}
 
@@ -37,7 +38,10 @@ export default class TimeScale extends WidgetBase {
 
 	drawFrame = async (timestamp) => {
 		const { canvas, mediaAudio } = this;
-		const { pixelsInSecod } = this.defaultConsts;
+		const {
+			pixelsInSecond,
+			markerHeight,
+		} = this.defaultConsts;
 
 		if (!mediaAudio) {
 			this.showNoMediaAudioLoadedMessage();
@@ -49,17 +53,19 @@ export default class TimeScale extends WidgetBase {
 
 		const ctx = canvas.getContext("2d");
 
-		const yDelta = 30;
-		// const yAccentDelta = yDelta * 2;
-		const markersNum = divideOnEvenlyParts(canvas.width, pixelsInSecod);
+		const secondsInAudio = mediaAudio.audioBuffer.duration;
+		const pixelsInAudio = secondsInAudio * pixelsInSecond;
+		ctx.width = pixelsInAudio;
+		// const markersNum = divideOnEvenlyParts(canvas.width, pixelsInSecond);
+		const markersNumber = divideOnEvenlyParts(pixelsInAudio, pixelsInSecond);
 		ctx.lineWidth = 1;
 		ctx.beginPath();
-		for (let offset = 1; offset <= markersNum; offset += 1) {
-			ctx.moveTo(pixelsInSecod * offset, 0);
-			ctx.lineTo(pixelsInSecod * offset, yDelta);
+		for (let offset = 1; offset <= markersNumber; offset += 1) {
+			ctx.moveTo(pixelsInSecond * offset, 0);
+			ctx.lineTo(pixelsInSecond * offset, markerHeight);
 
 			// ? TODO: Implement calculation of accent markers
-			// ctx.lineTo(xDelta * offset, (xDelta * offset) % 3 === 0 ? yAccentDelta : yDelta);
+			// ctx.lineTo(xDelta * offset, (xDelta * offset) % 3 === 0 ? yAccentDelta : markerHeight);
 			// console.log((xDelta * offset) % 3);
 
 			// ! TODO: Implement time markers digits output
