@@ -59,7 +59,7 @@ class EffectsSidebar extends Component {
 	}
 
 	render() {
-		const items = this.effectGroups.map(group => (<li key={group.name}><EffectsGroup group={group} /></li>));
+		const items = this.effectGroups.map(group => (<li key={group.name} className="sidebar__group"><EffectsGroup group={group} /></li>));
 		return (
 			<div className="sidebar">
 				<ul>

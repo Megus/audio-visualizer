@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
+import CollapsiblePane from "../CollapsiblePane/CollapsiblePane";
 import "./EffectPane.css";
 
 class EffectPane extends Component {
@@ -16,15 +17,9 @@ class EffectPane extends Component {
 
 	render() {
 		const params = this.props.effect.params.map(param => (<li key={param.name}>{param.name}: {param.value}</li>));
+		const listOfParams = <ul>{params}</ul>;
 		return (
-			<div className="effects-group__effects-list_effect">
-				<div className="effects-group__effects-list_effect_effect-name">
-					{this.props.effect.name}
-				</div>
-				<ul className="effects-group__effects-list_effect_effect-params">
-					{params}
-				</ul>
-			</div>
+			<CollapsiblePane name={this.props.effect.name} content={listOfParams} theme="even" />
 		);
 	}
 }
