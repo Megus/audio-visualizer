@@ -1,5 +1,5 @@
 .collapsible-pane {
-  position: relative;
+  /*position: relative;*/
 }
 
 .collapsible-pane_theme_odd .collapsible-pane__content {
@@ -20,14 +20,13 @@
 
 .collapsible-pane__name:before {
   content: "\25BC";
-  position: absolute;
-  left: 7px;
+  position: relative;
+  left: -9px;
   font-size: 12px;
 }
 
 .collapsible-pane__name_collapsed:before {
   transform: rotate(270deg);
-  top: -1px;
 }
 
 .collapsible-pane__content {

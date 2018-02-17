@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import CollapsiblePane from "./widgets/CollapsiblePane/CollapsiblePane";
+import DraggableCollapsiblePane from "./widgets/DraggableCollapsiblePane/DraggableCollapsiblePane";
 import "./EffectsSidebar.css";
 
 class EffectsSidebar extends Component {
@@ -10,6 +10,8 @@ class EffectsSidebar extends Component {
 		this.buildContent = this.buildContent.bind(this);
 
 		this.state = {
+			dragged: null,
+			dropTarget: null,
 			elements: [
 				{
 					id: 1,
@@ -101,6 +103,48 @@ class EffectsSidebar extends Component {
 		};
 	}
 
+	setDragged(id) {
+		if (!id) {
+			this.setState({ dragged: null });
+			// console.log("reset dragged");
+			return;
+		}
+		if (this.state.dragged || this.assigningDraggableInProcess) { return; }
+		this.assigningDraggableInProcess = true; // hack to prevent setting parents as dragged
+		const dragged = this.state.elements.find(element => element.id === id);
+		this.setState({ dragged }, () => {
+			this.assigningDraggableInProcess = false;
+			// console.log("set dragged", this.state.dragged.id);
+		});
+	}
+
+	setDropTarget(id) {
+		if (this.state.dragged && this.state.dragged.id && this.state.dragged.id === id) { return; }
+		if (!id) {
+			this.setState({ dropTarget: null });
+			// console.log("reset target");
+			return;
+		}
+		if (this.state.dropTarget || this.assigningDropTargetInProcess) { return; }
+		this.assigningDropTargetInProcess = true;
+		const dropTarget = this.state.elements.find(element => element.id === id);
+		if (!dropTarget) { return; }
+		this.setState({ dropTarget }, () => {
+			this.assigningDropTargetInProcess = false;
+			// console.log("set target", this.state.dropTarget.id);
+		});
+	}
+
+	reorder() {
+		console.log("reordering", this.state.dragged.id, this.state.dropTarget.id);
+		const draggedIndex = this.state.elements.findIndex(element => element.id === this.state.dragged.id);
+		const targetIndex = this.state.elements.findIndex(element => element.id === this.state.dropTarget.id);
+		const elements = this.state.elements.slice(0);
+		const dragged = elements.splice(draggedIndex, 1)[0];
+		elements.splice(targetIndex, 0, dragged);
+		this.setState({ elements });
+	}
+
 	buildContent(parent) {
 		const elementsOnLevel = this.state.elements.filter(element => element.parent === parent).map((element) => {
 			const elementWithContent = Object.assign({}, element);
@@ -111,12 +155,16 @@ class EffectsSidebar extends Component {
 				elementWithContent.content = (<ul>{params}</ul>);
 			}
 			return elementWithContent;
-		}).map((element) => {
-			const collapsiblePane = (<CollapsiblePane name={element.name} content={element.content} />);
-			return (
-				<li key={element.id}>{collapsiblePane}</li>
-			);
-		});
+		}).map(element => (
+			<DraggableCollapsiblePane
+				key={element.id}
+				object={element}
+				dragged={this.state.dragged}
+				dropTarget={this.state.dropTarget}
+				setDragged={id => this.setDragged(id)}
+				setDropTarget={id => this.setDropTarget(id)}
+				reorder={() => this.reorder()}
+			/>));
 		return (<ul>{elementsOnLevel}</ul>);
 	}
 

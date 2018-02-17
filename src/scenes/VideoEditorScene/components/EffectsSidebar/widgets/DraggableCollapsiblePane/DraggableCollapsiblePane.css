@@ -1,0 +1,9 @@
+.placeholder * {
+  background-color: whitesmoke !important;
+  color: whitesmoke !important;
+  border: none !important;
+}
+.placeholder {
+  border: 2px solid lightgray;
+  border-radius: 3px;
+}
