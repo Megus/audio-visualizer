@@ -16,7 +16,6 @@ class DraggableCollapsiblePane extends Component {
 		this.onDragLeave = this.onDragLeave.bind(this);
 		this.makeDraggable = this.makeDraggable.bind(this);
 		this.makeUndraggable = this.makeUndraggable.bind(this);
-		this.entireElement = this.entireElement.bind(this);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -32,22 +31,21 @@ class DraggableCollapsiblePane extends Component {
 	// as dragged
 
 	onDragStart(event) {
-		// const ghost = event.target.cloneNode(true);
-		// ghost.style.visibility = "hidden";
-		// event.dataTransfer.setDragImage(ghost, 0, 0);
 		this.props.setDragged(this.props.object.id);
 		return false;
 	}
 
 	onDrag(event) {
-		// event.target.style.opacity = "0.3";
-		event.target.classList.add("placeholder");
+		event.target.style.visilibity = "hidden";
+		event.target.style.height = "0px";
+		event.target.style.overflow = "hidden";
 	}
 
 	onDragEnd(event) {
 		event.preventDefault();
-		// event.target.style.opacity = "1";
-		event.target.classList.remove("placeholder");
+		event.target.style.visilibity = "";
+		event.target.style.height = "";
+		event.target.style.overflow = "";
 		this.props.setDragged(null);
 		this.props.setDropTarget(null);
 		this.makeUndraggable(event);
@@ -85,26 +83,16 @@ class DraggableCollapsiblePane extends Component {
 
 	onDragLeave(event) {
 		event.preventDefault();
-		// this.props.setDropTarget(null);
 	}
 
 	// helpers
 
-	entireElement(element) {
-		while (element.tagName !== "LI" || !element.id) {
-			element = element.parentNode;
-		}
-		return element;
-	}
-
 	makeDraggable(event) {
-		// console.log(this.props.object.name, "is now draggable");
 		this.element.setAttribute("draggable", "true");
 		event.stopPropagation();
 	}
 
 	makeUndraggable(event) {
-		// console.log(this.props.object.name, "is now undraggable");
 		this.element.setAttribute("draggable", "false");
 		if (event) { event.stopPropagation(); }
 	}
@@ -113,14 +101,12 @@ class DraggableCollapsiblePane extends Component {
 		this.element.addEventListener("dragenter", this.onDragEnter, true);
 		this.element.addEventListener("dragleave", this.onDragLeave, true);
 		this.element.addEventListener("drop", this.onDrop, true);
-		// this.element.style.border = "2px solid red";
 	}
 
 	makeUntargetable() {
 		this.element.removeEventListener("dragenter", this.onDragEnter, true);
 		this.element.removeEventListener("dragleave", this.onDragLeave, true);
 		this.element.addEventListener("drop", this.onDrop, true);
-		// this.element.style.border = "";
 	}
 
 	render() {
