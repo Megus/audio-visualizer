@@ -21,6 +21,9 @@ class DraggableCollapsiblePane extends Component {
 		this.onDragLeave = this.onDragLeave.bind(this);
 		this.makeDraggable = this.makeDraggable.bind(this);
 		this.makeUndraggable = this.makeUndraggable.bind(this);
+		this.onTryingToReorder = this.onTryingToReorder.bind(this);
+		this.onLeavingSpaceAfterElement = this.onLeavingSpaceAfterElement.bind(this);
+		this.onReorder = this.onReorder.bind(this);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -41,26 +44,6 @@ class DraggableCollapsiblePane extends Component {
 	onDragStart() {
 		this.props.setDragged(this.props.object.id);
 		return false;
-	}
-
-	onDrop(event) {
-		event.preventDefault();
-		event.stopPropagation();
-		const { dropTarget, dragged } = this.props;
-		if (!dropTarget || !dragged) { return; }
-		if (dropTarget.type === "group") {
-			if (dragged.type === "group") {
-				console.log(`merge ${dragged.name} with ${dropTarget.name}`);
-			} else if (dragged.type === "effect") {
-				console.log(`append ${dragged.name} to ${dropTarget.name}`);
-			}
-		} else if (dropTarget.type === "effect") {
-			if (dragged.type === "group") {
-				console.log(`create a group of group ${dragged.name} && effect ${dropTarget.name}`);
-			} else if (dragged.type === "effect") {
-				console.log(`create a group of two effects: ${dragged.name} && ${dropTarget.name}`);
-			}
-		}
 	}
 
 	onDrag(event) {
@@ -84,8 +67,11 @@ class DraggableCollapsiblePane extends Component {
 	// as target
 
 	onDragEnter(event) {
+		const { target } = event;
+		if (target.className === "drop-space-before-element") {
+			return; // propagate to onReorder handler
+		}
 		event.stopPropagation();
-
 		event.preventDefault();
 		if (this.props.dragged && this.props.dragged.id === this.props.object.id) { return; }
 		if (this.props.dragged && this.props.dragged.parent === this.props.object.id) { return; }
@@ -100,7 +86,59 @@ class DraggableCollapsiblePane extends Component {
 	onDragLeave(event) {
 		event.preventDefault();
 		this.props.setDropTarget(null);
-		// this.resetStyle();
+	}
+
+	onDrop(event) {
+		const { target } = event;
+		if (target.className === "drop-space-before-element") {
+			return; // propagate to onReorder handler
+		}
+		event.preventDefault();
+		event.stopPropagation();
+		const { dropTarget, dragged } = this.props;
+		if (!dropTarget || !dragged) { return; }
+		if (dropTarget.type === "group") {
+			if (dragged.type === "group") {
+				console.log(`merge ${dragged.name} with ${dropTarget.name}`);
+			} else if (dragged.type === "effect") {
+				console.log(`append ${dragged.name} to ${dropTarget.name}`);
+			}
+		} else if (dropTarget.type === "effect") {
+			if (dragged.type === "group") {
+				console.log(`create a group of group ${dragged.name} && effect ${dropTarget.name}`);
+			} else if (dragged.type === "effect") {
+				console.log(`create a group of two effects: ${dragged.name} && ${dropTarget.name}`);
+			}
+		}
+	}
+
+	// reordering
+
+	onTryingToReorder(event) {
+		const { target } = event;
+		if (target.id && target.id === `before-${this.props.dragged.id}`) { return; }
+		event.preventDefault();
+		event.stopPropagation();
+		target.style.height = "200px";
+		target.style.backgroundColor = "whitesmoke";
+		target.style.margin = "10px 0";
+	}
+
+	onLeavingSpaceAfterElement(event) {
+		const { target } = event;
+		target.style.height = "";
+		target.style.backgroundColor = "";
+		target.style.margin = "";
+	}
+
+	onReorder(event) {
+		const { target } = event;
+		event.preventDefault();
+		event.stopPropagation();
+		console.log("drop before", this.props.object.name);
+		target.style.height = "";
+		target.style.backgroundColor = "";
+		target.style.margin = "";
 	}
 
 	// helpers
@@ -117,10 +155,8 @@ class DraggableCollapsiblePane extends Component {
 
 	makeTargetable() {
 		this.element.addEventListener("dragover", this.onDragEnter);
-		// this.element.addEventListener("dragover", (event) => { console.log(this.props.object.name);event.stopPropagation(); });
 		this.element.addEventListener("dragleave", this.onDragLeave, true);
 		this.element.addEventListener("drop", this.onDrop, true);
-		// console.log("targetable:", this.props.object.name);
 	}
 
 	makeUntargetable() {
@@ -130,23 +166,31 @@ class DraggableCollapsiblePane extends Component {
 	}
 
 	setTargetStyle() {
-		// console.log("set target style");
 		this.element.classList.add("merge-target");
-		// this.element.style.opacity = "0.3";
 	}
 
 	resetStyle() {
 		this.element.classList.remove("merge-target");
-		// this.element.style.opacity = "";
 	}
 
 	render() {
 		return (
 			<div>
+				{
+					(this.props.dragged && this.props.dragged.id === this.props.object.id) ||
+					<div
+						id={`before-${this.props.object.id}`}
+						className="drop-space-before-element"
+						onDragEnter={event => event.preventDefault()}
+						onDragOver={this.onTryingToReorder}
+						onDragLeave={this.onLeavingSpaceAfterElement}
+						onDrop={this.onReorder}
+					/>
+				}
 				<li
 					ref={(element) => { this.element = element; }}
 					id={this.props.object.id}
-					className="targetable-list-item"
+					className={`targetable-list-item targetable-list-item_for_${this.props.object.type}`}
 					key={this.props.object.id}
 					onMouseDown={this.makeDraggable}
 					onDragStart={this.onDragStart}
@@ -160,7 +204,6 @@ class DraggableCollapsiblePane extends Component {
 						theme={this.props.theme}
 					/>
 				</li>
-				<div className="drop-target" />
 			</div>
 		);
 	}
