@@ -20,7 +20,7 @@ const LSimpleWave = {
 	},
 	defaultConsts: {},
 	defaultVars: {
-		color: "#FFFFFFFF",
+		color: { r: 255, g: 255, b: 255, a: 1 },
 		lineWidth: 2
 	},
 	renderClass: SimpleWave,

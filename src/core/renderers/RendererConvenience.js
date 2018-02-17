@@ -59,4 +59,26 @@ function colorToCanvasFillStyle(color) {
 	return `rgba(${r},${g},${b},${a})`;
 }
 
-export { scaleImageInFrame, colorToCanvasFillStyle };
+function compileVertexShader(gl, str) {
+    const shader = gl.createShader(gl.VERTEX_SHADER);
+	gl.shaderSource(shader, str);
+	gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    	console.log(gl.getShaderInfoLog(shader));
+    	return null;
+    }
+    return shader;
+}
+
+function compileFragmentShader(gl, str) {
+    const shader = gl.createShader(gl.FRAGMENT_SHADER);
+	gl.shaderSource(shader, str);
+	gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    	console.log(gl.getShaderInfoLog(shader));
+    	return null;
+    }
+    return shader;
+}
+
+export { scaleImageInFrame, colorToCanvasFillStyle, compileFragmentShader, compileVertexShader };

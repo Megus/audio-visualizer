@@ -47,7 +47,7 @@ class VideoEditorScene extends Component {
 		this.renderEngine = new RenderEngine(project, canvas.width, canvas.height);
 		this.setState({
 			canPlay: true,
-			isAnimating: true,
+			isAnimating: false,
 		});
 		setTimeout(this.draw, 1);
 	}

@@ -3,6 +3,7 @@ class Project {
 		this.title = projectJson.title;
 		this.author = projectJson.author;
 		this.mediaInfo = projectJson.media;
+		this.backgroundColor = projectJson.backgroundColor;
 		this.layers = projectJson.layers;
 	}
 

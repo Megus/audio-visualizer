@@ -5,6 +5,7 @@
 		"width": 1920,
 		"height": 1080
 	},
+	"backgroundColor": { "r": 0, "g": 0, "b": 128 },
 	"media": {
 		"mainAudio": {
 			"type": "audio",
@@ -28,8 +29,39 @@
 				"scale": "aspectFill"
 			},
 			"vars": {
-				"frame": { "x": 0, "y": 0, "width": 1920, "height": 1080 }
-			}
+				"frame": { "x": 0, "y": 0, "width": 960, "height": 540 }
+			},
+			"filters": [
+				{
+					"id": "org.megus.AdjustColor",
+					"consts": {},
+					"vars": {
+						"saturation": -1.0
+					},
+					"automation": {
+						"saturation": [
+							{
+								"timestamp": 0,
+								"value": -1.0
+							},
+							{
+								"timestamp": 10,
+								"easing": "linear",
+								"value": 0
+							},
+							{
+								"timestamp": 15,
+								"value": 0
+							},
+							{
+								"timestamp": 20,
+								"easing": "easeOutElastic",
+								"value": 1.0
+							}
+						]
+					}
+				}
+			]
 		},
 		{
 			"id": "org.megus.SimpleImage",

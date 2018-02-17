@@ -32,7 +32,7 @@ const LSimpleSpectrum = {
 	},
 	defaultVars: {
 		scale: 10,
-		color: "#FF0000FF",
+		color: { r: 255, g: 0, b: 0, a: 1 },
 		fallTime: 1.5,
 	},
 	renderClass: SimpleSpectrum,

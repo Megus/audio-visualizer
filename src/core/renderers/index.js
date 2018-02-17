@@ -4,9 +4,11 @@ import LSimpleImage from "./layers/SimpleImage";
 import LSimplePower from "./layers/SimplePower";
 import LSimpleVideo from "./layers/SimpleVideo";
 
+import FAdjustColor from "./filters/AdjustColor"
+
 import { ValueTypes } from "./RendererBase"
 
-const rArray = [ LSimpleSpectrum, LSimpleWave, LSimpleImage, LSimplePower, LSimpleVideo ];
+const rArray = [ LSimpleSpectrum, LSimpleWave, LSimpleImage, LSimplePower, LSimpleVideo, FAdjustColor ];
 let renderers = {};
 // Create hash table of renderers from array for convenience
 rArray.forEach((r) => {
