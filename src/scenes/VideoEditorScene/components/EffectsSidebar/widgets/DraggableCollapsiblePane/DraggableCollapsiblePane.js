@@ -4,6 +4,11 @@ import PropTypes from "prop-types";
 import CollapsiblePane from "../CollapsiblePane/CollapsiblePane";
 import "./DraggableCollapsiblePane.css";
 
+const orNull = wrappedPropTypes => (props, propName, ...rest) => {
+	if (props[propName] === null) { return null; }
+	return wrappedPropTypes(props, propName, ...rest);
+};
+
 class DraggableCollapsiblePane extends Component {
 	constructor(props) {
 		super(props);
@@ -30,25 +35,9 @@ class DraggableCollapsiblePane extends Component {
 
 	// as dragged
 
-	onDragStart(event) {
+	onDragStart() {
 		this.props.setDragged(this.props.object.id);
 		return false;
-	}
-
-	onDrag(event) {
-		event.target.style.visilibity = "hidden";
-		event.target.style.height = "0px";
-		event.target.style.overflow = "hidden";
-	}
-
-	onDragEnd(event) {
-		event.preventDefault();
-		event.target.style.visilibity = "";
-		event.target.style.height = "";
-		event.target.style.overflow = "";
-		this.props.setDragged(null);
-		this.props.setDropTarget(null);
-		this.makeUndraggable(event);
 	}
 
 	onDrop(event) {
@@ -69,6 +58,24 @@ class DraggableCollapsiblePane extends Component {
 				console.log(`create a group of two effects: ${dragged.name} && ${dropTarget.name}`);
 			}
 		}
+	}
+
+	onDrag(event) {
+		const { target } = event;
+		target.style.visilibity = "hidden";
+		target.style.height = "0px";
+		target.style.overflow = "hidden";
+	}
+
+	onDragEnd(event) {
+		event.preventDefault();
+		const { target } = event;
+		target.style.visilibity = "";
+		target.style.height = "";
+		target.style.overflow = "";
+		this.props.setDragged(null);
+		this.props.setDropTarget(null);
+		this.makeUndraggable(event);
 	}
 
 	// as target
@@ -138,13 +145,21 @@ export default DraggableCollapsiblePane;
 
 DraggableCollapsiblePane.propTypes = {
 	object: PropTypes.shape({
-		id: PropTypes.number,
-		type: PropTypes.string,
-		name: PropTypes.string,
-		content: PropTypes.object,
+		id: PropTypes.number.isRequired,
+		type: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired,
+		content: PropTypes.object.isRequired,
 	}).isRequired,
-	dragged: PropTypes.shape({}).isRequired,
-	dropTarget: PropTypes.shape({}).isRequired,
+	dragged: orNull(PropTypes.shape({
+		id: PropTypes.number.isRequired,
+		type: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired,
+	}).isRequired),
+	dropTarget: orNull(PropTypes.shape({
+		id: PropTypes.number.isRequired,
+		type: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired,
+	}).isRequired),
 	setDragged: PropTypes.func.isRequired,
 	setDropTarget: PropTypes.func.isRequired,
 	reorder: PropTypes.func.isRequired,
@@ -153,4 +168,6 @@ DraggableCollapsiblePane.propTypes = {
 
 DraggableCollapsiblePane.defaultProps = {
 	theme: "odd",
+	dragged: null,
+	dropTarget: null,
 };
