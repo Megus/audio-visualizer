@@ -118,20 +118,23 @@ class EffectsSidebar extends Component {
 		});
 	}
 
-	setDropTarget(id) {
-		if (this.state.dragged && this.state.dragged.id && this.state.dragged.id === id) { return; }
-		if (!id) {
+	setDropTarget(args) {
+		if (!args) {
 			this.setState({ dropTarget: null });
 			// console.log("reset target");
 			return;
 		}
+		const { id, callback } = args;
+		if (this.state.dragged && this.state.dragged.id && this.state.dragged.id === id) { return; }
 		if (this.state.dropTarget || this.assigningDropTargetInProcess) { return; }
 		this.assigningDropTargetInProcess = true;
 		const dropTarget = this.state.elements.find(element => element.id === id);
 		if (!dropTarget) { return; }
 		this.setState({ dropTarget }, () => {
 			this.assigningDropTargetInProcess = false;
-			// console.log("set target", this.state.dropTarget.id);
+			if (callback) {
+				callback();
+			}
 		});
 	}
 

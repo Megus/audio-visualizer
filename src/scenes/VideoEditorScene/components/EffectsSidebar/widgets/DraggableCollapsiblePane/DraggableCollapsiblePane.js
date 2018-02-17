@@ -24,6 +24,9 @@ class DraggableCollapsiblePane extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
+		if (!nextProps.dragged || !nextProps.dropTarget) {
+			this.resetStyle();
+		}
 		if (nextProps.dragged === this.props.dragged) { return; }
 		if (nextProps.dragged && nextProps.dragged.id !== this.props.object.id &&
 				nextProps.dragged.parent !== this.props.object.id) {
@@ -81,15 +84,23 @@ class DraggableCollapsiblePane extends Component {
 	// as target
 
 	onDragEnter(event) {
+		event.stopPropagation();
+
 		event.preventDefault();
 		if (this.props.dragged && this.props.dragged.id === this.props.object.id) { return; }
 		if (this.props.dragged && this.props.dragged.parent === this.props.object.id) { return; }
-		console.log("drag", this.props.dragged.name, "over", this.props.object.name);
-		this.props.setDropTarget(this.props.object.id);
+		this.props.setDropTarget({
+			id: this.props.object.id,
+			callback: () => {
+				this.setTargetStyle();
+			},
+		});
 	}
 
 	onDragLeave(event) {
 		event.preventDefault();
+		this.props.setDropTarget(null);
+		// this.resetStyle();
 	}
 
 	// helpers
@@ -105,15 +116,28 @@ class DraggableCollapsiblePane extends Component {
 	}
 
 	makeTargetable() {
-		this.element.addEventListener("dragenter", this.onDragEnter, true);
+		this.element.addEventListener("dragover", this.onDragEnter);
+		// this.element.addEventListener("dragover", (event) => { console.log(this.props.object.name);event.stopPropagation(); });
 		this.element.addEventListener("dragleave", this.onDragLeave, true);
 		this.element.addEventListener("drop", this.onDrop, true);
+		// console.log("targetable:", this.props.object.name);
 	}
 
 	makeUntargetable() {
-		this.element.removeEventListener("dragenter", this.onDragEnter, true);
+		this.element.removeEventListener("dragover", this.onDragEnter);
 		this.element.removeEventListener("dragleave", this.onDragLeave, true);
 		this.element.addEventListener("drop", this.onDrop, true);
+	}
+
+	setTargetStyle() {
+		// console.log("set target style");
+		this.element.classList.add("merge-target");
+		// this.element.style.opacity = "0.3";
+	}
+
+	resetStyle() {
+		this.element.classList.remove("merge-target");
+		// this.element.style.opacity = "";
 	}
 
 	render() {
@@ -121,13 +145,14 @@ class DraggableCollapsiblePane extends Component {
 			<div>
 				<li
 					ref={(element) => { this.element = element; }}
-					id={`draggable-${this.props.object.id}`}
+					id={this.props.object.id}
+					className="targetable-list-item"
 					key={this.props.object.id}
 					onMouseDown={this.makeDraggable}
 					onDragStart={this.onDragStart}
 					onDrag={this.onDrag}
 					onDragEnd={this.onDragEnd}
-					onDragOver={event => event.preventDefault()}
+					onDragEnter={event => event.preventDefault()}
 				>
 					<CollapsiblePane
 						name={this.props.object.name}
