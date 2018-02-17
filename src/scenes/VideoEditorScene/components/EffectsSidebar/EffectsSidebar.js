@@ -84,6 +84,19 @@ class EffectsSidebar extends Component {
 					parent: 2,
 					params: [],
 				},
+				{
+					id: 7,
+					type: "group",
+					name: "Nested Group",
+					parent: 2,
+				},
+				{
+					id: 8,
+					type: "effect",
+					name: "Nested Effect",
+					parent: 7,
+					params: [],
+				},
 			],
 		};
 	}
