@@ -78,7 +78,7 @@ class RenderEngine {
 			const renderer = createRenderer(id, this.project,
 				canvas, { ...layer.consts, realtime: this.realtime, layers: layer.layers }, layer.vars);
 			layer.renderer = renderer;
-			layer.layers.forEach((subLayer) => this.setupLayer(subLayer, parentLayer));
+			layer.layers.forEach((subLayer) => this.setupLayer(subLayer, layer));
 			if (layer.filters) {
 				layer.filters.forEach((filter) => this.setupLayer(filter, layer));
 			}
@@ -144,7 +144,7 @@ class RenderEngine {
 		const dTimestamp = timestamp - this.oldTimestamp;
 
 		// Apply automation
-		this.applyAutomation(project.mainGroup);
+		this.applyAutomation(project.mainGroup, timestamp);
 		// Render main group
 		await project.mainGroup.renderer.render(timestamp, dTimestamp);
 		// Draw the final image to target canvas
