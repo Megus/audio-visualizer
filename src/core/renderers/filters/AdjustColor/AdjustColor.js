@@ -138,6 +138,7 @@ class AdjustColor extends RendererBase {
 
 		// Copy processed picture back to the source canvas
 		const ctx = this.canvas.getContext("2d");
+		ctx.globalAlpha = 1.0;
 		ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		ctx.drawImage(this.filterCanvas, 0, 0);
 	}

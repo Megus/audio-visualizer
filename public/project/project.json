@@ -57,27 +57,19 @@
 						},
 						"vars": {
 							"image": 0,
-							"frame": { "x": 1500, "y": 10, "width": 410, "height": 410 }
+							"frame": { "x": 1500, "y": 10, "width": 410, "height": 410 },
+							"alpha": 0.0
 						},
 						"automation": {
-							"frame": [
+							"alpha": [
 								{
 									"timestamp": 0,
-									"value": { "x": 10, "y": 10, "width": 410, "height": 410 }
+									"value": 0
 								},
 								{
 									"timestamp": 5,
-									"easing": "easeInOutCubic",
-									"value": { "x": 1300, "y": 460, "width": 610, "height": 610 }
-								},
-								{
-									"timestamp": 7,
-									"value": { "x": 1300, "y": 460, "width": 610, "height": 610 }
-								},
-								{
-									"timestamp": 15,
-									"easing": "easeInOutCubic",
-									"value": { "x": 10, "y": 660, "width": 410, "height": 410 }
+									"easing": "linear",
+									"value": 1
 								}
 							]
 						}
@@ -88,29 +80,7 @@
 						"id": "org.megus.AdjustColor",
 						"consts": {},
 						"vars": {
-							"saturation": -1.0
-						},
-						"automation": {
-							"saturation": [
-								{
-									"timestamp": 0,
-									"value": -1.0
-								},
-								{
-									"timestamp": 10,
-									"easing": "linear",
-									"value": 0
-								},
-								{
-									"timestamp": 15,
-									"value": 0
-								},
-								{
-									"timestamp": 20,
-									"easing": "easeOutElastic",
-									"value": 1.0
-								}
-							]
+							"saturation": 2.0
 						}
 					}
 				]
@@ -173,6 +143,17 @@
 							"timestamp": 30,
 							"easing": "easeOutElastic",
 							"value": { "x": 480, "y": 0, "width": 960, "height": 380 }
+						}
+					],
+					"alpha": [
+						{
+							"timestamp": 0,
+							"value": 1
+						},
+						{
+							"timestamp": 5,
+							"easing": "linear",
+							"value": 0
 						}
 					]
 				}

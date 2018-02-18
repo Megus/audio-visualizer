@@ -1,6 +1,5 @@
 import { createRenderer, renderers } from "./renderers";
 import { ValueTypes } from "./renderers/RendererBase";
-import { colorToCanvasFillStyle } from "./renderers/RendererConvenience";
 import easings from "./easings";
 
 function ease(a, b, t, easing) {
@@ -145,6 +144,7 @@ class RenderEngine {
 		// Render main group
 		await project.mainGroup.renderer.render(timestamp, dTimestamp);
 		// Draw the final image to target canvas
+		canvasCtx.globalAlpha = 1.0;
 		canvasCtx.drawImage(project.mainGroup.renderer.canvas, 0, 0);
 
 		this.oldTimestamp = timestamp;

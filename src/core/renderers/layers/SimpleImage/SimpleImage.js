@@ -17,7 +17,6 @@ class SimpleImage extends RendererBase {
 
 		const canvas = this.canvas;
 		const canvasCtx = canvas.getContext("2d");
-
 		canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
 		const imgW = image.width;
