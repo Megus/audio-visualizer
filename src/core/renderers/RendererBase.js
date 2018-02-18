@@ -23,6 +23,7 @@ class RendererBase {
 
 const ValueTypes = {
 	// TODO: Validators?
+	bool: () => { return 0 },
 	int: () => { return 1; },
 	string: () => { return 2; },
 	color: () => { return 3; },

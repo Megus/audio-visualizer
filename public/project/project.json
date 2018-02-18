@@ -5,7 +5,6 @@
 		"width": 1920,
 		"height": 1080
 	},
-	"backgroundColor": { "r": 0, "g": 0, "b": 128 },
 	"media": {
 		"mainAudio": {
 			"type": "audio",
@@ -20,160 +19,173 @@
 			"url": "/project/video.mp4"
 		}
 	},
-	"layers": [
-		{
-			"group": true,
-			"title": "Video & image",
-			"layers": [
-				{
-					"id": "org.megus.SimpleVideo",
-					"title": "Video",
-					"consts": {
-						"video": "video1",
-						"looped": true,
-						"scale": "aspectFill"
-					},
-					"vars": {
-						"frame": { "x": 0, "y": 0, "width": 960, "height": 540 }
-					}
+	"mainGroup": {
+		"id": "Group",
+		"title": "Main group",
+		"consts": {},
+		"vars": {
+			"frame": { "x": 0, "y": 0, "width": 1920, "height": 1080 },
+			"bgColor": { "r": 32, "g": 32, "b": 64, "a": 1 }
+		},
+		"layers": [
+			{
+				"id": "Group",
+				"title": "Video & image",
+				"consts": {},
+				"vars": {
+					"frame": { "x": 0, "y": 0, "width": 1920, "height": 1080 }
 				},
-				{
-					"id": "org.megus.SimpleImage",
-					"title": "Album cover",
-					"consts": {
-						"images": ["img1"],
-						"scale": "aspectFit"
-					},
-					"vars": {
-						"image": 0,
-						"frame": { "x": 1500, "y": 10, "width": 410, "height": 410 }
-					},
-					"automation": {
-						"frame": [
-							{
-								"timestamp": 0,
-								"value": { "x": 10, "y": 10, "width": 410, "height": 410 }
-							},
-							{
-								"timestamp": 5,
-								"easing": "easeInOutCubic",
-								"value": { "x": 1300, "y": 460, "width": 610, "height": 610 }
-							},
-							{
-								"timestamp": 7,
-								"value": { "x": 1300, "y": 460, "width": 610, "height": 610 }
-							},
-							{
-								"timestamp": 15,
-								"easing": "easeInOutCubic",
-								"value": { "x": 10, "y": 660, "width": 410, "height": 410 }
-							}
-						]
-					}
-				}
-			],
-			"filters": [
-				{
-					"id": "org.megus.AdjustColor",
-					"consts": {},
-					"vars": {
-						"saturation": -1.0
-					},
-					"automation": {
-						"saturation": [
-							{
-								"timestamp": 0,
-								"value": -1.0
-							},
-							{
-								"timestamp": 10,
-								"easing": "linear",
-								"value": 0
-							},
-							{
-								"timestamp": 15,
-								"value": 0
-							},
-							{
-								"timestamp": 20,
-								"easing": "easeOutElastic",
-								"value": 1.0
-							}
-						]
-					}
-				}
-			]
-		},
-		{
-			"id": "org.megus.SimpleSpectrum",
-			"title": "Spectrum",
-			"consts": {
-				"barsCount": 256
-			},
-			"vars": {
-				"color": { "r": 255, "g": 0, "b": 0, "a": 0.8 },
-				"frame": { "x": 0, "y": 700, "width": 1920, "height": 380 }
-			},
-			"automation": {
-				"color": [
+				"layers": [
 					{
-						"timestamp": 0,
-						"value": { "r": 255, "g": 0, "b": 0, "a": 0.8 }
+						"id": "org.megus.SimpleVideo",
+						"title": "Video",
+						"consts": {
+							"video": "video1",
+							"looped": true,
+							"scale": "aspectFill"
+						},
+						"vars": {
+							"frame": { "x": 0, "y": 0, "width": 960, "height": 540 }
+						}
 					},
 					{
-						"timestamp": 5,
-						"easing": "easeInOutCubic",
-						"value": { "r": 0, "g": 255, "b": 0, "a": 0.8 }
-					},
-					{
-						"timestamp": 7,
-						"value": { "r": 0, "g": 0, "b": 255, "a": 0.8 }
-					}
-				]
-			}
-		},
-		{
-			"id": "org.megus.SimpleWave",
-			"title": "Wave",
-			"consts": {},
-			"vars": {
-				"lineWidth": 1,
-				"color": { "r": 255, "g": 255, "b": 255, "a": 0.5 },
-				"frame": { "x": 0, "y": 700, "width": 1920, "height": 380 }
-			},
-			"automation": {
-				"lineWidth": [
-					{
-						"timestamp": 0,
-						"value": 2
-					},
-					{
-						"timestamp": 5,
-						"easing": "linear",
-						"value": 8
+						"id": "org.megus.SimpleImage",
+						"title": "Album cover",
+						"consts": {
+							"images": ["img1"],
+							"scale": "aspectFit"
+						},
+						"vars": {
+							"image": 0,
+							"frame": { "x": 1500, "y": 10, "width": 410, "height": 410 }
+						},
+						"automation": {
+							"frame": [
+								{
+									"timestamp": 0,
+									"value": { "x": 10, "y": 10, "width": 410, "height": 410 }
+								},
+								{
+									"timestamp": 5,
+									"easing": "easeInOutCubic",
+									"value": { "x": 1300, "y": 460, "width": 610, "height": 610 }
+								},
+								{
+									"timestamp": 7,
+									"value": { "x": 1300, "y": 460, "width": 610, "height": 610 }
+								},
+								{
+									"timestamp": 15,
+									"easing": "easeInOutCubic",
+									"value": { "x": 10, "y": 660, "width": 410, "height": 410 }
+								}
+							]
+						}
 					}
 				],
-				"frame": [
+				"filters": [
 					{
-						"timestamp": 0,
-						"value": { "x": 0, "y": 700, "width": 1920, "height": 380 }
-					},
-					{
-						"timestamp": 30,
-						"easing": "easeOutElastic",
-						"value": { "x": 480, "y": 0, "width": 960, "height": 380 }
+						"id": "org.megus.AdjustColor",
+						"consts": {},
+						"vars": {
+							"saturation": -1.0
+						},
+						"automation": {
+							"saturation": [
+								{
+									"timestamp": 0,
+									"value": -1.0
+								},
+								{
+									"timestamp": 10,
+									"easing": "linear",
+									"value": 0
+								},
+								{
+									"timestamp": 15,
+									"value": 0
+								},
+								{
+									"timestamp": 20,
+									"easing": "easeOutElastic",
+									"value": 1.0
+								}
+							]
+						}
 					}
 				]
+			},
+			{
+				"id": "org.megus.SimpleSpectrum",
+				"title": "Spectrum",
+				"consts": {
+					"barsCount": 256
+				},
+				"vars": {
+					"color": { "r": 255, "g": 0, "b": 0, "a": 0.8 },
+					"frame": { "x": 0, "y": 700, "width": 1920, "height": 380 }
+				},
+				"automation": {
+					"color": [
+						{
+							"timestamp": 0,
+							"value": { "r": 255, "g": 0, "b": 0, "a": 0.8 }
+						},
+						{
+							"timestamp": 5,
+							"easing": "easeInOutCubic",
+							"value": { "r": 0, "g": 255, "b": 0, "a": 0.8 }
+						},
+						{
+							"timestamp": 7,
+							"value": { "r": 0, "g": 0, "b": 255, "a": 0.8 }
+						}
+					]
+				}
+			},
+			{
+				"id": "org.megus.SimpleWave",
+				"title": "Wave",
+				"consts": {},
+				"vars": {
+					"lineWidth": 1,
+					"color": { "r": 255, "g": 255, "b": 255, "a": 0.5 },
+					"frame": { "x": 0, "y": 700, "width": 1920, "height": 380 }
+				},
+				"automation": {
+					"lineWidth": [
+						{
+							"timestamp": 0,
+							"value": 2
+						},
+						{
+							"timestamp": 5,
+							"easing": "linear",
+							"value": 8
+						}
+					],
+					"frame": [
+						{
+							"timestamp": 0,
+							"value": { "x": 0, "y": 700, "width": 1920, "height": 380 }
+						},
+						{
+							"timestamp": 30,
+							"easing": "easeOutElastic",
+							"value": { "x": 480, "y": 0, "width": 960, "height": 380 }
+						}
+					]
+				}
+			},
+			{
+				"id": "org.megus.SimplePower",
+				"title": "Power",
+				"consts": {},
+				"vars": {
+					"color": { "r": 255, "g": 255, "b": 255, "a": 0.5 },
+					"frame": { "x": 0, "y": 1050, "width": 300, "height": 30 }
+				}
 			}
-		},
-		{
-			"id": "org.megus.SimplePower",
-			"title": "Power",
-			"consts": {},
-			"vars": {
-				"color": { "r": 255, "g": 255, "b": 255, "a": 0.5 },
-				"frame": { "x": 0, "y": 1050, "width": 300, "height": 30 }
-			}
-		}
-	]
+		]
+	}
 }

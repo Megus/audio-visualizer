@@ -4,7 +4,7 @@ class Project {
 		this.author = projectJson.author;
 		this.mediaInfo = projectJson.media;
 		this.backgroundColor = projectJson.backgroundColor;
-		this.layers = projectJson.layers;
+		this.mainGroup = projectJson.mainGroup;
 	}
 
 	prepare() {

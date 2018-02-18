@@ -7,7 +7,6 @@ class SimpleImage extends RendererBase {
 	}
 
 	onVarsUpdated(oldVars) {
-		// TODO: Render optimization to not draw image again if vars didn't change
 	}
 
 	async render(timestamp, dTimestamp) {
