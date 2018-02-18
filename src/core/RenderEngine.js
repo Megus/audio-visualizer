@@ -45,10 +45,7 @@ class RenderEngine {
 		this.width = width;
 		this.height = height;
 		this.realtime = realtime;
-
 		this.setupLayer(project.mainGroup);
-		console.log(project.mainGroup);
-
 		this.oldTimestamp = 0;
 	}
 
