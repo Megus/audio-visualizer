@@ -44,33 +44,49 @@ class RenderEngine {
 		this.project = project;
 		this.width = width;
 		this.height = height;
+		this.realtime = realtime;
 
-		this.canvas = document.createElement("canvas");
-		this.canvas.width = width;
-		this.canvas.height = height;
-
-		project.layers.forEach((layer) => {
-			const canvas = document.createElement("canvas");
-			canvas.width = width;
-			canvas.height = height;
-			const renderer = createRenderer(layer.id, project,
-				canvas, { ...layer.consts, realtime: realtime }, layer.vars);
-			layer.renderer = renderer;
-			if (layer.filters) {
-				layer.filters.forEach((filter) => {
-					const renderer = createRenderer(filter.id, project,
-						canvas, { ...filter.consts, realtime: realtime}, filter.vars);
-					filter.renderer = renderer;
-				});
-			}
-		});
+		this.setupLayer(project.mainGroup);
+		console.log(project.mainGroup);
 
 		this.oldTimestamp = 0;
 	}
 
+	setupLayer(layer, parentLayer) {
+		const id = layer.id;
+		if (renderers[id].type === "layer") {
+			// Regular layer
+			const canvas = document.createElement("canvas");
+			canvas.width = this.width;
+			canvas.height = this.height;
+			const renderer = createRenderer(id, this.project,
+				canvas, { ...layer.consts, realtime: this.realtime }, layer.vars);
+			layer.renderer = renderer;
+			if (layer.filters) {
+				layer.filters.forEach((filter) => this.setupLayer(filter, layer));
+			}
+		} else if (renderers[id].type === "filter") {
+			// Filter layer
+			const renderer = createRenderer(id, this.project,
+				parentLayer.renderer.canvas, { ...layer.consts, realtime: this.realtime}, layer.vars);
+			layer.renderer = renderer;
+		} else if (renderers[id].type === "group") {
+			// Group layer
+			const canvas = document.createElement("canvas");
+			canvas.width = this.width;
+			canvas.height = this.height;
+			const renderer = createRenderer(id, this.project,
+				canvas, { ...layer.consts, realtime: this.realtime, layers: layer.layers }, layer.vars);
+			layer.renderer = renderer;
+			layer.layers.forEach((subLayer) => this.setupLayer(subLayer, layer));
+			if (layer.filters) {
+				layer.filters.forEach((filter) => this.setupLayer(filter, layer));
+			}
+		}
+	}
+
 	// Handle automation
 	applyAutomation(layer, timestamp) {
-		// TODO: Handle filter automation
 		if (layer.automation) {
 			// TODO: Optimize this code, it's a temporary quick implementation
 			// The slowest part here is the constant scanning through automation lists
@@ -93,12 +109,14 @@ class RenderEngine {
 				if (idx === -1) {
 					idx = layerAuto.length - 1;
 				}
-				if (autoPosition < 0 || layerAuto[idx + 1].easing === undefined) {
-					// Start or it's the end of automation points
+				const varType = renderers[layer.id].vars[autoVar].type;
+				if (autoPosition < 0 ||
+					layerAuto[idx + 1].easing === undefined ||
+					typeInterpolators[varType] === undefined) {
+					// Interpolation is not available for this point
 					layer.renderer.setVars({[autoVar]: layerAuto[idx].value});
 				} else {
 					// Interpolate between pair of values
-					const varType = renderers[layer.id].vars[autoVar].type;
 					const newValue = typeInterpolators[varType](
 						layerAuto[idx].value,
 						layerAuto[idx + 1].value,
@@ -108,33 +126,30 @@ class RenderEngine {
 				}
 			});
 		}
+		// If this layer has filters, apply automation to them
+		if (layer.filters) {
+			layer.filters.forEach((filter) => this.applyAutomation(filter, timestamp));
+		}
+
+		// If it's a group, apply automation to all its layers
+		if (renderers[layer.id].type === "group") {
+			layer.layers.forEach((layer) => this.applyAutomation(layer, timestamp));
+		}
 	}
 
 	async drawFrame(canvas, timestamp) {
 		if (!canvas) { return; }
+		const project = this.project;
 		const canvasCtx = canvas.getContext("2d");
-		const offscreenCanvasCtx = this.canvas.getContext("2d");
-
-		offscreenCanvasCtx.fillStyle = colorToCanvasFillStyle(this.project.backgroundColor);
-		offscreenCanvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-
 		const dTimestamp = timestamp - this.oldTimestamp;
 
-		await Promise.all(this.project.layers.map(async (layer) => {
-			// Render layer
-			this.applyAutomation(layer, timestamp);
-			layer.renderer.render(timestamp, dTimestamp);
-			// Apply filters
-			if (layer.filters) {
-				layer.filters.forEach((filter) => {
-					this.applyAutomation(filter, timestamp);
-					filter.renderer.render(timestamp, dTimestamp);
-				});
-			}
-		}));
-		this.project.layers.forEach((layer) => { offscreenCanvasCtx.drawImage(layer.renderer.canvas, 0, 0); });
+		// Apply automation
+		this.applyAutomation(project.mainGroup, timestamp);
+		// Render main group
+		await project.mainGroup.renderer.render(timestamp, dTimestamp);
+		// Draw the final image to target canvas
+		canvasCtx.drawImage(project.mainGroup.renderer.canvas, 0, 0);
 
-		canvasCtx.drawImage(this.canvas, 0, 0);
 		this.oldTimestamp = timestamp;
 	}
 }
