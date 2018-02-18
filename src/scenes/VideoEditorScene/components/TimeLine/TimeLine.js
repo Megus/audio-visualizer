@@ -4,12 +4,14 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 import { MediaAudio } from "../../../../core/media/index";
-import divideOnEvenlyParts from "../../../../services/commonFunctions";
-import Widgets from "./widgets";
+import { divideOnEvenlyParts } from "../../../../services/commonFunctions";
+import { TimeScale, FrequencyVisualizer } from "./widgets";
+import { TimeScalePreset, FrequencyVisualizerPreset } from "./widgetPresets";
+
 
 import "./TimeLine.css";
 
-export default class TimeLine extends Component {
+class TimeLine extends Component {
 	static propTypes = {
 		height: PropTypes.number.isRequired,
 		width: PropTypes.number.isRequired,
@@ -33,8 +35,9 @@ export default class TimeLine extends Component {
 			widgets,
 		} = this;
 
-		widgets.push(new Widgets.TimeScale(canvasRef));
-		widgets.push(new Widgets.FrequencyVisualizer(canvasRef));
+		widgets.push(new TimeScale(canvasRef, new TimeScalePreset()));
+		widgets.push(new FrequencyVisualizer(canvasRef, new FrequencyVisualizerPreset()));
+		// widgets[Widgets.TimeScale.name] = new Widgets.TimeScale(canvasRef);
 
 		widgets.forEach(widget => widget.setMediaAudio(mediaAudio));
 	}
@@ -48,10 +51,21 @@ export default class TimeLine extends Component {
 		}
 
 		widgets.forEach(widget => widget.setMediaAudio(nextProps.mediaAudio));
+
+		// ! TODO: Call of preset load for TimeScale widget. Preset should be saved in state. Probably Redux will require here
+	}
+
+	clearCanvas = () => {
+		const { canvasRef } = this;
+
+		const ctx = canvasRef.getContext("2d");
+		ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
 	}
 
 	draw = async (timestamp) => {
 		const { widgets } = this;
+
+		this.clearCanvas();
 
 		await Promise.all(widgets.map(widget => widget.drawFrame(timestamp)));
 	}
@@ -85,3 +99,5 @@ export default class TimeLine extends Component {
 		);
 	}
 }
+
+export default TimeLine;

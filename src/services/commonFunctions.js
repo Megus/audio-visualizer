@@ -1,6 +1,6 @@
-export default function divideOnEvenlyPatrs(numberToDivide, divisor) {
+function divideOnEvenlyParts(numberToDivide, divisor) {
 	if (!numberToDivide) {
-		throw new Error("'numberToDivide' is null or undefined");
+		throw new Error("'numberToDivide' argument is null or undefined");
 	}
 
 	if (typeof numberToDivide !== "number") {
@@ -22,3 +22,22 @@ export default function divideOnEvenlyPatrs(numberToDivide, divisor) {
 
 	return (numberToDivide - numberToDivide % divisor) / divisor;
 }
+
+function secondsToMinutesString(seconds) {
+	if (!seconds) {
+		throw new Error("'seconds' argument is null or undefined");
+	}
+
+	if (typeof seconds !== "number") {
+		throw new Error("'seconds' argument is not a number");
+	}
+
+	const intPart = Math.floor(seconds / 60);
+	const remainder = seconds % 60;
+
+	return intPart < 1
+		? seconds.toString()
+		: `${intPart}:${remainder === 0 ? "00" : remainder}`;
+}
+
+export { divideOnEvenlyParts, secondsToMinutesString };
