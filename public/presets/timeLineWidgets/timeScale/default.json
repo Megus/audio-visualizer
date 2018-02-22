@@ -1,0 +1,19 @@
+{
+	"id": 0,
+	"name": "5 seconds",
+
+	"scale": 5,
+	"accentMarkerAppearanceFreq": 3,
+	"pixelsBetweenAdjMarkers": 50,
+
+	"markerHeight": 20,
+	"accentMarkerHeight": 30,
+	"additionalMarkersQty": 2,
+	"markerLineWidth": 1,
+
+	"timeStampFontSize": 24,
+
+	"prevPresetJsonPath": null,
+	"thispresetJsonPath": null,
+	"nextPresetJsonPath": null
+}

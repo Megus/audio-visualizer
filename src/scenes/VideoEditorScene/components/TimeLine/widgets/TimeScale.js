@@ -35,6 +35,8 @@ class TimeScale extends WidgetBase {
 	}
 
 	drawFrame = async (timestamp) => {
+		// console.log("TimeScale.draw() called");
+
 		const { canvas, mediaAudio } = this;
 		const {
 			scale,

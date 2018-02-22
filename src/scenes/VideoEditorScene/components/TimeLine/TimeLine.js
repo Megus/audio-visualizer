@@ -25,34 +25,44 @@ class TimeLine extends Component {
 	constructor(props) {
 		super(props);
 
-		this.widgets = [];
+		this.state = {
+			widgets: [],
+		};
 	}
 
-	componentDidMount() {
-		const { mediaAudio } = this.props;
-		const {
-			canvasRef,
-			widgets,
-		} = this;
+	async componentDidMount() {
+		const self = this;
+		const { mediaAudio } = self.props;
+		const { canvasRef } = self;
+		const { widgets } = self.state;
 
-		widgets.push(new TimeScale(canvasRef, new TimeScalePreset()));
-		widgets.push(new FrequencyVisualizer(canvasRef, new FrequencyVisualizerPreset()));
-		// widgets[Widgets.TimeScale.name] = new Widgets.TimeScale(canvasRef);
+		const timeScalePreset = "presets/timeLineWidgets/timeScale/default.json";
+		const timeScaleInstance = await TimeScalePreset.getInstance(timeScalePreset);
+
+		const freqVisPreset = "presets/timeLineWidgets/frequencyVisualizer/default.json";
+		const reqVisInstance = await FrequencyVisualizerPreset.getInstance(freqVisPreset);
+
+		widgets.push(new TimeScale(canvasRef, timeScaleInstance));
+		widgets.push(new FrequencyVisualizer(canvasRef, reqVisInstance));
 
 		widgets.forEach(widget => widget.setMediaAudio(mediaAudio));
+
+		//* self used to avoid Eslint complaining on calling setState inside componentDidMount
+		//! This is bad practice. It forces render() to bo called twice
+		self.setState({ widgets });
+
+		return Promise.resolve(); // TODO: Good practice to return non-hanging promises. Do refactoring everywhere
 	}
 
 	componentWillReceiveProps(nextProps) {
 		const { mediaAudio } = this.props;
-		const { widgets } = this;
+		const { widgets } = this.state;
 
 		if (nextProps.mediaAudio === mediaAudio) {
 			return;
 		}
 
 		widgets.forEach(widget => widget.setMediaAudio(nextProps.mediaAudio));
-
-		// ! TODO: Call of preset load for TimeScale widget. Preset should be saved in state. Probably Redux will require here
 	}
 
 	clearCanvas = () => {
@@ -63,7 +73,7 @@ class TimeLine extends Component {
 	}
 
 	draw = async (timestamp) => {
-		const { widgets } = this;
+		const { widgets } = this.state;
 
 		this.clearCanvas();
 
@@ -81,6 +91,7 @@ class TimeLine extends Component {
 
 		return (
 			<div className="root">
+				{/* //! TODO: Refactor component not to draw canvas until audio file is loaded */}
 				<canvas
 					className="canvas"
 					height={height}

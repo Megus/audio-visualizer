@@ -2,7 +2,8 @@ import WidgetBase from "./WidgetBase";
 
 class FrequencyVisualizer extends WidgetBase {
 	drawFrame = async (timestamp) => {
-		await Promise.resolve();
+		// console.log("FrequencyVisualizer.draw() called");
+		return Promise.resolve();
 	};
 }
 

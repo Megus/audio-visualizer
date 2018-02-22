@@ -18,7 +18,7 @@ class WidgetBase {
 		}
 
 		if (preset === null || !(preset instanceof WidgetPresetBase)) {
-			throw new Error("'preset' argument is null or not Widget");
+			throw new Error("'preset' argument is null or not widget preset class instance");
 		}
 
 		this.mediaAudio = null;
@@ -31,7 +31,7 @@ class WidgetBase {
 
 	// eslint-disable-next-line no-unused-vars, class-methods-use-this
 	drawFrame = async (timestamp) => {
-		await Promise.reject(new Error("WidgetBase.drawFrame() is abstract method. Must be Impelemented in descendandts"));
+		throw new Error("WidgetBase.drawFrame() is abstract method. Must be Impelemented in descendandts");
 	}
 
 	/**

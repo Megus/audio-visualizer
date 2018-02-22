@@ -1,36 +1,36 @@
+/**
+ * Error throwing/handling helper functions
+ */
+
+const throwError = (msg = "Unexpected error occured") => { throw new Error(msg); };
+
+const throwErrorIfRequiredArgumentMissed = argObj =>
+	Object.values(argObj)[0] || throwError(`'${Object.keys(argObj)[0]}' argument is required`);
+
+const throwErrorIfArgumentIsNotNumber = argObj =>
+	typeof Object.values(argObj)[0] === "number" || throwError(`'${Object.keys(argObj)[0]}' argument is not a number`);
+
+/**
+ * Utility functions
+ */
+
 function divideOnEvenlyParts(numberToDivide, divisor) {
-	if (!numberToDivide) {
-		throw new Error("'numberToDivide' argument is null or undefined");
-	}
+	throwErrorIfRequiredArgumentMissed({ numberToDivide });
+	throwErrorIfArgumentIsNotNumber({ numberToDivide });
 
-	if (typeof numberToDivide !== "number") {
-		throw new Error("'numberToDivide' argument is not a number");
-	}
+	throwErrorIfRequiredArgumentMissed({ divisor });
+	throwErrorIfArgumentIsNotNumber({ divisor });
 
-	if (!divisor) {
-		throw new Error("'divisor' argument is null or undefined");
-	}
-
-	if (typeof divisor !== "number") {
-		throw new Error("'divisor' argument is not a number");
-	}
-
-	if (!Number.isInteger(divisor) ||
-		divisor === 0) {
-		throw new Error("'divisor' argument must non-zero integer number");
+	if (!Number.isInteger(divisor) || divisor === 0) {
+		throwError("'divisor' argument must non-zero integer number");
 	}
 
 	return (numberToDivide - numberToDivide % divisor) / divisor;
 }
 
 function secondsToMinutesString(seconds) {
-	if (!seconds) {
-		throw new Error("'seconds' argument is null or undefined");
-	}
-
-	if (typeof seconds !== "number") {
-		throw new Error("'seconds' argument is not a number");
-	}
+	throwErrorIfRequiredArgumentMissed({ seconds });
+	throwErrorIfArgumentIsNotNumber({ seconds });
 
 	const intPart = Math.floor(seconds / 60);
 	const remainder = seconds % 60;
@@ -40,4 +40,4 @@ function secondsToMinutesString(seconds) {
 		: `${intPart}:${remainder === 0 ? "00" : remainder}`;
 }
 
-export { divideOnEvenlyParts, secondsToMinutesString };
+export { throwErrorIfRequiredArgumentMissed, divideOnEvenlyParts, secondsToMinutesString };
