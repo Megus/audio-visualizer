@@ -11,6 +11,7 @@ class SimpleVideo extends RendererBase {
 		if (video) {
 			let canvas = this.canvas;
 			let canvasCtx = canvas.getContext("2d");
+			canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
 			let videoTimestamp = timestamp;
 			const duration = video.video.duration;
