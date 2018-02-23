@@ -29,6 +29,7 @@ class VideoEditorScene extends Component {
 			canPlay: false,
 			isAnimating: false,
 			isRendering: false,
+			project: null
 		};
 	}
 
@@ -44,11 +45,11 @@ class VideoEditorScene extends Component {
 	setup(project) {
 		const canvas = this.canvasRef;
 
-		this.project = project;
 		this.renderEngine = new RenderEngine(project, canvas.width, canvas.height);
 		this.setState({
 			canPlay: true,
 			isAnimating: false,
+			project,
 		});
 		setTimeout(this.draw, 1);
 	}
@@ -139,10 +140,16 @@ class VideoEditorScene extends Component {
 		}
 	}
 
+	modifyProjectEffects(newEffects) {
+		if (!this.state.project) { return; }
+		this.setState({ project: { ...this.state.project, mainGroup: newEffects } });
+		// do stuff
+	}
+
 	render() {
 		return (
 			<div>
-				<EffectsSidebar project={this.project} />
+				<EffectsSidebar mainGroup={this.state.project && this.state.project.mainGroup} update={effects => this.modifyProjectEffects(effects)} />
 				<div style={{ width: "calc(100% - 300px)" }}>
 					<audio
 						id="player"
@@ -167,7 +174,7 @@ class VideoEditorScene extends Component {
 					<br />
 					{
 						this.state.isRendering && <VideoRenderingScene
-							project={this.project}
+							project={this.state.project}
 							duration={this.audioRef.duration}
 							onClose={this.closeRenderingPopup}
 						/>

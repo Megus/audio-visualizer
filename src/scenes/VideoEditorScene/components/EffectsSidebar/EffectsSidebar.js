@@ -8,9 +8,11 @@ class EffectsSidebar extends Component {
 		super(props);
 
 		this.convertLayerToFlatState = this.convertLayerToFlatState.bind(this);
+		this.pathFromRootToElement = this.pathFromRootToElement.bind(this);
 		this.buildContent = this.buildContent.bind(this);
 
 		this.state = {
+			initialStructure: null,
 			dragged: null,
 			dropTarget: null,
 			elements: [],
@@ -18,7 +20,9 @@ class EffectsSidebar extends Component {
 	}
 
 	componentWillReceiveProps(newProps) {
-		const layers = newProps.project.mainGroup.layers;
+		if (!newProps || !newProps.mainGroup) { return; }
+		this.setState({ initialStructure: Object.assign({}, newProps.mainGroup) });
+		const layers = newProps.mainGroup.layers;
 		let elements = [];
 		layers.forEach((layer) => {
 			elements = elements.concat(this.convertLayerToFlatState(layer, [], null));
@@ -35,7 +39,8 @@ class EffectsSidebar extends Component {
 		});
 		const params = consts.concat(vars);
 		const rootObj = {
-			id: layer.id,
+			// id: layer.id,
+			id: layer.title,
 			name: layer.title,
 			type: layer.layers ? "group" : "effect",
 			parent: parent,
@@ -80,8 +85,50 @@ class EffectsSidebar extends Component {
 		});
 	}
 
+	pathFromRootToElement(element) {
+		if (element.parent === null) { return []; }
+		return this.pathFromRootToElement(this.state.elements.find(_element => _element.id === element.parent)).concat([element.parent]);
+	}
+
 	reorder() {
 		console.log(`reorder ${this.state.dragged.name} and ${this.state.dropTarget.name}`);
+		if (this.state.dragged.parent === this.state.dropTarget.parent) {
+			const reorderOnTheSameLevel = (layers) => {
+				const draggedIndex = layers.findIndex(subLayer => subLayer.title === this.state.dragged.id);
+				const targetIndex = layers.findIndex(subLayer => subLayer.title === this.state.dropTarget.id);
+				const newLayers = layers.slice(0);
+				const dragged = newLayers.splice(draggedIndex, 1)[0];
+				newLayers.splice(targetIndex, 0, dragged);
+				return newLayers;
+			}
+			if (this.state.dragged.parent === null || this.state.dragged.parent === undefined) {
+				// top level reordered
+				const layers = reorderOnTheSameLevel(this.state.initialStructure.layers);
+				this.props.update({ ...this.state.initialStructure, layers });
+			} else {
+				// reorder the whole tree
+				const buildReorderedTree = (tree, path) => {
+					return {
+						...tree,
+						layers: tree.layers.map((layer) => {
+							if (layer.title !== path[0]) {
+								return layer;
+							}
+							if (path.length === 1) {
+								return {
+									...layer,
+									layers: reorderOnTheSameLevel(layer.layers),
+								};
+							}
+							return buildReorderedTree(layer, path.slice(1));
+						})
+					};
+				}
+				const path = this.pathFromRootToElement(this.state.dragged);
+				const newTree = buildReorderedTree(this.state.initialStructure, path);
+				this.props.update(newTree);
+			}
+		}
 	}
 
 	merge() {
