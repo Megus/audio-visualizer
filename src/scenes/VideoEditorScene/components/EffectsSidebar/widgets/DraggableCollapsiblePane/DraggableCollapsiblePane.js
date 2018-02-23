@@ -31,8 +31,8 @@ class DraggableCollapsiblePane extends Component {
 			this.resetStyle();
 		}
 		if (nextProps.dragged === this.props.dragged) { return; }
-		if (nextProps.dragged && nextProps.dragged.id !== this.props.object.id &&
-				nextProps.dragged.parent !== this.props.object.id) {
+		if (nextProps.dragged && nextProps.dragged.title !== this.props.object.title &&
+				nextProps.dragged.parent !== this.props.object.title) {
 			this.makeTargetable();
 		} else {
 			this.makeUntargetable();
@@ -42,7 +42,7 @@ class DraggableCollapsiblePane extends Component {
 	// as dragged
 
 	onDragStart() {
-		this.props.setDragged(this.props.object.id);
+		this.props.setDragged(this.props.object.title);
 		return false;
 	}
 
@@ -73,10 +73,10 @@ class DraggableCollapsiblePane extends Component {
 		}
 		event.stopPropagation();
 		event.preventDefault();
-		if (this.props.dragged && this.props.dragged.id === this.props.object.id) { return; }
-		if (this.props.dragged && this.props.dragged.parent === this.props.object.id) { return; }
+		if (this.props.dragged && this.props.dragged.title === this.props.object.title) { return; }
+		if (this.props.dragged && this.props.dragged.parent === this.props.object.title) { return; }
 		this.props.setDropTarget({
-			id: this.props.object.id,
+			title: this.props.object.title,
 			callback: () => {
 				this.setTargetStyle();
 			},
@@ -105,7 +105,7 @@ class DraggableCollapsiblePane extends Component {
 	onTryingToReorder(event, isAfter) {
 		const { target } = event;
 		if (!isAfter && target.id &&
-			target.id === `before-${this.props.dragged.id}`) { return; }
+			target.id === `before-${this.props.dragged.title}`) { return; }
 		event.preventDefault();
 		event.stopPropagation();
 		target.style.height = "200px";
@@ -125,7 +125,7 @@ class DraggableCollapsiblePane extends Component {
 		event.preventDefault();
 		event.stopPropagation();
 		this.props.setDropTarget({
-			id: this.props.object.id,
+			title: this.props.object.title,
 			callback: () => {
 				this.props.reorder(isAfter);
 			},
@@ -171,9 +171,9 @@ class DraggableCollapsiblePane extends Component {
 		return (
 			<div>
 				{
-					(this.props.dragged && this.props.dragged.id === this.props.object.id) ||
+					(this.props.dragged && this.props.dragged.title === this.props.object.title) ||
 					<div
-						id={`before-${this.props.object.id}`}
+						id={`before-${this.props.object.title}`}
 						className="drop-space-before-element"
 						onDragEnter={event => event.preventDefault()}
 						onDragOver={this.onTryingToReorder}
@@ -183,9 +183,9 @@ class DraggableCollapsiblePane extends Component {
 				}
 				<li
 					ref={(element) => { this.element = element; }}
-					id={this.props.object.id}
+					id={this.props.object.title}
 					className={`targetable-list-item targetable-list-item_for_${this.props.object.type}`}
-					key={this.props.object.id}
+					key={this.props.object.title}
 					onMouseDown={this.makeDraggable}
 					onDragStart={this.onDragStart}
 					onDrag={this.onDrag}
@@ -193,7 +193,7 @@ class DraggableCollapsiblePane extends Component {
 					onDragEnter={event => event.preventDefault()}
 				>
 					<CollapsiblePane
-						name={this.props.object.name}
+						name={this.props.object.title}
 						content={this.props.object.content}
 						theme={this.props.theme}
 					/>
@@ -201,7 +201,7 @@ class DraggableCollapsiblePane extends Component {
 				{
 					(this.props.isLastChild) &&
 					<div
-						id={`after-${this.props.object.id}`}
+						id={`after-${this.props.object.title}`}
 						className="drop-space-before-element"
 						onDragEnter={event => event.preventDefault()}
 						onDragOver={event => this.onTryingToReorder(event, true)}
@@ -218,20 +218,17 @@ export default DraggableCollapsiblePane;
 
 DraggableCollapsiblePane.propTypes = {
 	object: PropTypes.shape({
-		id: PropTypes.string.isRequired,
 		type: PropTypes.string.isRequired,
-		name: PropTypes.string.isRequired,
+		title: PropTypes.string.isRequired,
 		content: PropTypes.object.isRequired,
 	}).isRequired,
 	dragged: orNull(PropTypes.shape({
-		id: PropTypes.string.isRequired,
 		type: PropTypes.string.isRequired,
-		name: PropTypes.string.isRequired,
+		title: PropTypes.string.isRequired,
 	}).isRequired),
 	dropTarget: orNull(PropTypes.shape({
-		id: PropTypes.string.isRequired,
 		type: PropTypes.string.isRequired,
-		name: PropTypes.string.isRequired,
+		title: PropTypes.string.isRequired,
 	}).isRequired),
 	setDragged: PropTypes.func.isRequired,
 	setDropTarget: PropTypes.func.isRequired,

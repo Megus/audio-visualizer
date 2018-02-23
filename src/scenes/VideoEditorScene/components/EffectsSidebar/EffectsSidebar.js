@@ -8,7 +8,7 @@ class EffectsSidebar extends Component {
 		super(props);
 
 		this.convertLayerToFlatState = this.convertLayerToFlatState.bind(this);
-		this.pathFromRootToElement = this.pathFromRootToElement.bind(this);
+		this.convertFlatStateToLayer = this.convertFlatStateToLayer.bind(this);
 		this.buildContent = this.buildContent.bind(this);
 
 		this.state = {
@@ -28,6 +28,7 @@ class EffectsSidebar extends Component {
 			elements = elements.concat(this.convertLayerToFlatState(layer, [], null));
 		});
 		this.setState({ elements });
+		// console.log("back to hierarchy", this.convertFlatStateToLayer(elements, newProps.mainGroup));
 	}
 
 	convertLayerToFlatState(layer, flatState, parent) {
@@ -39,28 +40,45 @@ class EffectsSidebar extends Component {
 		});
 		const params = consts.concat(vars);
 		const rootObj = {
-			// id: layer.id,
-			id: layer.title,
-			name: layer.title,
+			...layer,
 			type: layer.layers ? "group" : "effect",
 			parent: parent,
 			params: !layer.layers && params,
 		};
 		flatState.push(rootObj);
 		if (layer.layers) {
-			layer.layers.forEach(sublayer => this.convertLayerToFlatState(sublayer, flatState, rootObj.id));
+			layer.layers.forEach(sublayer => this.convertLayerToFlatState(sublayer, flatState, rootObj.title));
 		}
 		return flatState;
 	}
 
-	setDragged(id) {
-		if (!id) {
+	convertFlatStateToLayer(flatState, layer) {
+		const title = layer.title === "Main group" ? null : layer.title;
+		delete layer.parent;
+		delete layer.type;
+		delete layer.params;
+		return {
+			...layer,
+			layers: flatState.filter(element => element.parent === title).map(element => {
+				if (element.type === "effect") {
+					// maybe refactor this
+					delete element.parent;
+					delete element.type;
+					delete element.params;
+					return element;
+				} return this.convertFlatStateToLayer(flatState, element);
+			}),
+		};
+	}
+
+	setDragged(title) {
+		if (!title) {
 			this.setState({ dragged: null });
 			return;
 		}
 		if (this.state.dragged || this.assigningDraggableInProcess) { return; }
 		this.assigningDraggableInProcess = true; // hack to prevent setting parents as dragged
-		const dragged = this.state.elements.find(element => element.id === id);
+		const dragged = this.state.elements.find(element => element.title === title);
 		this.setState({ dragged }, () => {
 			this.assigningDraggableInProcess = false;
 		});
@@ -71,11 +89,11 @@ class EffectsSidebar extends Component {
 			this.setState({ dropTarget: null });
 			return;
 		}
-		const { id, callback } = args;
-		if (this.state.dragged && this.state.dragged.id && this.state.dragged.id === id) { return; }
+		const { title, callback } = args;
+		if (this.state.dragged && this.state.dragged.title && this.state.dragged.title === title) { return; }
 		if (this.state.dropTarget || this.assigningDropTargetInProcess) { return; }
 		this.assigningDropTargetInProcess = true;
-		const dropTarget = this.state.elements.find(element => element.id === id);
+		const dropTarget = this.state.elements.find(element => element.title === title);
 		if (!dropTarget) { return; }
 		this.setState({ dropTarget }, () => {
 			this.assigningDropTargetInProcess = false;
@@ -85,63 +103,23 @@ class EffectsSidebar extends Component {
 		});
 	}
 
-	pathFromRootToElement(element) {
-		if (element.parent === null) { return []; }
-		return this.pathFromRootToElement(this.state.elements.find(_element => _element.id === element.parent)).concat([element.parent]);
-	}
-
 	reorder(isDroppedAfter) {
+		let newElements = this.state.elements.slice(0);
+		const draggedIndex = newElements.findIndex(subLayer => subLayer.title === this.state.dragged.title);
+		const dragged = newElements.splice(draggedIndex, 1)[0];
 		if (isDroppedAfter) {
-			console.log(`put ${this.state.dragged.name} after ${this.state.dropTarget.name}`);
+			newElements.push(dragged);
 		} else {
-			console.log(`put ${this.state.dragged.name} before ${this.state.dropTarget.name}`);
+			const targetIndex = newElements.findIndex(subLayer => subLayer.title === this.state.dropTarget.title);
+			newElements.splice(targetIndex, 0, dragged);
 		}
-		if (this.state.dragged.parent === this.state.dropTarget.parent) {
-			const reorderOnTheSameLevel = (layers) => {
-				const draggedIndex = layers.findIndex(subLayer => subLayer.title === this.state.dragged.id);
-				const newLayers = layers.slice(0);
-				const dragged = newLayers.splice(draggedIndex, 1)[0];
-				if (isDroppedAfter) {
-					newLayers.push(dragged);
-				} else {
-					const targetIndex = newLayers.findIndex(subLayer => subLayer.title === this.state.dropTarget.id);
-					newLayers.splice(targetIndex, 0, dragged);
-				}
-				return newLayers;
-			}
-			if (this.state.dragged.parent === null || this.state.dragged.parent === undefined) {
-				// top level reordered
-				const layers = reorderOnTheSameLevel(this.state.initialStructure.layers);
-				this.props.update({ ...this.state.initialStructure, layers });
-			} else {
-				// reorder the whole tree
-				const buildReorderedTree = (tree, path) => {
-					return {
-						...tree,
-						layers: tree.layers.map((layer) => {
-							if (layer.title !== path[0]) {
-								return layer;
-							}
-							if (path.length === 1) {
-								return {
-									...layer,
-									layers: reorderOnTheSameLevel(layer.layers),
-								};
-							}
-							return buildReorderedTree(layer, path.slice(1));
-						})
-					};
-				}
-				const path = this.pathFromRootToElement(this.state.dragged);
-				const newTree = buildReorderedTree(this.state.initialStructure, path);
-				console.log("newTree", newTree);
-				this.props.update(newTree);
-			}
-		}
+		newElements.find(element => element.title === this.state.dragged.title).parent = this.state.dropTarget.parent;
+		this.props.update(this.convertFlatStateToLayer(newElements, this.state.initialStructure));
+		this.setState({ dragged: null, dropTarget: null });
 	}
 
 	merge() {
-		console.log(`merge ${this.state.dragged.name} and ${this.state.dropTarget.name}`);
+		console.log(`merge ${this.state.dragged.title} and ${this.state.dropTarget.title}`);
 	}
 
 	buildContent(parent) {
@@ -149,7 +127,7 @@ class EffectsSidebar extends Component {
 		elementsOnLevel = elementsOnLevel.map((element) => {
 			const elementWithContent = Object.assign({}, element);
 			if (elementWithContent.type === "group") {
-				elementWithContent.content = this.buildContent(elementWithContent.id);
+				elementWithContent.content = this.buildContent(elementWithContent.title);
 			} else {
 				const params = elementWithContent.params.map(param => (<li key={param.name}>{param.name}: {param.value.toString()}</li>));
 				elementWithContent.content = (<ul>{params}</ul>);
@@ -158,12 +136,12 @@ class EffectsSidebar extends Component {
 		});
 		elementsOnLevel = elementsOnLevel.map(element => (
 			<DraggableCollapsiblePane
-				key={element.id}
+				key={element.title}
 				object={element}
 				dragged={this.state.dragged}
 				dropTarget={this.state.dropTarget}
-				setDragged={id => this.setDragged(id)}
-				setDropTarget={id => this.setDropTarget(id)}
+				setDragged={title => this.setDragged(title)}
+				setDropTarget={title => this.setDropTarget(title)}
 				reorder={isDroppedAfter => this.reorder(isDroppedAfter)}
 				merge={() => this.merge()}
 				isLastChild={elementsOnLevel.indexOf(element) === elementsOnLevel.length - 1}
