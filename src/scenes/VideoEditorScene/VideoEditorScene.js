@@ -48,7 +48,7 @@ class VideoEditorScene extends Component {
 		this.renderEngine = new RenderEngine(project, canvas.width, canvas.height);
 		this.setState({
 			canPlay: true,
-			isAnimating: true,
+			isAnimating: false,
 		});
 		setTimeout(this.draw, 1);
 	}
@@ -142,11 +142,12 @@ class VideoEditorScene extends Component {
 	render() {
 		return (
 			<div>
-				<EffectsSidebar />
+				<EffectsSidebar project={this.project} />
 				<div style={{ width: "calc(100% - 300px)" }}>
 					<audio
 						id="player"
 						controls
+						muted
 						onPlay={this.onAudioPlay}
 						onPause={this.onAudioPause}
 						ref={(audio) => { this.audioRef = audio; }}

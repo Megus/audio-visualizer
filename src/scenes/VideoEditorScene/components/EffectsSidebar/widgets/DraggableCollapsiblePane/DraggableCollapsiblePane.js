@@ -97,19 +97,7 @@ class DraggableCollapsiblePane extends Component {
 		event.stopPropagation();
 		const { dropTarget, dragged } = this.props;
 		if (!dropTarget || !dragged) { return; }
-		if (dropTarget.type === "group") {
-			if (dragged.type === "group") {
-				console.log(`merge ${dragged.name} with ${dropTarget.name}`);
-			} else if (dragged.type === "effect") {
-				console.log(`append ${dragged.name} to ${dropTarget.name}`);
-			}
-		} else if (dropTarget.type === "effect") {
-			if (dragged.type === "group") {
-				console.log(`create a group of group ${dragged.name} && effect ${dropTarget.name}`);
-			} else if (dragged.type === "effect") {
-				console.log(`create a group of two effects: ${dragged.name} && ${dropTarget.name}`);
-			}
-		}
+		this.props.merge();
 	}
 
 	// reordering
@@ -135,7 +123,12 @@ class DraggableCollapsiblePane extends Component {
 		const { target } = event;
 		event.preventDefault();
 		event.stopPropagation();
-		console.log("drop before", this.props.object.name);
+		this.props.setDropTarget({
+			id: this.props.object.id,
+			callback: () => {
+				this.props.reorder();
+			},
+		});
 		target.style.height = "";
 		target.style.backgroundColor = "";
 		target.style.margin = "";
@@ -213,24 +206,25 @@ export default DraggableCollapsiblePane;
 
 DraggableCollapsiblePane.propTypes = {
 	object: PropTypes.shape({
-		id: PropTypes.number.isRequired,
+		id: PropTypes.string.isRequired,
 		type: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 		content: PropTypes.object.isRequired,
 	}).isRequired,
 	dragged: orNull(PropTypes.shape({
-		id: PropTypes.number.isRequired,
+		id: PropTypes.string.isRequired,
 		type: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 	}).isRequired),
 	dropTarget: orNull(PropTypes.shape({
-		id: PropTypes.number.isRequired,
+		id: PropTypes.string.isRequired,
 		type: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 	}).isRequired),
 	setDragged: PropTypes.func.isRequired,
 	setDropTarget: PropTypes.func.isRequired,
 	reorder: PropTypes.func.isRequired,
+	merge: PropTypes.func.isRequired,
 	theme: PropTypes.string,
 };
 

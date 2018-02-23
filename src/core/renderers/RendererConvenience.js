@@ -51,4 +51,34 @@ function scaleImageInFrame(scale, imgW, imgH, frameW, frameH) {
 	return {x, y, w, h, sx, sy, sw, sh};
 }
 
-export { scaleImageInFrame };
+function colorToCanvasFillStyle(color) {
+	const a = color.a === undefined ? 1 : color.a;
+	const r = Math.floor(color.r);
+	const g = Math.floor(color.g)
+	const b = Math.floor(color.b);
+	return `rgba(${r},${g},${b},${a})`;
+}
+
+function compileVertexShader(gl, str) {
+    const shader = gl.createShader(gl.VERTEX_SHADER);
+	gl.shaderSource(shader, str);
+	gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    	console.log(gl.getShaderInfoLog(shader));
+    	return null;
+    }
+    return shader;
+}
+
+function compileFragmentShader(gl, str) {
+    const shader = gl.createShader(gl.FRAGMENT_SHADER);
+	gl.shaderSource(shader, str);
+	gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    	console.log(gl.getShaderInfoLog(shader));
+    	return null;
+    }
+    return shader;
+}
+
+export { scaleImageInFrame, colorToCanvasFillStyle, compileFragmentShader, compileVertexShader };

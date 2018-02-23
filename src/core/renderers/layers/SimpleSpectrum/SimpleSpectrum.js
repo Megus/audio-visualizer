@@ -1,4 +1,5 @@
 import RendererBase from "../../RendererBase";
+import { colorToCanvasFillStyle } from "../../RendererConvenience"
 
 class SimpleSpectrum extends RendererBase {
 	constructor(media, canvas, consts = {}, vars = {}) {
@@ -46,15 +47,14 @@ class SimpleSpectrum extends RendererBase {
 	async render(timestamp, dTimestamp) {
 		const canvas = this.canvas;
 		const canvasCtx = canvas.getContext("2d");
+		canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
 		this.audio.getFrequencyArray(timestamp, this.dataArray);
 
 		let barHeight;
 		let x = this.vars.frame.x;
 
-		canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-
-		canvasCtx.fillStyle = this.vars.color;
+		canvasCtx.fillStyle = colorToCanvasFillStyle(this.vars.color);
 		for (let i = 0; i < this.consts.barsCount; i += 1) {
 			// Calculate bar height
 			if (Math.floor(this.barBins[i]) < Math.floor(this.barBins[i + 1])) {
