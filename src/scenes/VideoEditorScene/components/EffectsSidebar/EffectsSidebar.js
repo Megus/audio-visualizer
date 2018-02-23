@@ -90,15 +90,23 @@ class EffectsSidebar extends Component {
 		return this.pathFromRootToElement(this.state.elements.find(_element => _element.id === element.parent)).concat([element.parent]);
 	}
 
-	reorder() {
-		console.log(`reorder ${this.state.dragged.name} and ${this.state.dropTarget.name}`);
+	reorder(isDroppedAfter) {
+		if (isDroppedAfter) {
+			console.log(`put ${this.state.dragged.name} after ${this.state.dropTarget.name}`);
+		} else {
+			console.log(`put ${this.state.dragged.name} before ${this.state.dropTarget.name}`);
+		}
 		if (this.state.dragged.parent === this.state.dropTarget.parent) {
 			const reorderOnTheSameLevel = (layers) => {
 				const draggedIndex = layers.findIndex(subLayer => subLayer.title === this.state.dragged.id);
-				const targetIndex = layers.findIndex(subLayer => subLayer.title === this.state.dropTarget.id);
 				const newLayers = layers.slice(0);
 				const dragged = newLayers.splice(draggedIndex, 1)[0];
-				newLayers.splice(targetIndex, 0, dragged);
+				if (isDroppedAfter) {
+					newLayers.push(dragged);
+				} else {
+					const targetIndex = newLayers.findIndex(subLayer => subLayer.title === this.state.dropTarget.id);
+					newLayers.splice(targetIndex, 0, dragged);
+				}
 				return newLayers;
 			}
 			if (this.state.dragged.parent === null || this.state.dragged.parent === undefined) {
@@ -126,6 +134,7 @@ class EffectsSidebar extends Component {
 				}
 				const path = this.pathFromRootToElement(this.state.dragged);
 				const newTree = buildReorderedTree(this.state.initialStructure, path);
+				console.log("newTree", newTree);
 				this.props.update(newTree);
 			}
 		}
@@ -136,7 +145,8 @@ class EffectsSidebar extends Component {
 	}
 
 	buildContent(parent) {
-		const elementsOnLevel = this.state.elements.filter(element => element.parent === parent).map((element) => {
+		let elementsOnLevel = this.state.elements.filter(element => element.parent === parent);
+		elementsOnLevel = elementsOnLevel.map((element) => {
 			const elementWithContent = Object.assign({}, element);
 			if (elementWithContent.type === "group") {
 				elementWithContent.content = this.buildContent(elementWithContent.id);
@@ -145,7 +155,8 @@ class EffectsSidebar extends Component {
 				elementWithContent.content = (<ul>{params}</ul>);
 			}
 			return elementWithContent;
-		}).map(element => (
+		});
+		elementsOnLevel = elementsOnLevel.map(element => (
 			<DraggableCollapsiblePane
 				key={element.id}
 				object={element}
@@ -153,8 +164,9 @@ class EffectsSidebar extends Component {
 				dropTarget={this.state.dropTarget}
 				setDragged={id => this.setDragged(id)}
 				setDropTarget={id => this.setDropTarget(id)}
-				reorder={() => this.reorder()}
+				reorder={isDroppedAfter => this.reorder(isDroppedAfter)}
 				merge={() => this.merge()}
+				isLastChild={elementsOnLevel.indexOf(element) === elementsOnLevel.length - 1}
 			/>));
 		return (<ul>{elementsOnLevel}</ul>);
 	}

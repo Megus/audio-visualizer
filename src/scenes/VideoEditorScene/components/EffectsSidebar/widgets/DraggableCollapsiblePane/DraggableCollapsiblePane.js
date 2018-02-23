@@ -102,9 +102,10 @@ class DraggableCollapsiblePane extends Component {
 
 	// reordering
 
-	onTryingToReorder(event) {
+	onTryingToReorder(event, isAfter) {
 		const { target } = event;
-		if (target.id && target.id === `before-${this.props.dragged.id}`) { return; }
+		if (!isAfter && target.id &&
+			target.id === `before-${this.props.dragged.id}`) { return; }
 		event.preventDefault();
 		event.stopPropagation();
 		target.style.height = "200px";
@@ -119,14 +120,14 @@ class DraggableCollapsiblePane extends Component {
 		target.style.margin = "";
 	}
 
-	onReorder(event) {
+	onReorder(event, isAfter) {
 		const { target } = event;
 		event.preventDefault();
 		event.stopPropagation();
 		this.props.setDropTarget({
 			id: this.props.object.id,
 			callback: () => {
-				this.props.reorder();
+				this.props.reorder(isAfter);
 			},
 		});
 		target.style.height = "";
@@ -197,6 +198,17 @@ class DraggableCollapsiblePane extends Component {
 						theme={this.props.theme}
 					/>
 				</li>
+				{
+					(this.props.isLastChild) &&
+					<div
+						id={`after-${this.props.object.id}`}
+						className="drop-space-before-element"
+						onDragEnter={event => event.preventDefault()}
+						onDragOver={event => this.onTryingToReorder(event, true)}
+						onDragLeave={this.onLeavingSpaceAfterElement}
+						onDrop={event => this.onReorder(event, true)}
+					/>
+				}
 			</div>
 		);
 	}
