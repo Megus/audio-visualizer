@@ -4,6 +4,7 @@
 	top: 0;
 	bottom: 0;
 	width: 300px;
+	overflow: auto;
 	box-sizing: border-box;
 	border-left: 1px solid gray;
 	padding: 10px;

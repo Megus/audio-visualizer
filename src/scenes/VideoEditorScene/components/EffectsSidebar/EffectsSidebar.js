@@ -121,6 +121,29 @@ class EffectsSidebar extends Component {
 
 	merge() {
 		console.log(`merge ${this.state.dragged.title} and ${this.state.dropTarget.title}`);
+		let newElements = this.state.elements.slice(0);
+		const target = newElements.find(subLayer => subLayer.title === this.state.dropTarget.title);
+		const targetIndex = newElements.indexOf(target);
+		const dragged = newElements.find(subLayer => subLayer.title === this.state.dragged.title);
+		const newGroupCount = newElements.filter(element => element.title.substr(0, 9) === "New Group").length
+		let title;
+		if (newGroupCount > 0) {
+			title = `New Group (${newGroupCount + 1})`;
+		} else {
+			title = "New Group";
+		}
+		newElements.splice(targetIndex, 0, {
+			id: "GGroup",
+			title: title,
+			consts: {},
+			vars: {},
+			type: "group",
+			parent: this.state.dropTarget.parent
+		});
+		target.parent = title;
+		dragged.parent = title;
+		this.props.update(this.convertFlatStateToLayer(newElements, this.state.initialStructure));
+		this.setState({ dragged: null, dropTarget: null });
 	}
 
 	buildContent(parent) {
