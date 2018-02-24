@@ -41,9 +41,10 @@ class DraggableCollapsiblePane extends Component {
 
 	// as dragged
 
-	onDragStart() {
-		this.props.setDragged(this.props.object.title);
-		return false;
+	onDragStart(event) {
+		event.stopPropagation();
+		const height = this.element.getBoundingClientRect().height;
+		this.props.setDragged(this.props.object.title, height);
 	}
 
 	onDrag(event) {
@@ -108,7 +109,7 @@ class DraggableCollapsiblePane extends Component {
 			target.id === `before-${this.props.dragged.title}`) { return; }
 		event.preventDefault();
 		event.stopPropagation();
-		target.style.height = "200px";
+		target.style.height = `${this.props.draggedHeight}px`;
 		target.style.backgroundColor = "whitesmoke";
 		target.style.margin = "10px 0";
 		if (target.className === "drop-space before-element") {
@@ -233,6 +234,7 @@ DraggableCollapsiblePane.propTypes = {
 		type: PropTypes.string.isRequired,
 		title: PropTypes.string.isRequired,
 	}).isRequired),
+	draggedHeight: PropTypes.number.isRequired,
 	dropTarget: orNull(PropTypes.shape({
 		type: PropTypes.string.isRequired,
 		title: PropTypes.string.isRequired,

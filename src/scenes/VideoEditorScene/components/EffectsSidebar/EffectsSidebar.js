@@ -14,6 +14,7 @@ class EffectsSidebar extends Component {
 		this.state = {
 			initialStructure: null,
 			dragged: null,
+			draggedHeight: 0,
 			dropTarget: null,
 			elements: [],
 		};
@@ -71,15 +72,15 @@ class EffectsSidebar extends Component {
 		};
 	}
 
-	setDragged(title) {
+	setDragged(title, draggedHeight) {
 		if (!title) {
-			this.setState({ dragged: null });
+			this.setState({ dragged: null, draggedHeight: 0 });
 			return;
 		}
 		if (this.state.dragged || this.assigningDraggableInProcess) { return; }
 		this.assigningDraggableInProcess = true; // hack to prevent setting parents as dragged
 		const dragged = this.state.elements.find(element => element.title === title);
-		this.setState({ dragged }, () => {
+		this.setState({ dragged, draggedHeight }, () => {
 			this.assigningDraggableInProcess = false;
 		});
 	}
@@ -139,8 +140,9 @@ class EffectsSidebar extends Component {
 				key={element.title}
 				object={element}
 				dragged={this.state.dragged}
+				draggedHeight={this.state.draggedHeight}
 				dropTarget={this.state.dropTarget}
-				setDragged={title => this.setDragged(title)}
+				setDragged={(title, draggedHeight) => this.setDragged(title, draggedHeight)}
 				setDropTarget={title => this.setDropTarget(title)}
 				reorder={isDroppedAfter => this.reorder(isDroppedAfter)}
 				merge={() => this.merge()}
