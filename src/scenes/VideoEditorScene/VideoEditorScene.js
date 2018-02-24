@@ -29,7 +29,7 @@ class VideoEditorScene extends Component {
 			canPlay: false,
 			isAnimating: false,
 			isRendering: false,
-			project: null
+			project: null,
 		};
 	}
 
@@ -143,13 +143,16 @@ class VideoEditorScene extends Component {
 	modifyProjectEffects(newEffects) {
 		if (!this.state.project) { return; }
 		this.setState({ project: { ...this.state.project, mainGroup: newEffects } });
-		// do stuff
+		// this.renderEngine.setupLayer(layer, parentLayer); // for all new layers
 	}
 
 	render() {
 		return (
 			<div>
-				<EffectsSidebar mainGroup={this.state.project && this.state.project.mainGroup} update={effects => this.modifyProjectEffects(effects)} />
+				<EffectsSidebar
+					mainGroup={this.state.project && this.state.project.mainGroup}
+					update={effects => this.modifyProjectEffects(effects)}
+				/>
 				<div style={{ width: "calc(100% - 300px)" }}>
 					<audio
 						id="player"

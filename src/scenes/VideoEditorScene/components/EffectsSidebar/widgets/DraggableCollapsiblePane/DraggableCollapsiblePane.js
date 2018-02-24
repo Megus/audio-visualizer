@@ -43,7 +43,7 @@ class DraggableCollapsiblePane extends Component {
 
 	onDragStart(event) {
 		event.stopPropagation();
-		const height = this.element.getBoundingClientRect().height;
+		const { height } = this.element.getBoundingClientRect();
 		this.props.setDragged(this.props.object.title, height);
 	}
 
@@ -106,7 +106,7 @@ class DraggableCollapsiblePane extends Component {
 	onTryingToReorder(event, isAfter) {
 		const { target } = event;
 		if (!isAfter && target.id &&
-			target.id === `before-${this.props.dragged.title}`) { return; }
+			target.id === `before-${this.props.dragged.uniqueId}`) { return; }
 		event.preventDefault();
 		event.stopPropagation();
 		target.style.height = `${this.props.draggedHeight}px`;
@@ -142,6 +142,14 @@ class DraggableCollapsiblePane extends Component {
 
 	// helpers
 
+	setTargetStyle() {
+		this.element.classList.add("merge-target");
+	}
+
+	resetStyle() {
+		this.element.classList.remove("merge-target");
+	}
+
 	makeDraggable(event) {
 		this.element.setAttribute("draggable", "true");
 		this.element.classList.add("draggable");
@@ -166,21 +174,13 @@ class DraggableCollapsiblePane extends Component {
 		this.element.addEventListener("drop", this.onDrop, true);
 	}
 
-	setTargetStyle() {
-		this.element.classList.add("merge-target");
-	}
-
-	resetStyle() {
-		this.element.classList.remove("merge-target");
-	}
-
 	render() {
 		return (
 			<div className="draggable-droppable-pane">
 				{
 					(this.props.dragged && this.props.dragged.title === this.props.object.title) ||
 					<div
-						id={`before-${this.props.object.title}`}
+						id={`before-${this.props.object.uniqueId}`}
 						className="drop-space before-element"
 						onDragEnter={event => event.preventDefault()}
 						onDragOver={this.onTryingToReorder}
@@ -190,7 +190,7 @@ class DraggableCollapsiblePane extends Component {
 				}
 				<li
 					ref={(element) => { this.element = element; }}
-					id={this.props.object.title}
+					id={this.props.object.uniqueId}
 					className={`targetable-list-item targetable-list-item_for_${this.props.object.type}`}
 					key={this.props.object.title}
 					onMouseDown={this.makeDraggable}
@@ -209,7 +209,7 @@ class DraggableCollapsiblePane extends Component {
 				{
 					(this.props.isLastChild) &&
 					<div
-						id={`after-${this.props.object.title}`}
+						id={`after-${this.props.object.uniqueId}`}
 						className="drop-space after-element"
 						onDragEnter={event => event.preventDefault()}
 						onDragOver={event => this.onTryingToReorder(event, true)}
@@ -229,6 +229,7 @@ DraggableCollapsiblePane.propTypes = {
 		type: PropTypes.string.isRequired,
 		title: PropTypes.string.isRequired,
 		content: PropTypes.object.isRequired,
+		uniqueId: PropTypes.string.isRequired,
 	}).isRequired,
 	dragged: orNull(PropTypes.shape({
 		type: PropTypes.string.isRequired,
@@ -244,6 +245,7 @@ DraggableCollapsiblePane.propTypes = {
 	reorder: PropTypes.func.isRequired,
 	merge: PropTypes.func.isRequired,
 	theme: PropTypes.string,
+	isLastChild: PropTypes.bool.isRequired,
 };
 
 DraggableCollapsiblePane.defaultProps = {

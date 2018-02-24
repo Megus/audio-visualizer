@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 import DraggableCollapsiblePane from "./widgets/DraggableCollapsiblePane/DraggableCollapsiblePane";
 import "./EffectsSidebar.css";
@@ -20,57 +21,19 @@ class EffectsSidebar extends Component {
 		};
 	}
 
-	componentWillReceiveProps(newProps) {
-		if (!newProps || !newProps.mainGroup) { return; }
-		this.setState({ initialStructure: Object.assign({}, newProps.mainGroup) });
-		const layers = newProps.mainGroup.layers;
+	componentWillReceiveProps(nextProps) {
+		if (!nextProps || !nextProps.mainGroup) { return; }
+		this.setState({ initialStructure: Object.assign({}, nextProps.mainGroup) });
+		const { mainGroup } = nextProps;
+		const { layers } = mainGroup;
 		let elements = [];
 		layers.forEach((layer) => {
 			elements = elements.concat(this.convertLayerToFlatState(layer, [], null));
 		});
 		this.setState({ elements });
-		// console.log("back to hierarchy", this.convertFlatStateToLayer(elements, newProps.mainGroup));
+		// console.log("back to hierarchy", this.convertFlatStateToLayer(elements, nextProps.mainGroup));
 	}
 
-	convertLayerToFlatState(layer, flatState, parent) {
-		const consts = Object.keys(layer.consts).map((key) => {
-			return { name: key, value: layer.consts[key] };
-		});
-		const vars = Object.keys(layer.vars).map((key) => {
-			return { name: key, value: layer.vars[key] };
-		});
-		const params = consts.concat(vars);
-		const rootObj = {
-			...layer,
-			type: layer.layers ? "group" : "effect",
-			parent: parent,
-			params: !layer.layers && params,
-		};
-		flatState.push(rootObj);
-		if (layer.layers) {
-			layer.layers.forEach(sublayer => this.convertLayerToFlatState(sublayer, flatState, rootObj.title));
-		}
-		return flatState;
-	}
-
-	convertFlatStateToLayer(flatState, layer) {
-		const title = layer.title === "Main group" ? null : layer.title;
-		delete layer.parent;
-		delete layer.type;
-		delete layer.params;
-		return {
-			...layer,
-			layers: flatState.filter(element => element.parent === title).map(element => {
-				if (element.type === "effect") {
-					// maybe refactor this
-					delete element.parent;
-					delete element.type;
-					delete element.params;
-					return element;
-				} return this.convertFlatStateToLayer(flatState, element);
-			}),
-		};
-	}
 
 	setDragged(title, draggedHeight) {
 		if (!title) {
@@ -104,8 +67,40 @@ class EffectsSidebar extends Component {
 		});
 	}
 
+	convertFlatStateToLayer(flatState, layer) {
+		const {
+			parent, type, ...reducedLayer
+		} = layer;
+		const title = reducedLayer.title === "Main group" ? null : reducedLayer.title;
+		return {
+			...reducedLayer,
+			layers: flatState.filter(element => element.parent === title).map((element) => {
+				if (element.type === "effect") {
+					const {
+						parent, type, ...reducedElement
+					} = element;
+					return reducedElement;
+				} return this.convertFlatStateToLayer(flatState, element);
+			}),
+		};
+	}
+
+	convertLayerToFlatState(layer, flatState, parent) {
+		const rootObj = {
+			...layer,
+			parent,
+			type: layer.layers ? "group" : "effect",
+			uniqueId: layer.title.toLowerCase().replace(/\s/g, "_"),
+		};
+		flatState.push(rootObj);
+		if (layer.layers) {
+			layer.layers.forEach(sublayer => this.convertLayerToFlatState(sublayer, flatState, rootObj.title));
+		}
+		return flatState;
+	}
+
 	reorder(isDroppedAfter) {
-		let newElements = this.state.elements.slice(0);
+		const newElements = this.state.elements.slice(0);
 		const draggedIndex = newElements.findIndex(subLayer => subLayer.title === this.state.dragged.title);
 		const dragged = newElements.splice(draggedIndex, 1)[0];
 		if (isDroppedAfter) {
@@ -120,12 +115,11 @@ class EffectsSidebar extends Component {
 	}
 
 	merge() {
-		console.log(`merge ${this.state.dragged.title} and ${this.state.dropTarget.title}`);
-		let newElements = this.state.elements.slice(0);
+		const newElements = this.state.elements.slice(0);
 		const target = newElements.find(subLayer => subLayer.title === this.state.dropTarget.title);
 		const targetIndex = newElements.indexOf(target);
 		const dragged = newElements.find(subLayer => subLayer.title === this.state.dragged.title);
-		const newGroupCount = newElements.filter(element => element.title.substr(0, 9) === "New Group").length
+		const newGroupCount = newElements.filter(element => element.title.substr(0, 9) === "New Group").length;
 		let title;
 		if (newGroupCount > 0) {
 			title = `New Group (${newGroupCount + 1})`;
@@ -134,11 +128,11 @@ class EffectsSidebar extends Component {
 		}
 		newElements.splice(targetIndex, 0, {
 			id: "GGroup",
-			title: title,
+			title,
 			consts: {},
 			vars: {},
 			type: "group",
-			parent: this.state.dropTarget.parent
+			parent: this.state.dropTarget.parent,
 		});
 		target.parent = title;
 		dragged.parent = title;
@@ -153,7 +147,10 @@ class EffectsSidebar extends Component {
 			if (elementWithContent.type === "group") {
 				elementWithContent.content = this.buildContent(elementWithContent.title);
 			} else {
-				const params = elementWithContent.params.map(param => (<li key={param.name}>{param.name}: {param.value.toString()}</li>));
+				const params = Object.keys(elementWithContent.consts)
+					.map(key => (<li key={key}>{key}: {elementWithContent.consts[key].toString()}</li>))
+					.concat(Object.keys(elementWithContent.vars)
+						.map(key => (<li key={key}>{key}: {elementWithContent.vars[key].toString()}</li>)));
 				elementWithContent.content = (<ul>{params}</ul>);
 			}
 			return elementWithContent;
@@ -187,3 +184,8 @@ class EffectsSidebar extends Component {
 }
 
 export default EffectsSidebar;
+
+EffectsSidebar.propTypes = {
+	update: PropTypes.func.isRequired,
+	mainGroup: PropTypes.shape({}).isRequired,
+};
