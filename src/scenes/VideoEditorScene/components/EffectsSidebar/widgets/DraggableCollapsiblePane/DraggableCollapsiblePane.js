@@ -24,6 +24,7 @@ class DraggableCollapsiblePane extends Component {
 		this.onTryingToReorder = this.onTryingToReorder.bind(this);
 		this.onLeavingSpaceAfterElement = this.onLeavingSpaceAfterElement.bind(this);
 		this.onReorder = this.onReorder.bind(this);
+		this.deleteElement = this.deleteElement.bind(this);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -174,6 +175,10 @@ class DraggableCollapsiblePane extends Component {
 		this.element.addEventListener("drop", this.onDrop, true);
 	}
 
+	deleteElement() {
+		this.props.deleteElement(this.props.object.title);
+	}
+
 	render() {
 		return (
 			<div className="draggable-droppable-pane">
@@ -204,6 +209,8 @@ class DraggableCollapsiblePane extends Component {
 						name={this.props.object.title}
 						content={this.props.object.content}
 						theme={this.props.theme}
+						showDeleteButton={true}
+						onDelete={this.deleteElement}
 					/>
 				</li>
 				{
@@ -244,6 +251,7 @@ DraggableCollapsiblePane.propTypes = {
 	setDropTarget: PropTypes.func.isRequired,
 	reorder: PropTypes.func.isRequired,
 	merge: PropTypes.func.isRequired,
+	deleteElement: PropTypes.func.isRequired,
 	theme: PropTypes.string,
 	isLastChild: PropTypes.bool.isRequired,
 };

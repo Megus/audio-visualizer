@@ -39,6 +39,16 @@ class CollapsiblePane extends Component {
 					onClick={this.toggle}
 				>
 					{this.props.name}
+					{
+						this.props.showDeleteButton &&
+						<div
+							role="button"
+							className="collapsible-pane__delete_button"
+							onClick={(event) => { this.props.onDelete(); event.stopPropagation(); }}
+						>
+							x
+						</div>
+					}
 				</div>
 				<div className={this.contentClass()}>{this.props.content}</div>
 			</div>
@@ -51,9 +61,12 @@ export default CollapsiblePane;
 CollapsiblePane.propTypes = {
 	name: PropTypes.string.isRequired,
 	content: PropTypes.shape({}).isRequired,
+	showDeleteButton: PropTypes.bool,
+	onDelete: PropTypes.func.isRequired,
 	theme: PropTypes.string,
 };
 
 CollapsiblePane.defaultProps = {
+	showDeleteButton: false,
 	theme: "odd",
 };

@@ -47,3 +47,14 @@
   padding: 0;
   visibility: hidden;
 }
+
+.collapsible-pane__name .collapsible-pane__delete_button {
+  float: right;
+  margin-right: 3px;
+  cursor: pointer;
+  display: none;
+}
+
+.collapsible-pane__name:hover .collapsible-pane__delete_button {
+  display: block;
+}

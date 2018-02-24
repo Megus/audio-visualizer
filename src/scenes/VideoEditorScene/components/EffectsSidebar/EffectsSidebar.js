@@ -10,6 +10,8 @@ class EffectsSidebar extends Component {
 
 		this.convertLayerToFlatState = this.convertLayerToFlatState.bind(this);
 		this.convertFlatStateToLayer = this.convertFlatStateToLayer.bind(this);
+		this.deleteElementWithChildren = this.deleteElementWithChildren.bind(this);
+		this.deleteElement = this.deleteElement.bind(this);
 		this.buildContent = this.buildContent.bind(this);
 
 		this.state = {
@@ -140,6 +142,23 @@ class EffectsSidebar extends Component {
 		this.setState({ dragged: null, dropTarget: null });
 	}
 
+	deleteElementWithChildren(element, elements) {
+		const elementIndex = elements.indexOf(element);
+		elements.splice(elementIndex, 1);
+		const children = elements.filter(child => child.parent === element.title);
+		if (children.length > 0) {
+			children.forEach(child => this.deleteElementWithChildren(child, elements));
+		}
+	}
+
+	deleteElement(title) {
+		const newElements = this.state.elements.slice(0);
+		const element = newElements.find(_element => _element.title === title);
+		if (!element) { return; }
+		this.deleteElementWithChildren(element, newElements);
+		this.props.update(this.convertFlatStateToLayer(newElements, this.state.initialStructure));
+	}
+
 	buildContent(parent) {
 		let elementsOnLevel = this.state.elements.filter(element => element.parent === parent);
 		elementsOnLevel = elementsOnLevel.map((element) => {
@@ -166,6 +185,7 @@ class EffectsSidebar extends Component {
 				setDropTarget={title => this.setDropTarget(title)}
 				reorder={isDroppedAfter => this.reorder(isDroppedAfter)}
 				merge={() => this.merge()}
+				deleteElement={this.deleteElement}
 				isLastChild={elementsOnLevel.indexOf(element) === elementsOnLevel.length - 1}
 			/>));
 		return (<ul>{elementsOnLevel}</ul>);
