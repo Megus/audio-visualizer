@@ -4,11 +4,16 @@
 
 const throwError = (msg = "Unexpected error occured") => { throw new Error(msg); };
 
+// ? Is it possible to improve helper functions below ??
+
 const throwErrorIfRequiredArgumentMissed = argObj =>
 	Object.values(argObj)[0] || throwError(`'${Object.keys(argObj)[0]}' argument is required`);
 
 const throwErrorIfArgumentIsNotNumber = argObj =>
 	typeof Object.values(argObj)[0] === "number" || throwError(`'${Object.keys(argObj)[0]}' argument is not a number`);
+
+const throwErrorIfArgumentIsNotFunction = argObj =>
+	typeof Object.values(argObj)[0] === "function" || throwError(`'${Object.keys(argObj)[0]}' argument is not a function`);
 
 /**
  * Utility functions
@@ -40,4 +45,9 @@ function secondsToMinutesString(seconds) {
 		: `${intPart}:${remainder === 0 ? "00" : remainder}`;
 }
 
-export { throwErrorIfRequiredArgumentMissed, divideOnEvenlyParts, secondsToMinutesString };
+export {
+	throwErrorIfRequiredArgumentMissed,
+	throwErrorIfArgumentIsNotFunction,
+	divideOnEvenlyParts,
+	secondsToMinutesString,
+};

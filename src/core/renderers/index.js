@@ -13,30 +13,32 @@ import { ValueTypes } from "./RendererBase";
 const rArray = [
 	LSimpleSpectrum, LSimpleWave, LSimpleImage, LSimplePower, LSimpleVideo,
 	FAdjustColor,
-	GGroup
+	GGroup,
 ];
 let renderers = {};
 // Create hash table of renderers from array for convenience
 rArray.forEach((r) => {
 	// Add common vars
-	r.vars = { ...r.vars, 
+	r.vars = {
+		...r.vars,
 		frame: {
 			title: "Frame",
-			type: ValueTypes.frame
+			type: ValueTypes.frame,
 		},
 		on: {
 			title: "Enabled",
-			type: ValueTypes.bool
+			type: ValueTypes.bool,
 		},
 		alpha: {
 			title: "Opacity",
-			type: ValueTypes.float
-		}
+			type: ValueTypes.float,
+		},
 	};
-	r.defaultVars = { ...r.defaultVars,
+	r.defaultVars = {
+		...r.defaultVars,
 		on: true,
-		alpha: 1.0
-	}
+		alpha: 1.0,
+	};
 	renderers[r.id] = r;
 });
 
@@ -49,9 +51,9 @@ function createRenderer(id, project, canvas, consts, vars) {
 			{ ...r.defaultConsts, ...consts },
 			{ ...r.defaultVars, ...vars }
 		);
-	} else {
-		return null;
 	}
+
+	return null;
 }
 
 export { renderers, createRenderer };

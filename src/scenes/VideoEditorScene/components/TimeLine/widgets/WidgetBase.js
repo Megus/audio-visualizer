@@ -22,7 +22,9 @@ class WidgetBase {
 		}
 
 		this.mediaAudio = null;
-		this.preset = preset;
+
+		this.presets = [];
+		this.activePreset = preset;
 	}
 
 	/**
@@ -30,9 +32,8 @@ class WidgetBase {
 	 */
 
 	// eslint-disable-next-line no-unused-vars, class-methods-use-this
-	drawFrame = async (timestamp) => {
-		throw new Error("WidgetBase.drawFrame() is abstract method. Must be Impelemented in descendandts");
-	}
+	drawFrame = async timestamp =>
+		Promise.reject(new Error("WidgetBase.drawFrame() is abstract method. Must be called for descendandts"));
 
 	/**
 	 * Base methods

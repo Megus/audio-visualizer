@@ -1,6 +1,6 @@
 {
-	"id": 0,
-	"name": "5 seconds",
+	"id": 2,
+	"name": "Preset 2",
 
 	"scale": 5,
 	"accentMarkerAppearanceFreq": 3,
@@ -13,7 +13,7 @@
 
 	"timeStampFontSize": 24,
 
-	"prevPresetFile": null,
-	"thisPresetFile": "default.json",
-	"nextPresetFile": "preset_1.json"
+	"prevPresetFile": "preset_1.json",
+	"thisPresetFile": "preset_2.json",
+	"nextPresetFile": "preset_3.json"
 }

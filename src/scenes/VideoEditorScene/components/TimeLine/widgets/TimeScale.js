@@ -3,7 +3,7 @@ import WidgetBase from "./WidgetBase";
 import { divideOnEvenlyParts, secondsToMinutesString } from "../../../../../services/commonFunctions";
 
 class TimeScale extends WidgetBase {
-	defaultConsts = {
+	static defaultConsts = {
 		noAudioLoadedMessage: "No audio file loaded",
 	}
 
@@ -19,7 +19,7 @@ class TimeScale extends WidgetBase {
 
 	showNoMediaAudioLoadedMessage = () => {
 		const { canvas } = this;
-		const { noAudioLoadedMessage } = this.defaultConsts;
+		const { noAudioLoadedMessage } = TimeScale.defaultConsts;
 
 		const ctx = canvas.getContext("2d");
 		ctx.font = "42px sans-serif";
@@ -35,7 +35,7 @@ class TimeScale extends WidgetBase {
 	}
 
 	drawFrame = async (timestamp) => {
-		// console.log("TimeScale.draw() called");
+		console.log("TimeScale.draw() called. Timestamp", timestamp);
 
 		const { canvas, mediaAudio } = this;
 		const {
@@ -48,7 +48,7 @@ class TimeScale extends WidgetBase {
 			markerLineWidth,
 			timeStampFontSize,
 			timeStampFont,
-		} = this.preset;
+		} = this.activePreset;
 
 		if (!mediaAudio) {
 			this.showNoMediaAudioLoadedMessage();
@@ -68,12 +68,12 @@ class TimeScale extends WidgetBase {
 			ctx.moveTo(pixelsBetweenAdjMarkers * offset, 0);
 			ctx.lineTo(pixelsBetweenAdjMarkers * offset, markerHeight);
 
-			// * Сalculation of accent markers
+			// * Сalculation and output of accent markers
 			ctx.lineTo(pixelsBetweenAdjMarkers * offset, (pixelsBetweenAdjMarkers * offset) % accentMarkerAppearanceFreq === 0
 				? accentMarkerHeight
 				: markerHeight);
 
-			// * Time markers output
+			// * Calculation and output of time markers
 			if ((pixelsBetweenAdjMarkers * offset) % accentMarkerAppearanceFreq === 0) {
 				const txt = secondsToMinutesString(offset * scale);
 				const txtMeasure = ctx.measureText(txt);

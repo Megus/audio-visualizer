@@ -6,8 +6,7 @@ import PropTypes from "prop-types";
 import { MediaAudio } from "../../../../core/media/index";
 import { divideOnEvenlyParts } from "../../../../services/commonFunctions";
 import { TimeScale, FrequencyVisualizer } from "./widgets";
-import { TimeScalePreset, FrequencyVisualizerPreset } from "./widgetPresets";
-
+import { TimeScalePreset, FrequencyVisualizerPreset, WidgetPresetCollection } from "./widgetPresets";
 
 import "./TimeLine.css";
 
@@ -22,12 +21,8 @@ class TimeLine extends Component {
 		mediaAudio: null,
 	};
 
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			widgets: [],
-		};
+	state = {
+		widgets: [],
 	}
 
 	async componentDidMount() {
@@ -36,19 +31,27 @@ class TimeLine extends Component {
 		const { canvasRef } = self;
 		const { widgets } = self.state;
 
-		const timeScalePreset = "presets/timeLineWidgets/timeScale/default.json";
-		const timeScaleInstance = await TimeScalePreset.getInstance(timeScalePreset);
+		try {
+			// const collection = new WidgetPresetCollection(TimeScalePreset.getInstance);
+			// await collection.fill();
+			// console.log(collection);
+			// const hash = collection.asHashTableBy("name");
+			// console.log(hash);
+			// console.log(hash["Preset 1"]);
 
-		const freqVisPreset = "presets/timeLineWidgets/frequencyVisualizer/default.json";
-		const reqVisInstance = await FrequencyVisualizerPreset.getInstance(freqVisPreset);
+			const timeScalePreset = await TimeScalePreset.getInstance();
+			const reqVisPreset = await FrequencyVisualizerPreset.getInstance();
 
-		widgets.push(new TimeScale(canvasRef, timeScaleInstance));
-		widgets.push(new FrequencyVisualizer(canvasRef, reqVisInstance));
+			widgets.push(new TimeScale(canvasRef, timeScalePreset));
+			widgets.push(new FrequencyVisualizer(canvasRef, reqVisPreset));
+		} catch (error) {
+			return Promise.reject(new Error(`TimeLine.componentDidMount() failed: ${error}`));
+		}
 
 		widgets.forEach(widget => widget.setMediaAudio(mediaAudio));
 
 		//* self used to avoid Eslint complaining on calling setState inside componentDidMount
-		//! This is bad practice. It forces render() to bo called twice
+		//! This is bad practice. It forces render() to be called twice
 		self.setState({ widgets });
 
 		return Promise.resolve(); // TODO: Good practice to return non-hanging promises. Do refactoring everywhere

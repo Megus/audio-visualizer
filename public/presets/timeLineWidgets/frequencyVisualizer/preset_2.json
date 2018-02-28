@@ -1,0 +1,8 @@
+{
+	"id": 2,
+	"name": "FrequencyVisualizer preset 2",
+
+	"prevPresetFile": "preset_1.json",
+	"thisPresetFile": "preset_2.json",
+	"nextPresetFile": null
+}
