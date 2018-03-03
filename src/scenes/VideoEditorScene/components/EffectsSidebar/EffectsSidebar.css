@@ -18,17 +18,7 @@
 																	supported by Chrome and Opera */
 }
 
-ul {
-	padding: 0;
-	margin: 0;
-}
-
-li {
-	padding: 0;
-	margin: 0;
-	list-style: none;
-}
-
-li:not(:last-child) {
-	/*margin-bottom: 7px;*/
+.sidebar__new-effect-link {
+	text-decoration: underline;
+	cursor: pointer;
 }

@@ -198,6 +198,13 @@ class EffectsSidebar extends Component {
 				<ul>
 					{items}
 				</ul>
+				<div
+					className="sidebar__new-effect-link"
+					role="button"
+					onClick={this.props.openAddNewEffectPanel}
+				>
+					Add new effect...
+				</div>
 			</div>
 		);
 	}
@@ -207,5 +214,6 @@ export default EffectsSidebar;
 
 EffectsSidebar.propTypes = {
 	update: PropTypes.func.isRequired,
+	openAddNewEffectPanel: PropTypes.func.isRequired,
 	mainGroup: PropTypes.shape({}).isRequired,
 };
