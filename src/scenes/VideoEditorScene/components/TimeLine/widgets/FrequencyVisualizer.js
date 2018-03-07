@@ -6,6 +6,9 @@ class FrequencyVisualizer extends WidgetBase {
 
 		return Promise.resolve();
 	};
+
+	static getInstance = async (canvas, presetFactoryMethod) =>
+		WidgetBase.getInstance(canvas, presetFactoryMethod, (cvs, presets) => new FrequencyVisualizer(cvs, presets));
 }
 
 export default FrequencyVisualizer;

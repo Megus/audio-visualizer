@@ -1,37 +1,35 @@
 import { MediaAudio } from "../../../../../core/media/index";
-import WidgetPresetBase from "../widgetPresets/WidgetPresetBase";
+import { WidgetPresetCollection } from "../widgetPresets";
+import {
+	throwError,
+	throwErrorIfRequiredArgumentMissed,
+} from "../../../../../services/commonFunctions";
 
 class WidgetBase {
-	constructor(canvas, preset) {
-		if (canvas === undefined) {
-			throw new Error("'canvas' argument is undefined");
+	constructor(canvas, presets) {
+		throwErrorIfRequiredArgumentMissed({ canvas });
+		throwErrorIfRequiredArgumentMissed({ presets });
+
+		// ? TODO: Move to separate function
+		if (!(presets instanceof WidgetPresetCollection)) {
+			throw new Error("'presets' argument is not an instance of WidgetPresetCollection class");
 		}
 
-		if (preset === undefined) {
-			throw new Error("'preset' argument is undefined");
-		}
+		this.canvas = canvas.getContext
+			? canvas
+			: throwError("'canvas' argument is not an instance of Canvas");
 
-		if (canvas.getContext) {
-			this.canvas = canvas;
-		} else {
-			throw new Error("'canvas' argument is null or not canvas instance");
-		}
-
-		if (preset === null || !(preset instanceof WidgetPresetBase)) {
-			throw new Error("'preset' argument is null or not widget preset class instance");
-		}
+		this.presets = presets;
+		this.activePreset = presets.getDefaultPreset();
 
 		this.mediaAudio = null;
-
-		this.presets = [];
-		this.activePreset = preset;
 	}
 
 	/**
 	 * Abstract methods
 	 */
 
-	// eslint-disable-next-line no-unused-vars, class-methods-use-this
+	// eslint-disable-next-line no-unused-vars
 	drawFrame = async timestamp =>
 		Promise.reject(new Error("WidgetBase.drawFrame() is abstract method. Must be called for descendandts"));
 
@@ -46,11 +44,15 @@ class WidgetBase {
 
 		// Can accept null, but cannot accept instances other than MediaAudio class instance
 		if (value !== null && !(value instanceof MediaAudio)) {
-			throw new Error("'mediaAudio' argument not MediaAudio class instance");
+			throw new Error("'mediaAudio' argument is not MediaAudio class instance");
 		}
 
 		this.mediaAudio = value;
 	}
+
+	// eslint-disable-next-line no-unused-vars
+	static getInstance = async (canvas, presetFactoryMethod, widgetConstructorCallback) =>
+		widgetConstructorCallback(canvas, await WidgetPresetCollection.getFilledInstance(presetFactoryMethod));
 }
 
 export default WidgetBase;

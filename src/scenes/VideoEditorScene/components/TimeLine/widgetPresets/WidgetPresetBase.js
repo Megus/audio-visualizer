@@ -26,7 +26,7 @@ export default class WidgetPresetBase {
 	 * Base methods
 	 */
 
-	static loadFromFile = (widgetName, presetConstructorCallback, presetJsonFileName = "default.json") => {
+	static loadFromFile = async (widgetName, presetConstructorCallback, presetJsonFileName = "default.json") => {
 		throwErrorIfRequiredArgumentMissed({ widgetName });
 		throwErrorIfRequiredArgumentMissed({ presetConstructorCallback });
 		throwErrorIfRequiredArgumentMissed({ presetJsonFileName });

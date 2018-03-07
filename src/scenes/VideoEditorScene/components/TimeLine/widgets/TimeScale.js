@@ -1,5 +1,4 @@
 import WidgetBase from "./WidgetBase";
-
 import { divideOnEvenlyParts, secondsToMinutesString } from "../../../../../services/commonFunctions";
 
 class TimeScale extends WidgetBase {
@@ -56,7 +55,7 @@ class TimeScale extends WidgetBase {
 		}
 
 		const ctx = canvas.getContext("2d");
-		// ctx.scale(0.77, 1);
+		// ctx.scale(0.77, 1); // * Possible usefule function
 
 		ctx.lineWidth = markerLineWidth;
 		ctx.font = timeStampFont;
@@ -85,6 +84,9 @@ class TimeScale extends WidgetBase {
 
 		return Promise.resolve();
 	}
+
+	static getInstance = async (canvas, presetFactoryMethod) =>
+		WidgetBase.getInstance(canvas, presetFactoryMethod, (cvs, presets) => new TimeScale(cvs, presets));
 }
 
 export default TimeScale;

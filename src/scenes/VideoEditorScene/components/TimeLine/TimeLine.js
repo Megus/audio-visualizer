@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import { MediaAudio } from "../../../../core/media/index";
 import { divideOnEvenlyParts } from "../../../../services/commonFunctions";
 import { TimeScale, FrequencyVisualizer } from "./widgets";
-import { TimeScalePreset, FrequencyVisualizerPreset, WidgetPresetCollection } from "./widgetPresets";
+import { TimeScalePreset, FrequencyVisualizerPreset } from "./widgetPresets";
 
 import "./TimeLine.css";
 
@@ -26,35 +26,27 @@ class TimeLine extends Component {
 	}
 
 	async componentDidMount() {
-		const self = this;
-		const { mediaAudio } = self.props;
-		const { canvasRef } = self;
-		const { widgets } = self.state;
+		console.log("componentDidMount() call");
+		const { mediaAudio } = this.props;
+		const { canvasRef } = this;
+		const { widgets } = this.state;
 
 		try {
-			// const collection = new WidgetPresetCollection(TimeScalePreset.getInstance);
-			// await collection.fill();
-			// console.log(collection);
-			// const hash = collection.asHashTableBy("name");
-			// console.log(hash);
-			// console.log(hash["Preset 1"]);
-
-			const timeScalePreset = await TimeScalePreset.getInstance();
-			const reqVisPreset = await FrequencyVisualizerPreset.getInstance();
-
-			widgets.push(new TimeScale(canvasRef, timeScalePreset));
-			widgets.push(new FrequencyVisualizer(canvasRef, reqVisPreset));
+			console.log("before await");
+			widgets.push(await TimeScale.getInstance(canvasRef, TimeScalePreset.getInstance));
+			widgets.push(await FrequencyVisualizer.getInstance(canvasRef, FrequencyVisualizerPreset.getInstance));
+			console.log("after await");
 		} catch (error) {
 			return Promise.reject(new Error(`TimeLine.componentDidMount() failed: ${error}`));
 		}
 
 		widgets.forEach(widget => widget.setMediaAudio(mediaAudio));
 
-		//* self used to avoid Eslint complaining on calling setState inside componentDidMount
-		//! This is bad practice. It forces render() to be called twice
-		self.setState({ widgets });
+		console.log("widgets ", widgets);
+		// eslint-disable-next-line react/no-did-mount-set-state
+		this.setState({ widgets }); //! This is bad practice. It forces render() to be called twice
 
-		return Promise.resolve(); // TODO: Good practice to return non-hanging promises. Do refactoring everywhere
+		return Promise.resolve();
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -76,6 +68,7 @@ class TimeLine extends Component {
 	}
 
 	draw = async (timestamp) => {
+		console.log("draw() call");
 		const { widgets } = this.state;
 
 		this.clearCanvas();
@@ -84,13 +77,18 @@ class TimeLine extends Component {
 	}
 
 	render() {
+		console.log("render() call");
 		const {
 			height,
 			width,
 		} = this.props;
 
+		const { widgets } = this.state;
+
 		// ? TODO: Get current audio time via props
-		requestAnimationFrame(this.draw);
+		if (widgets.length > 0) {
+			requestAnimationFrame(this.draw);
+		}
 
 		return (
 			<div className="root">

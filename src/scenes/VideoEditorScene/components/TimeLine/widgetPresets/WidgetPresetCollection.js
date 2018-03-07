@@ -10,6 +10,12 @@ class WidgetPresetCollection extends Array {
 
 		super(...items);
 
+		//* Workaround to force 'instanceof WidgetPresetCollection' work
+		//* Refer to: https://github.com/babel/babel/issues/3083
+		this.constructor = WidgetPresetCollection;
+		// eslint-disable-next-line no-proto
+		this.__proto__ = WidgetPresetCollection.prototype;
+
 		this.presetFactoryMethod = presetFactoryMethod;
 	}
 
@@ -29,9 +35,9 @@ class WidgetPresetCollection extends Array {
 	fill = async () => {
 		const fillThis = async (presetJsonFileName = null) => {
 			try {
-				const widgetPreset = !presetJsonFileName
-					? await this.presetFactoryMethod()						// get default preset
-					: await this.presetFactoryMethod(presetJsonFileName);	// get named preset
+				const widgetPreset = presetJsonFileName
+					? await this.presetFactoryMethod(presetJsonFileName)	// get named preset
+					: await this.presetFactoryMethod();						// get default preset
 
 				this.push(widgetPreset);
 
@@ -46,6 +52,13 @@ class WidgetPresetCollection extends Array {
 		};
 
 		return fillThis();
+	}
+
+	static getFilledInstance = async (presetFactoryMethod, ...items) => {
+		const instance = new WidgetPresetCollection(presetFactoryMethod, ...items);
+		await instance.fill();
+
+		return instance;
 	}
 }
 

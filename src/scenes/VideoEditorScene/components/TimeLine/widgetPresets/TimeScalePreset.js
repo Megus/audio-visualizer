@@ -20,7 +20,7 @@ class TimeScalePreset extends WidgetPresetBase {
 		this.timeStampFont = `bold ${presetJson.timeStampFontSize}px sans-serif`;
 	}
 
-	static getInstance = presetJsonFileName =>
+	static getInstance = async presetJsonFileName =>
 		WidgetPresetBase.loadFromFile(
 			"timeScale",
 			presetJson => new TimeScalePreset(presetJson),

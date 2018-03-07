@@ -46,6 +46,7 @@ function secondsToMinutesString(seconds) {
 }
 
 export {
+	throwError,
 	throwErrorIfRequiredArgumentMissed,
 	throwErrorIfArgumentIsNotFunction,
 	divideOnEvenlyParts,
