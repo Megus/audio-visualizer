@@ -73,3 +73,13 @@
 .modal .modal__close-button:before {
 	content: "\2715";
 }
+
+ul,
+li {
+	padding: 0;
+	margin: 0;
+}
+
+li {
+	list-style: none;
+}

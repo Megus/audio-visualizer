@@ -1,0 +1,60 @@
+.collapsible-pane {
+}
+
+.collapsible-pane_theme_odd .collapsible-pane__content {
+  border: 1px solid lightgray;
+  background-color: #fff;
+}
+
+.collapsible-pane_theme_even .collapsible-pane__content {
+  border: none;
+  background-color: whitesmoke;
+}
+
+.collapsible-pane__name {
+  line-height: 34px;
+  background-color: #cecece;
+  padding: 0 7px 0 22px;
+}
+
+.collapsible-pane__name:before {
+  content: "";
+  position: absolute;
+  margin-left: -15px;
+  top: 10px;
+  font-size: 12px;
+  width: 0;
+  height: 0;
+  border-top: 10px solid black;
+  border-right: 6px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 6px solid transparent;
+}
+
+.collapsible-pane__name_collapsed:before {
+  border-top: 6px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 10px solid black;
+}
+
+.collapsible-pane__content {
+  padding: 7px 7px 15px 15px;
+}
+
+.collapsible-pane__content_hidden {
+  height: 0;
+  padding: 0;
+  visibility: hidden;
+}
+
+.collapsible-pane__name .collapsible-pane__delete_button {
+  float: right;
+  margin-right: 3px;
+  cursor: pointer;
+  display: none;
+}
+
+.collapsible-pane__name:hover .collapsible-pane__delete_button {
+  display: block;
+}

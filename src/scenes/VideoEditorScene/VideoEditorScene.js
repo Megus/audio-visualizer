@@ -8,6 +8,8 @@ import createNewProject from "../../services/createNewProject";
 import RenderEngine from "../../core/RenderEngine";
 
 import VideoRenderingScene from "../VideoRenderingScene/VideoRenderingScene";
+import EffectsSidebar from "./components/EffectsSidebar/EffectsSidebar";
+import AddNewEffectPanel from "./components/AddNewEffectPanel/AddNewEffectPanel";
 
 class VideoEditorScene extends Component {
 	constructor(props) {
@@ -15,12 +17,16 @@ class VideoEditorScene extends Component {
 
 		this.openRenderingPopup = this.openRenderingPopup.bind(this);
 		this.closeRenderingPopup = this.closeRenderingPopup.bind(this);
+		this.initRenderEngine = this.initRenderEngine.bind(this);
 		this.draw = this.draw.bind(this);
 		this.onAudioPlay = this.onAudioPlay.bind(this);
 		this.onAudioPause = this.onAudioPause.bind(this);
 		this.uploadFile = this.uploadFile.bind(this);
 		this.loadProject = this.loadProject.bind(this);
 		this.setup = this.setup.bind(this);
+		this.openAddNewEffectPanel = this.openAddNewEffectPanel.bind(this);
+		this.closeAddNewEffectPanel = this.closeAddNewEffectPanel.bind(this);
+		this.addNewEffect = this.addNewEffect.bind(this);
 
 		this.audioFilePath = "/project/bad-monday.mp3";
 
@@ -28,6 +34,8 @@ class VideoEditorScene extends Component {
 			canPlay: false,
 			isAnimating: false,
 			isRendering: false,
+			newEffectPaneOpen: false,
+			project: null,
 		};
 	}
 
@@ -41,14 +49,18 @@ class VideoEditorScene extends Component {
 	}
 
 	setup(project) {
-		const canvas = this.canvasRef;
-
-		this.project = project;
-		this.renderEngine = new RenderEngine(project, canvas.width, canvas.height);
+		this.initRenderEngine(project);
 		this.setState({
 			canPlay: true,
 			isAnimating: false,
+			project,
 		});
+		// setTimeout(this.draw, 1);
+	}
+
+	initRenderEngine(project) {
+		const canvas = this.canvasRef;
+		this.renderEngine = new RenderEngine(project, canvas.width, canvas.height);
 		setTimeout(this.draw, 1);
 	}
 
@@ -138,37 +150,79 @@ class VideoEditorScene extends Component {
 		}
 	}
 
+	modifyProjectEffects(newEffects) {
+		if (!this.state.project) { return; }
+		this.setState({ project: { ...this.state.project, mainGroup: newEffects } }, () => {
+			this.initRenderEngine(this.state.project);
+		});
+	}
+
+	openAddNewEffectPanel() {
+		this.setState({ newEffectPaneOpen: true });
+	}
+
+	closeAddNewEffectPanel() {
+		this.setState({ newEffectPaneOpen: false });
+	}
+
+	addNewEffect(effect) {
+		const project = {
+			...this.state.project,
+			mainGroup: {
+				...this.state.project.mainGroup,
+				layers: this.state.project.mainGroup.layers.concat({ ...effect, title: effect.name }),
+			},
+		};
+		this.renderEngine.setupLayer(effect);
+		this.setState({ project, newEffectPaneOpen: false });
+		this.initRenderEngine(project);
+	}
+
 	render() {
 		return (
 			<div>
-				<audio
-					id="player"
-					controls
-					muted
-					onPlay={this.onAudioPlay}
-					onPause={this.onAudioPause}
-					ref={(audio) => { this.audioRef = audio; }}
+				<EffectsSidebar
+					mainGroup={this.state.project && this.state.project.mainGroup}
+					update={effects => this.modifyProjectEffects(effects)}
+					openAddNewEffectPanel={this.openAddNewEffectPanel}
 				/>
-				<hr />
-				<br />
-				<button onClick={this.openRenderingPopup}>Render</button>
-				<input type="file" onChange={this.uploadFile} />
-				<button onClick={this.loadProject}>Load Bad Monday</button>
-				<br />
-				<canvas
-					width="1920"
-					height="1080"
-					style={{ width: 960, height: 540 }}
-					ref={(canvas) => { this.canvasRef = canvas; }}
-				/>
-				<br />
 				{
-					this.state.isRendering && <VideoRenderingScene
-						project={this.project}
-						duration={this.audioRef.duration}
-						onClose={this.closeRenderingPopup}
+					this.state.newEffectPaneOpen &&
+					<AddNewEffectPanel
+						onClose={this.closeAddNewEffectPanel}
+						onChoice={this.addNewEffect}
 					/>
 				}
+				<div style={{ width: "calc(100% - 300px)" }}>
+					<audio
+						id="player"
+						controls
+						muted
+						onPlay={this.onAudioPlay}
+						onPause={this.onAudioPause}
+						ref={(audio) => { this.audioRef = audio; }}
+					/>
+					<hr />
+					<br />
+					<button onClick={this.openRenderingPopup}>Render</button>
+					<input type="file" onChange={this.uploadFile} />
+					<button onClick={this.loadProject}>Load Bad Monday</button>
+					<br />
+					<canvas
+						width="1920"
+						height="1080"
+						style={{ width: 960, height: 540 }}
+						ref={(canvas) => { this.canvasRef = canvas; }}
+					/>
+					<br />
+					{
+						this.state.isRendering && <VideoRenderingScene
+							project={this.state.project}
+							duration={this.audioRef.duration}
+							onClose={this.closeRenderingPopup}
+						/>
+					}
+				</div>
 			</div>
 		);
 	}

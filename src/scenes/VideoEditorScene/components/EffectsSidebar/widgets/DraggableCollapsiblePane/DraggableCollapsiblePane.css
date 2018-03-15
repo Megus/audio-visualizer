@@ -1,0 +1,19 @@
+.merge-target {
+  opacity: 0.5;
+}
+
+.drop-space {
+  height: 20px;
+}
+
+.targetable-list-item {
+  position: relative;
+}
+
+.targetable-list-item.targetable-list-item_for_group .collapsible-pane__content  {
+  padding-top: 0px;
+}
+
+.targetable-list-item.targetable-list-item_for_effect .collapsible-pane__content  {
+  padding-top: 7px;
+}
