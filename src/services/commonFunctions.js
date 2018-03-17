@@ -15,6 +15,9 @@ const throwErrorIfArgumentIsNotNumber = argObj =>
 const throwErrorIfArgumentIsNotFunction = argObj =>
 	typeof Object.values(argObj)[0] === "function" || throwError(`'${Object.keys(argObj)[0]}' argument is not a function`);
 
+const throwErrorIfArgumentIsNotInstanceOfType = (argObj, type) =>
+	Object.values(argObj)[0] instanceof type || throwError(`'${Object.keys(argObj)[0]}' argument is not an instance of '${type}'`);
+
 /**
  * Utility functions
  */
@@ -49,6 +52,7 @@ export {
 	throwError,
 	throwErrorIfRequiredArgumentMissed,
 	throwErrorIfArgumentIsNotFunction,
+	throwErrorIfArgumentIsNotInstanceOfType,
 	divideOnEvenlyParts,
 	secondsToMinutesString,
 };

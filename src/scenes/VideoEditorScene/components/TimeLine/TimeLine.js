@@ -23,41 +23,82 @@ class TimeLine extends Component {
 
 	state = {
 		widgets: [],
+		canSetNextPreset: false,
+		canSetPrevPreset: false,
+		activePresetName: "",
 	}
 
 	async componentDidMount() {
-		console.log("componentDidMount() call");
+		// console.log("componentDidMount() call");
 		const { mediaAudio } = this.props;
 		const { canvasRef } = this;
 		const { widgets } = this.state;
 
 		try {
-			console.log("before await");
-			widgets.push(await TimeScale.getInstance(canvasRef, TimeScalePreset.getInstance));
-			widgets.push(await FrequencyVisualizer.getInstance(canvasRef, FrequencyVisualizerPreset.getInstance));
-			console.log("after await");
+			// console.log("before await");
+
+			const timeScaleWidget = await TimeScale.getInstance(canvasRef, TimeScalePreset.getInstance);
+			const freqVisWidget = await FrequencyVisualizer.getInstance(canvasRef, FrequencyVisualizerPreset.getInstance);
+
+			widgets.push(timeScaleWidget, freqVisWidget);
+
+			// console.log("after await");
+
+			widgets.forEach(w => w.setMediaAudio(mediaAudio));
+
+			// console.log("widgets ", widgets);
+
+			// eslint-disable-next-line react/no-did-mount-set-state
+			this.setState({
+				widgets,
+				canSetNextPreset: timeScaleWidget.canSetNextPreset(),
+				canSetPrevPreset: freqVisWidget.canSetPrevPreset(),
+				activePresetName: timeScaleWidget.activePreset.name,
+			}); //! This is bad practice. It forces render() to be called twice
 		} catch (error) {
-			return Promise.reject(new Error(`TimeLine.componentDidMount() failed: ${error}`));
+			return Promise.reject(new Error(`TimeLine.componentDidMount() failed with the next reason: ${error}`));
 		}
-
-		widgets.forEach(widget => widget.setMediaAudio(mediaAudio));
-
-		console.log("widgets ", widgets);
-		// eslint-disable-next-line react/no-did-mount-set-state
-		this.setState({ widgets }); //! This is bad practice. It forces render() to be called twice
 
 		return Promise.resolve();
 	}
 
-	componentWillReceiveProps(nextProps) {
-		const { mediaAudio } = this.props;
+	componentWillReceiveProps = nextProps =>
+		nextProps.mediaAudio === this.props.mediaAudio ||
+		this.state.widgets.forEach(w => w.setMediaAudio(nextProps.mediaAudio));
+
+	// ! TODO: Subject to rename
+	setNextPreset = () => {
 		const { widgets } = this.state;
 
-		if (nextProps.mediaAudio === mediaAudio) {
+		const timeScaleWidget = widgets.find(w => w instanceof TimeScale);
+		if (!timeScaleWidget) {
 			return;
 		}
 
-		widgets.forEach(widget => widget.setMediaAudio(nextProps.mediaAudio));
+		this.setState({
+			canSetNextPreset: timeScaleWidget.setNextPresetAsActive() && timeScaleWidget.canSetNextPreset(),
+			canSetPrevPreset: timeScaleWidget.canSetPrevPreset(),
+			activePresetName: timeScaleWidget.activePreset.name,
+
+		});
+		console.log("next preset", timeScaleWidget.activePreset);
+	}
+
+	// ! TODO: Subject to rename
+	setPrevPreset = () => {
+		const { widgets } = this.state;
+
+		const timeScaleWidget = widgets.find(widget => widget instanceof TimeScale);
+		if (!timeScaleWidget) {
+			return;
+		}
+
+		this.setState({
+			canSetNextPreset: timeScaleWidget.canSetNextPreset,
+			canSetPrevPreset: timeScaleWidget.setPrevPresetAsActive() && timeScaleWidget.canSetPrevPreset(),
+			activePresetName: timeScaleWidget.activePreset.name,
+		});
+		console.log("prev preset", timeScaleWidget.activePreset);
 	}
 
 	clearCanvas = () => {
@@ -68,7 +109,7 @@ class TimeLine extends Component {
 	}
 
 	draw = async (timestamp) => {
-		console.log("draw() call");
+		// console.log("draw() call");
 		const { widgets } = this.state;
 
 		this.clearCanvas();
@@ -77,7 +118,7 @@ class TimeLine extends Component {
 	}
 
 	render() {
-		console.log("render() call");
+		// console.log("render() call");
 		const {
 			height,
 			width,
@@ -106,6 +147,21 @@ class TimeLine extends Component {
 					{/* <button className="footer__ctrl" onClick={this.testDraw}>Test draw</button> */}
 					<div className="footer__ctrl">Canvas base dim: {width}x{height}</div>
 					<div className="footer__ctrl">Canvase style dim: {divideOnEvenlyParts(width, 2)}x{divideOnEvenlyParts(height, 2)}</div>
+					<button
+						className="footer__ctrl"
+						onClick={this.setPrevPreset}
+						disabled={!this.state.canSetPrevPreset}
+					>
+						&lt; Prev. Preset
+					</button>
+					<button
+						className="footer__ctrl"
+						onClick={this.setNextPreset}
+						disabled={!this.state.canSetNextPreset}
+					>
+						Next Preset &gt;
+					</button>
+					<div className="footer__ctrl">Active preset: {this.state.activePresetName}</div>
 				</div>
 			</div>
 		);

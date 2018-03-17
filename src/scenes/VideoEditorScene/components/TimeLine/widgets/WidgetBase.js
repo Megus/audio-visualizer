@@ -3,17 +3,15 @@ import { WidgetPresetCollection } from "../widgetPresets";
 import {
 	throwError,
 	throwErrorIfRequiredArgumentMissed,
+	throwErrorIfArgumentIsNotInstanceOfType,
 } from "../../../../../services/commonFunctions";
+import WidgetPresetBase from "../widgetPresets/WidgetPresetBase";
 
 class WidgetBase {
 	constructor(canvas, presets) {
 		throwErrorIfRequiredArgumentMissed({ canvas });
 		throwErrorIfRequiredArgumentMissed({ presets });
-
-		// ? TODO: Move to separate function
-		if (!(presets instanceof WidgetPresetCollection)) {
-			throw new Error("'presets' argument is not an instance of WidgetPresetCollection class");
-		}
+		throwErrorIfArgumentIsNotInstanceOfType({ presets }, WidgetPresetCollection);
 
 		this.canvas = canvas.getContext
 			? canvas
@@ -37,17 +35,89 @@ class WidgetBase {
 	 * Base methods
 	 */
 
-	setMediaAudio = (value) => {
-		if (value === undefined) {
-			throw new Error("'mediaAudio' argument is undefined");
+	setActivePreset = (preset) => {
+		throwErrorIfRequiredArgumentMissed({ preset });
+		throwErrorIfArgumentIsNotInstanceOfType({ preset }, WidgetPresetBase);
+
+		const { presets } = this;
+
+		if (!presets || presets.length === 0) {
+			return false;
 		}
 
-		// Can accept null, but cannot accept instances other than MediaAudio class instance
-		if (value !== null && !(value instanceof MediaAudio)) {
-			throw new Error("'mediaAudio' argument is not MediaAudio class instance");
+		const foundPreset = presets.find(p => p.id === preset.id);
+		if (foundPreset) {
+			this.activePreset = preset;
+			return true;
 		}
 
-		this.mediaAudio = value;
+		return false;
+	}
+
+	setNextPresetAsActive = () => {
+		const {
+			presets,
+			activePreset,
+		} = this;
+
+		if (!presets || presets.length === 0) {
+			return false;
+		}
+
+		if (!activePreset.nextPresetExists()) {
+			return false;
+		}
+
+		const nextPreset = presets.find(p => p.thisPresetFile === activePreset.nextPresetFile);
+		if (nextPreset) {
+			this.activePreset = nextPreset;
+			return true;
+		}
+
+		return false;
+	}
+
+	setPrevPresetAsActive = () => {
+		const {
+			presets,
+			activePreset,
+		} = this;
+
+		if (!presets || presets.length === 0) {
+			return false;
+		}
+
+		if (!activePreset.prevPresetExists()) {
+			return false;
+		}
+
+		const prevPreset = presets.find(p => p.thisPresetFile === activePreset.prevPresetFile);
+		if (prevPreset) {
+			this.activePreset = prevPreset;
+			return true;
+		}
+
+		return false;
+	}
+
+	canSetNextPreset = () => this.activePreset.nextPresetExists();
+	canSetPrevPreset = () => this.activePreset.prevPresetExists();
+
+	setMediaAudio = (mediaAudio) => {
+		if (mediaAudio === undefined) {
+			throwError("'mediaAudio' argument is undefined");
+		}
+
+		// Can accept null
+		if (mediaAudio === null) {
+			this.mediaAudio = mediaAudio;
+			return;
+		}
+
+		// Cannot accept instances other than MediaAudio class instance
+		throwErrorIfArgumentIsNotInstanceOfType({ mediaAudio }, MediaAudio);
+
+		this.mediaAudio = mediaAudio;
 	}
 
 	// eslint-disable-next-line no-unused-vars

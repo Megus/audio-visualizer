@@ -42,7 +42,7 @@ class WidgetPresetCollection extends Array {
 				this.push(widgetPreset);
 
 				if (widgetPreset.nextPresetFile) {
-					await fillThis(widgetPreset.nextPresetFile); // recursive call
+					await fillThis(widgetPreset.nextPresetFile);			// recursive call
 				}
 			} catch (error) {
 				return Promise.reject(error);

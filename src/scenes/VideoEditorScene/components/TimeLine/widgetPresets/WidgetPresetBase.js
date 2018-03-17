@@ -38,4 +38,8 @@ export default class WidgetPresetBase {
 			.then(json => presetConstructorCallback(json))
 			.catch(error => new Error(`Cannot load TimeLine widget preset. Error: ${error}`));
 	}
+
+	nextPresetExists = () => this.nextPresetFile || false;
+
+	prevPresetExists = () => this.prevPresetFile || false;
 }
