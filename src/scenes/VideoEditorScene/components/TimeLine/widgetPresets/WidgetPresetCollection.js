@@ -37,7 +37,7 @@ class WidgetPresetCollection extends Array {
 			try {
 				const widgetPreset = presetJsonFileName
 					? await this.presetFactoryMethod(presetJsonFileName)	// get named preset
-					: await this.presetFactoryMethod();						// get default preset
+					: await this.presetFactoryMethod();						// get initial preset
 
 				this.push(widgetPreset);
 

@@ -1,8 +1,9 @@
 {
-	"id": 3,
-	"name": "Preset 3",
+	"id": 1,
+	"orderId": 3,
+	"name": "10 sec. scale",
 
-	"scale": 5,
+	"scale": 10,
 	"accentMarkerAppearanceFreq": 3,
 	"pixelsBetweenAdjMarkers": 50,
 
@@ -13,7 +14,7 @@
 
 	"timeStampFontSize": 24,
 
-	"prevPresetFile": "preset_2.json",
-	"thisPresetFile": "preset_3.json",
-	"nextPresetFile": null
+	"prevPresetFile": "default.json",
+	"thisPresetFile": "zoom_in_0.json",
+	"nextPresetFile": "final.json"
 }

@@ -152,14 +152,14 @@ class TimeLine extends Component {
 						onClick={this.setPrevPreset}
 						disabled={!this.state.canSetPrevPreset}
 					>
-						&lt; Prev. Preset
+						Zoom Out &ndash;
 					</button>
 					<button
 						className="footer__ctrl"
 						onClick={this.setNextPreset}
 						disabled={!this.state.canSetNextPreset}
 					>
-						Next Preset &gt;
+						Zoom In +
 					</button>
 					<div className="footer__ctrl">Active preset: {this.state.activePresetName}</div>
 				</div>

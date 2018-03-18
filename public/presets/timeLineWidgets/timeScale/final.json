@@ -1,19 +1,20 @@
 {
 	"id": 2,
-	"name": "Preset 2",
+	"orderId": 4,
+	"name": "15 sec. scale",
 
-	"scale": 5,
+	"scale": 15,
 	"accentMarkerAppearanceFreq": 3,
 	"pixelsBetweenAdjMarkers": 50,
 
 	"markerHeight": 20,
 	"accentMarkerHeight": 30,
-	"additionalMarkersQty": 2,
+	"additionalMarkersQty": 4,
 	"markerLineWidth": 1,
 
 	"timeStampFontSize": 24,
 
-	"prevPresetFile": "preset_1.json",
-	"thisPresetFile": "preset_2.json",
-	"nextPresetFile": "preset_3.json"
+	"prevPresetFile": "zoom_in_0.json",
+	"thisPresetFile": "final.json",
+	"nextPresetFile": null
 }

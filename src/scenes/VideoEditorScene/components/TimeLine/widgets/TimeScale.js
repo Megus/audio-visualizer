@@ -60,20 +60,21 @@ class TimeScale extends WidgetBase {
 		ctx.lineWidth = markerLineWidth;
 		ctx.font = timeStampFont;
 
-		const markersNumber = (mediaAudio.audioBuffer.duration / scale) + additionalMarkersQty;
+		const markersNumber = Math.floor(mediaAudio.audioBuffer.duration / scale) + additionalMarkersQty;
 
 		ctx.beginPath();
 		for (let offset = 1; offset <= markersNumber; offset += 1) {
-			ctx.moveTo(pixelsBetweenAdjMarkers * offset, 0);
-			ctx.lineTo(pixelsBetweenAdjMarkers * offset, markerHeight);
+			// * Calculate if marker is accent
+			const isAccesntMarker = offset % accentMarkerAppearanceFreq === 0;
 
-			// * Сalculation and output of accent markers
-			ctx.lineTo(pixelsBetweenAdjMarkers * offset, (pixelsBetweenAdjMarkers * offset) % accentMarkerAppearanceFreq === 0
+			// * Regular and accent markers output
+			ctx.moveTo(pixelsBetweenAdjMarkers * offset, 0);
+			ctx.lineTo(pixelsBetweenAdjMarkers * offset, isAccesntMarker
 				? accentMarkerHeight
 				: markerHeight);
 
-			// * Calculation and output of time markers
-			if ((pixelsBetweenAdjMarkers * offset) % accentMarkerAppearanceFreq === 0) {
+			// * Time stamps output
+			if (isAccesntMarker) {
 				const txt = secondsToMinutesString(offset * scale);
 				const txtMeasure = ctx.measureText(txt);
 				ctx.fillText(txt, pixelsBetweenAdjMarkers * offset - txtMeasure.width / 2, accentMarkerHeight + timeStampFontSize);

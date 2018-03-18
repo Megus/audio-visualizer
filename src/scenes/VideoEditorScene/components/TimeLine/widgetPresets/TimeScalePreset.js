@@ -1,10 +1,12 @@
 import WidgetPresetBase from "./WidgetPresetBase";
 
+const INITIAL_PRESET_JSON_FILE_NAME = "initial.json";
+
 class TimeScalePreset extends WidgetPresetBase {
 	constructor(presetJson) {
 		super(presetJson);
 
-		// * Relative measure of time between two adjacent markers (1 - 1 sec, 5 - 5 sec, 0.5 - 30 sec ??)
+		// * Relative measure of time between two adjacent markers (1 - 1 sec, 5 - 5 sec, 0.5 - 0.5 sec)
 		this.scale = presetJson.scale;
 		// Frequency of accent marker appearance
 		this.accentMarkerAppearanceFreq = presetJson.accentMarkerAppearanceFreq;
@@ -20,7 +22,7 @@ class TimeScalePreset extends WidgetPresetBase {
 		this.timeStampFont = `bold ${presetJson.timeStampFontSize}px sans-serif`;
 	}
 
-	static getInstance = async presetJsonFileName =>
+	static getInstance = async (presetJsonFileName = INITIAL_PRESET_JSON_FILE_NAME) =>
 		WidgetPresetBase.loadFromFile(
 			"timeScale",
 			presetJson => new TimeScalePreset(presetJson),

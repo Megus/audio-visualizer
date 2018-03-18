@@ -1,6 +1,7 @@
 {
 	"id": 0,
-	"name": "5 seconds",
+	"orderId": 2,
+	"name": "5 sec. scale (default)",
 
 	"scale": 5,
 	"accentMarkerAppearanceFreq": 3,
@@ -13,7 +14,7 @@
 
 	"timeStampFontSize": 24,
 
-	"prevPresetFile": null,
+	"prevPresetFile": "zoom_out_0.json",
 	"thisPresetFile": "default.json",
-	"nextPresetFile": "preset_1.json"
+	"nextPresetFile": "zoom_in_0.json"
 }

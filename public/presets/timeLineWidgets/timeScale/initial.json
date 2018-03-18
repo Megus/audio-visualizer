@@ -1,0 +1,20 @@
+{
+	"id": 4,
+	"orderId": 0,
+	"name": "0.1 sec. scale",
+
+	"scale": 0.1,
+	"accentMarkerAppearanceFreq": 5,
+	"pixelsBetweenAdjMarkers": 50,
+
+	"markerHeight": 20,
+	"accentMarkerHeight": 30,
+	"additionalMarkersQty": 2,
+	"markerLineWidth": 1,
+
+	"timeStampFontSize": 24,
+
+	"prevPresetFile": null,
+	"thisPresetFile": "initial.json",
+	"nextPresetFile": "zoom_out_0.json"
+}

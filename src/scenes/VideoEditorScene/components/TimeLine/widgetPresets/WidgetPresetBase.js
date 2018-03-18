@@ -7,6 +7,7 @@ export default class WidgetPresetBase {
 		throwErrorIfRequiredArgumentMissed({ presetJson });
 
 		this.id = presetJson.id;
+		this.orderId = presetJson.orderId;
 		this.name = presetJson.name;
 
 		this.prevPresetFile = presetJson.prevPresetFile;
@@ -26,7 +27,7 @@ export default class WidgetPresetBase {
 	 * Base methods
 	 */
 
-	static loadFromFile = async (widgetName, presetConstructorCallback, presetJsonFileName = "default.json") => {
+	static loadFromFile = async (widgetName, presetConstructorCallback, presetJsonFileName) => {
 		throwErrorIfRequiredArgumentMissed({ widgetName });
 		throwErrorIfRequiredArgumentMissed({ presetConstructorCallback });
 		throwErrorIfRequiredArgumentMissed({ presetJsonFileName });
