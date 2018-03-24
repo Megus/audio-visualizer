@@ -7,6 +7,8 @@ import LSimpleImage from "../../../../core/renderers/layers/SimpleImage";
 import LSimplePower from "../../../../core/renderers/layers/SimplePower";
 import LSimpleVideo from "../../../../core/renderers/layers/SimpleVideo";
 
+import "./AddNewEffectPanel.css";
+
 class AddNewEffectPanel extends Component {
 	constructor(props) {
 		super(props);
@@ -33,7 +35,7 @@ class AddNewEffectPanel extends Component {
 		return (
 			<div className="modal">
 				<div className="modal__overlay" onClick={event => this.props.onClose()} />
-				<div className="modal__popup">
+				<div className="modal__popup add-effect-modal">
 					<ul className="effects-list">
 						{effects}
 					</ul>

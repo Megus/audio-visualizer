@@ -6,6 +6,8 @@ import PropTypes from "prop-types";
 
 import RenderEngine from "../../core/RenderEngine";
 
+import "./VideoRenderingScene.css";
+
 class VideoRenderingScene extends Component {
 	constructor(props) {
 		super(props);
@@ -95,7 +97,7 @@ class VideoRenderingScene extends Component {
 		return (
 			<div className="modal">
 				<div className="modal__overlay" onClick={this.confirmCloseAndSave} />
-				<div className="modal__popup">
+				<div className="modal__popup rendering-modal">
 					<div className="modal__header">
 						{this.state.progressPercentage}%
 						<div

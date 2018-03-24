@@ -129,7 +129,7 @@ class EffectsSidebar extends Component {
 			title = "New Group";
 		}
 		newElements.splice(targetIndex, 0, {
-			id: "GGroup",
+			id: "Group",
 			title,
 			consts: {},
 			vars: {},

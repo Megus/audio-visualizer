@@ -50,6 +50,7 @@ class RenderEngine {
 
 	setupLayer(layer, parentLayer) {
 		const id = layer.id;
+		if (!renderers[id]) { console.log(layer); }
 		if (renderers[id].type === "layer") {
 			// Regular layer
 			const canvas = document.createElement("canvas");
