@@ -47,13 +47,10 @@
 
 .modal .modal__popup {
 	z-index: 11;
-	width: 1000px;
-	height: 620px;
 	position: absolute;
 	left: 50%;
-	margin-left: -500px;
 	top: 50%;
-	margin-top: -310px;
+	transform: translate(-50%, -50%);
 	background-color: #fff;
 	border-radius: 3px;
 	padding: 20px;

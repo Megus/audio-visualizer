@@ -170,7 +170,7 @@ class VideoEditorScene extends Component {
 			...this.state.project,
 			mainGroup: {
 				...this.state.project.mainGroup,
-				layers: this.state.project.mainGroup.layers.concat({ ...effect, title: effect.name }),
+				layers: this.state.project.mainGroup.layers.concat(effect),
 			},
 		};
 		this.renderEngine.setupLayer(effect);
